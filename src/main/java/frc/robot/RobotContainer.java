@@ -34,7 +34,7 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    driveController.setRumble(RumbleType.kBothRumble, 0);
+    driveController.setRumble(RumbleType.kBothRumble, 1);
 
     switch (RobotConstants.currentMode) {
       case REAL:
@@ -95,6 +95,13 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // Default command, normal field-relative drive
+    swerve.setDefaultCommand(
+        DriveCommands.joystickDrive(
+          swerve,
+            () -> -driveController.getLeftY(),
+            () -> -driveController.getLeftX(),
+            () -> -driveController.getRawAxis(2)));
 
   }
 
