@@ -4,5 +4,15 @@
 
 package frc.robot;
 
-/** Add your docs here. */
-public class Constants {}
+import edu.wpi.first.wpilibj.RobotBase;
+
+public final class RobotConstants {
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+    public static enum Mode{
+        REAL,
+        SIM,
+        REPLAY
+    }
+}

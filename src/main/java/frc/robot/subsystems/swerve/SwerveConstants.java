@@ -1,0 +1,111 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.subsystems.swerve;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.ClosedLoopOutputType;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+
+
+public class SwerveConstants {
+  public static final double maxSpeedMetersPerSec = 4.8;
+  public static final double odometryFrequencyHz = 100.0; // Hz
+  public static final double trackWidth = Units.inchesToMeters(26.5);
+  public static final double wheelBase = Units.inchesToMeters(26.5);
+  public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
+  public static final Translation2d[] moduleTranslations =
+      new Translation2d[] {
+        new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
+        new Translation2d(trackWidth / 2.0, -wheelBase / 2.0),
+        new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
+        new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
+      };
+
+  // Zeroed rotation values for each module, see setup instructions
+  public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d frontRightZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d backLeftZeroRotation = new Rotation2d(0.0);
+  public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
+
+  // Device CAN IDs
+  public static final int pigeonCanId = 9;
+
+  public static final int frontLeftDriveCanId = 1;
+  public static final int backLeftDriveCanId = 3;
+  public static final int frontRightDriveCanId = 5;
+  public static final int backRightDriveCanId = 7;
+
+  public static final int frontLeftAzimuthCanId = 2;
+  public static final int backLeftAzimuthCanId = 4;
+  public static final int frontRightAzimuthCanId = 6;
+  public static final int backRightAzimuthCanId = 8;
+
+  // Drive motor configuration
+  public static final int driveMotorCurrentLimit = 50;
+  public static final double wheelDiameterMeters = Units.inchesToMeters(3.0);
+  public static final double wheelRadiusMeters = wheelDiameterMeters/2.0;
+  public static final double driveMotorReduction =
+      (45.0 * 20.0) / (18.0 * 15.0);
+  public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
+  public static final boolean driveMotorInverted = false;
+  public static final ClosedLoopOutputType driveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
+
+  // Drive encoder configuration
+  public static final double driveEncoderPositionFactor =
+      2 * Math.PI / driveMotorReduction; // Rotor Rotations -> Wheel Radians
+  public static final double driveEncoderVelocityFactor =
+      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
+
+  // Drive PID configuration
+  public static final double driveKp = 0.0;
+  public static final double driveKd = 0.0;
+  public static final double driveKs = 0.0;
+  public static final double driveKv = 0.1;
+  public static final double driveSimP = 0.05;
+  public static final double driveSimD = 0.0;
+  public static final double driveSimKs = 0.0;
+  public static final double driveSimKv = 0.0789;
+
+  // Azimuth motor configuration
+  public static final boolean azimuthInverted = false;
+  public static final int azimuthMotorCurrentLimit = 20;
+  public static final double azimuthMotorReduction = 9424.0 / 203.0;
+  public static final DCMotor azimuthGearbox = DCMotor.getNeo550(1);
+
+  // Azimuth encoder configuration
+  public static final boolean azimuthEncoderInverted = true;
+  public static final double azimuthEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
+  public static final double azimuthEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
+
+  // Azimuth PID configuration
+  public static final double azimuthKp = 2.0;
+  public static final double azimuthKd = 0.0;
+  public static final double azimuthSimP = 8.0;
+  public static final double azimuthSimD = 0.0;
+  public static final double azimuthPIDMinInput = 0; // Radians
+  public static final double azimuthPIDMaxInput = 2 * Math.PI; // Radians
+
+  // PathPlanner configuration
+  public static final double robotMassKg = 74.088;
+  public static final double robotMOI = 6.883;
+  public static final double wheelCOF = 1.2;
+  public static final RobotConfig ppConfig =
+      new RobotConfig(
+          robotMassKg,
+          robotMOI,
+          new ModuleConfig(
+              wheelRadiusMeters,
+              maxSpeedMetersPerSec,
+              wheelCOF,
+              driveGearbox.withReduction(driveMotorReduction),
+              driveMotorCurrentLimit,
+              1),
+          moduleTranslations);
+}

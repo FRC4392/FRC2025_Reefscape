@@ -10,9 +10,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.urcl.URCL;
 
-import com.google.flatbuffers.Constants;
+import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -28,6 +30,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    
     switch (BuildConstants.DIRTY) {
       case 0:
         Logger.recordMetadata("GitDirty", "All changes committed");
@@ -61,14 +64,21 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    Logger.start();
+    SignalLogger.start();//Start CTRE Logger
+    Logger.registerURCL(URCL.startExternal()); //Start Rev Logger with AdvantageKit
+
+    Logger.start(); //Start AdvantageKit Logger
 
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
+    Threads.setCurrentThreadPriority(true, 99);
+
     CommandScheduler.getInstance().run();
+
+    Threads.setCurrentThreadPriority(false, 10);
   }
 
   @Override
