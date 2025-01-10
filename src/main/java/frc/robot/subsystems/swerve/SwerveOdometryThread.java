@@ -131,7 +131,7 @@ public class SwerveOdometryThread {
 
             // Read Spark values, mark invalid in case of error
             double[] sparkValues = new double[sparkSignals.size()];
-            
+
             for (int i = 0; i < sparkSignals.size(); i++) {
                 sparkValues[i] = sparkSignals.get(i).getAsDouble();
                 if (sparks.get(i).getLastError() != REVLibError.kOk) {
@@ -144,7 +144,7 @@ public class SwerveOdometryThread {
                 for (int i = 0; i < sparkSignals.size(); i++) {
                     sparkQueues.get(i).offer(sparkValues[i]);
                 }
-                for (int i=0; i < phoenixSignals.length; i++){
+                for (int i = 0; i < phoenixSignals.length; i++) {
                     phoenixQueues.get(i).offer(phoenixSignals[i].getValueAsDouble());
                 }
                 for (int i = 0; i < genericSignals.size(); i++) {

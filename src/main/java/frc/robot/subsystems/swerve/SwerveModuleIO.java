@@ -30,17 +30,22 @@ public interface SwerveModuleIO {
     }
 
     /** Updates the set of loggable inputs. */
-    public default void updateInputs(SwerveModuleIOInputs inputs) {}
+    public default void updateInputs(SwerveModuleIOInputs inputs) {
+    }
 
     /** Run the drive motor at the specified open loop value. */
-    public default void setDriveOpenLoop(double output) {}
+    public default void setDriveOpenLoop(double output) {
+    }
 
     /** Run the azimuth motor at the specified open loop value. */
-    public default void setAzimuthOpenLoop(double output) {}
+    public default void setAzimuthOpenLoop(double output) {
+    }
 
     /** Run the drive motor at the specified velocity. */
-    public default void setDriveVelocity(double velocityRadPerSec) {}
+    public default void setDriveVelocity(double velocityRadPerSec) {
+    }
 
     /** Run the Azimuth motor to the specified rotation. */
-    public default void setAzimuthPosition(Rotation2d rotation) {}
+    public default void setAzimuthPosition(Rotation2d rotation) {
+    }
 }

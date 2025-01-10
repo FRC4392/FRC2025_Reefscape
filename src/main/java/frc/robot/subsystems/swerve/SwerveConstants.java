@@ -66,6 +66,20 @@ public class SwerveConstants {
     public static final boolean driveMotorInverted = false;
     public static final ClosedLoopOutputType driveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
 
+    // Drive PID configuration
+    public static final double driveKp = 0.05;
+    public static final double driveKi = 0.0;
+    public static final double driveKd = 0.0;
+    
+    public static final double driveKs = 0.0;
+    public static final double driveKv = 0.1;
+    public static final double driveKa = 0.0;
+
+    public static final double driveSimP = 0.05;
+    public static final double driveSimD = 0.0;
+    public static final double driveSimKs = 0.0;
+    public static final double driveSimKv = 0.0789;
+
     public static final TalonFXConfiguration driveConfiguration = new TalonFXConfiguration()
             .withAudio(new AudioConfigs()
                     .withAllowMusicDurDisable(true)
@@ -85,42 +99,25 @@ public class SwerveConstants {
                     .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withSlot0(new Slot0Configs()
-                    .withKP(0)
-                    .withKI(0)
-                    .withKD(0)
-
+                    .withKP(driveKp)
+                    .withKI(driveKi)
+                    .withKD(driveKd)
                     .withKG(0)
-                    .withKV(0)
-                    .withKS(0)
-                    .withKA(0))
+                    .withKV(driveKv)
+                    .withKS(driveKs)
+                    .withKA(driveKa))
             .withTorqueCurrent(new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(driveMotorStatorLimit)
                     .withPeakReverseTorqueCurrent(-driveMotorStatorLimit));
 
-    // // Drive encoder configuration
-    // public static final double driveEncoderPositionFactor = 2 * Math.PI / driveMotorReduction; // Rotor Rotations ->
-    //                                                                                            // Wheel Radians
-    // public static final double driveEncoderVelocityFactor = (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM ->
-    //                                                                                                     // Wheel Rad/Sec
-
-    // Drive PID configuration
-    public static final double driveKp = 0.0;
-    public static final double driveKd = 0.0;
-    public static final double driveKs = 0.0;
-    public static final double driveKv = 0.1;
-    public static final double driveSimP = 0.05;
-    public static final double driveSimD = 0.0;
-    public static final double driveSimKs = 0.0;
-    public static final double driveSimKv = 0.0789;
-
     // Azimuth motor configuration
     public static final boolean azimuthInverted = false;
     public static final int azimuthMotorCurrentLimit = 20;
-    public static final double azimuthMotorReduction = 9424.0 / 203.0;
+    public static final double azimuthMotorReduction = (32*20*63)/(8*14*18);
     public static final DCMotor azimuthGearbox = DCMotor.getNeo550(1);
 
     // Azimuth encoder configuration
-    public static final boolean azimuthEncoderInverted = true;
+    public static final boolean azimuthEncoderInverted = false;
     public static final double azimuthEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
     public static final double azimuthEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
     // Azimuth PID configuration
