@@ -39,35 +39,38 @@ public class RobotContainer {
     switch (RobotConstants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        swerve =
-            new Swerve(
-                new GyroIOPigeon2(),
-                new SwerveModuleIODeceivers(0),
-                new SwerveModuleIODeceivers(1),
-                new SwerveModuleIODeceivers(2),
-                new SwerveModuleIODeceivers(3));
+        swerve = new Swerve(
+            new GyroIOPigeon2(),
+            new SwerveModuleIODeceivers(0),
+            new SwerveModuleIODeceivers(1),
+            new SwerveModuleIODeceivers(2),
+            new SwerveModuleIODeceivers(3));
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        swerve =
-            new Swerve(
-                new GyroIO() {},
-                new SwerveModuleIOSim(),
-                new SwerveModuleIOSim(),
-                new SwerveModuleIOSim(),
-                new SwerveModuleIOSim());
+        swerve = new Swerve(
+            new GyroIO() {
+            },
+            new SwerveModuleIOSim(),
+            new SwerveModuleIOSim(),
+            new SwerveModuleIOSim(),
+            new SwerveModuleIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        swerve =
-            new Swerve(
-                new GyroIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {},
-                new SwerveModuleIO() {});
+        swerve = new Swerve(
+            new GyroIO() {
+            },
+            new SwerveModuleIO() {
+            },
+            new SwerveModuleIO() {
+            },
+            new SwerveModuleIO() {
+            },
+            new SwerveModuleIO() {
+            });
         break;
     }
 
@@ -90,7 +93,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-
     configureBindings();
   }
 
@@ -98,7 +100,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     swerve.setDefaultCommand(
         DriveCommands.joystickDrive(
-          swerve,
+            swerve,
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
             () -> -driveController.getRawAxis(2)));
