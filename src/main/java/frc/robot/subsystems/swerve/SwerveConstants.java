@@ -26,8 +26,8 @@ import edu.wpi.first.math.util.Units;
 public class SwerveConstants {
     public static final double maxSpeedMetersPerSec = 4.8;
     public static final double odometryFrequencyHz = 100.0; // Hz
-    public static final double trackWidth = Units.inchesToMeters(26.5);
-    public static final double wheelBase = Units.inchesToMeters(26.5);
+    public static final double trackWidth = Units.inchesToMeters(23.5);
+    public static final double wheelBase = Units.inchesToMeters(25.5);
     public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
     public static final Translation2d[] moduleTranslations = new Translation2d[] {
             new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
@@ -43,17 +43,17 @@ public class SwerveConstants {
     public static final Rotation2d backRightZeroRotation = new Rotation2d(0.0);
 
     // Device CAN IDs
-    public static final int pigeonCanId = 9;
+    public static final int pigeonCanId = 11;
 
-    public static final int frontLeftDriveCanId = 1;
-    public static final int backLeftDriveCanId = 3;
-    public static final int frontRightDriveCanId = 5;
-    public static final int backRightDriveCanId = 7;
+    public static final int frontLeftDriveCanId = 12;
+    public static final int backLeftDriveCanId = 14;
+    public static final int frontRightDriveCanId = 13;
+    public static final int backRightDriveCanId = 11;
 
-    public static final int frontLeftAzimuthCanId = 2;
-    public static final int backLeftAzimuthCanId = 4;
-    public static final int frontRightAzimuthCanId = 6;
-    public static final int backRightAzimuthCanId = 8;
+    public static final int frontLeftAzimuthCanId = 12;
+    public static final int backLeftAzimuthCanId = 14;
+    public static final int frontRightAzimuthCanId = 13;
+    public static final int backRightAzimuthCanId = 11;
 
     // Drive motor configuration
     public static final int driveMotorStatorLimit = 80;
