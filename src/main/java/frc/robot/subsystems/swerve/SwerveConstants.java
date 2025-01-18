@@ -111,7 +111,7 @@ public class SwerveConstants {
                     .withPeakReverseTorqueCurrent(-driveMotorStatorLimit));
 
     // Azimuth motor configuration
-    public static final boolean azimuthInverted = false;
+    public static final boolean azimuthInverted = true;
     public static final int azimuthMotorCurrentLimit = 20;
     public static final double azimuthMotorReduction = (32*20*63)/(8*14*18);
     public static final DCMotor azimuthGearbox = DCMotor.getNeo550(1);

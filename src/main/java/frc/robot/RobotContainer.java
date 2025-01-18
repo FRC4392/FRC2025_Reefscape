@@ -34,7 +34,7 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    driveController.setRumble(RumbleType.kBothRumble, 1);
+    driveController.setRumble(RumbleType.kBothRumble, 0);
 
     switch (RobotConstants.currentMode) {
       case REAL:
