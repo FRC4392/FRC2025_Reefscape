@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.subsystems.vision.VisionConstants.*;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,11 +22,16 @@ import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 public class RobotContainer {
 
   // Subsystems
   public final Swerve swerve;
+  public final Vision vision;
 
   // Controller
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -45,6 +52,10 @@ public class RobotContainer {
             new SwerveModuleIODeceivers(1),
             new SwerveModuleIODeceivers(2),
             new SwerveModuleIODeceivers(3));
+
+        vision = new Vision(swerve::addVisionMeasurement,
+            new VisionIOLimelight(camera0Name, swerve::getRotation));
+
         break;
 
       case SIM:
@@ -56,6 +67,9 @@ public class RobotContainer {
             new SwerveModuleIOSim(),
             new SwerveModuleIOSim(),
             new SwerveModuleIOSim());
+
+        vision = new Vision(swerve::addVisionMeasurement,
+            new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
         break;
 
       default:
@@ -71,6 +85,9 @@ public class RobotContainer {
             },
             new SwerveModuleIO() {
             });
+
+        vision = new Vision(swerve::addVisionMeasurement,
+            new VisionIO() {});
         break;
     }
 
