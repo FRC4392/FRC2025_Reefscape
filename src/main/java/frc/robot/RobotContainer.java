@@ -120,7 +120,7 @@ public class RobotContainer {
             swerve,
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
-            () -> -driveController.getRawAxis(2)));
+            () -> driveController.getLeftTriggerAxis()-driveController.getRightTriggerAxis()));
 
   }
 

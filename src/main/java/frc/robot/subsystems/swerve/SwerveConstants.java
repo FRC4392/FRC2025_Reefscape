@@ -46,14 +46,14 @@ public class SwerveConstants {
     public static final int pigeonCanId = 11;
 
     public static final int frontLeftDriveCanId = 12;
-    public static final int backLeftDriveCanId = 14;
+    public static final int backLeftDriveCanId = 11;
     public static final int frontRightDriveCanId = 13;
-    public static final int backRightDriveCanId = 11;
+    public static final int backRightDriveCanId = 14;
 
     public static final int frontLeftAzimuthCanId = 12;
-    public static final int backLeftAzimuthCanId = 14;
+    public static final int backLeftAzimuthCanId = 11;
     public static final int frontRightAzimuthCanId = 13;
-    public static final int backRightAzimuthCanId = 11;
+    public static final int backRightAzimuthCanId = 14;
 
     // Drive motor configuration
     public static final int driveMotorStatorLimit = 80;
@@ -63,7 +63,7 @@ public class SwerveConstants {
     public static final double wheelRadiusMeters = wheelDiameterMeters / 2.0;
     public static final double driveMotorReduction = (45.0 * 20.0) / (18.0 * 15.0);
     public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
-    public static final boolean driveMotorInverted = false;
+//     public static final boolean driveMotorInverted = true;
     public static final ClosedLoopOutputType driveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
 
     // Drive PID configuration
@@ -72,7 +72,7 @@ public class SwerveConstants {
     public static final double driveKd = 0.0;
     
     public static final double driveKs = 0.0;
-    public static final double driveKv = 0.1;
+    public static final double driveKv = 1.9;
     public static final double driveKa = 0.0;
 
     public static final double driveSimP = 0.05;
@@ -96,7 +96,7 @@ public class SwerveConstants {
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                     .withSensorToMechanismRatio(driveMotorReduction))
             .withMotorOutput(new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive)
+                    .withInverted(InvertedValue.CounterClockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withSlot0(new Slot0Configs()
                     .withKP(driveKp)
@@ -112,7 +112,7 @@ public class SwerveConstants {
 
     // Azimuth motor configuration
     public static final boolean azimuthInverted = true;
-    public static final int azimuthMotorCurrentLimit = 20;
+    public static final int azimuthMotorCurrentLimit = 30;
     public static final double azimuthMotorReduction = (32*20*63)/(8*14*18);
     public static final DCMotor azimuthGearbox = DCMotor.getNeo550(1);
 
@@ -121,7 +121,7 @@ public class SwerveConstants {
     public static final double azimuthEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
     public static final double azimuthEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
     // Azimuth PID configuration
-    public static final double azimuthKp = 2.0;
+    public static final double azimuthKp = 3.0;
     public static final double azimuthKd = 0.0;
     public static final double azimuthSimP = 8.0;
     public static final double azimuthSimD = 0.0;
