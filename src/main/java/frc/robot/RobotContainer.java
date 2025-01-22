@@ -9,10 +9,10 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -87,7 +87,8 @@ public class RobotContainer {
             });
 
         vision = new Vision(swerve::addVisionMeasurement,
-            new VisionIO() {});
+            new VisionIO() {
+            });
         break;
     }
 
@@ -109,6 +110,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Simple PathPlanner Auto", new PathPlannerAuto("Simple PathPlanner Auto"));
 
     configureBindings();
   }
@@ -120,11 +123,11 @@ public class RobotContainer {
             swerve,
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
-            () -> driveController.getLeftTriggerAxis()-driveController.getRightTriggerAxis()));
+            () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
 
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoChooser.get();
   }
 }
