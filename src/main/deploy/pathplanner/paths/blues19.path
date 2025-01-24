@@ -1,0 +1,88 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5506902903128474,
+        "y": 5.382135195071783
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.7932985964138983,
+        "y": 5.321792757179543
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5577137681166873,
+        "y": 7.2765442963141105
+      },
+      "prevControl": {
+        "x": 1.128133855181885,
+        "y": 7.665702614666158
+      },
+      "nextControl": {
+        "x": 2.1701788913769744,
+        "y": 6.721709467588245
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.5506902903128474,
+        "y": 5.382135195071783
+      },
+      "prevControl": {
+        "x": 1.3049221446847303,
+        "y": 6.061054161697303
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0033195020747183,
+      "rotationDegrees": -54.02279572015062
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "drop off preload",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "load",
+      "waypointRelativePos": 0.9746898263027165,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.00641590227
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 118.98882252119147
+  },
+  "useDefaultConstraints": true
+}
