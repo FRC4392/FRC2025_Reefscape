@@ -7,6 +7,9 @@
         {
           "type": "path",
           "data": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/autos/14 Score.auto
+            "pathName": "14 SCORE"
+========
             "pathName": "blues17"
           }
         },
@@ -14,6 +17,7 @@
           "type": "path",
           "data": {
             "pathName": "blues18"
+>>>>>>>> 1c1d2d8f30199fdea6190360d8d5dcd9258ad333:src/main/deploy/pathplanner/autos/17 automatic.auto
           }
         }
       ]
