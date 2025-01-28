@@ -39,6 +39,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
 public class SwerveModuleIODeceivers implements SwerveModuleIO {
@@ -67,6 +68,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         private final StatusSignal<AngularVelocity> driveVelocity;
         private final StatusSignal<Voltage> driveAppliedVolts;
         private final StatusSignal<Current> driveCurrent;
+        private final StatusSignal<Temperature> driveTemp;
 
         // Odometry queue
         private final Queue<Double> timestampQueue;
@@ -149,6 +151,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
                 driveVelocity = driveMotor.getVelocity();
                 driveAppliedVolts = driveMotor.getMotorVoltage();
                 driveCurrent = driveMotor.getStatorCurrent();
+                driveTemp = driveMotor.getDeviceTemp();
 
                 // Configure periodic frames
                 BaseStatusSignal.setUpdateFrequencyForAll(
@@ -179,6 +182,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
                 inputs.driveVelocityRadPerSec = Units.rotationsToRadians(driveVelocity.getValueAsDouble());
                 inputs.driveAppliedVolts = driveAppliedVolts.getValueAsDouble();
                 inputs.driveCurrentAmps = driveCurrent.getValueAsDouble();
+                inputs.driveMotorTemp = driveTemp.getValueAsDouble();
 
                 // Update turn inputs
                 sparkStickyFault = false;
@@ -192,6 +196,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
                                 new DoubleSupplier[] { azimuthMotor::getAppliedOutput, azimuthMotor::getBusVoltage },
                                 (values) -> inputs.azimuthAppliedVolts = values[0] * values[1]);
                 ifOk(azimuthMotor, azimuthMotor::getOutputCurrent, (value) -> inputs.azimuthCurrentAmps = value);
+                ifOk(azimuthMotor, azimuthMotor::getMotorTemperature, (value) -> inputs.azimuthMotorTemp = value);
                 inputs.azimuthConnected = turnConnectedDebounce.calculate(!sparkStickyFault);
 
                 // Update odometry inputs

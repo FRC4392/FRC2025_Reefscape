@@ -17,12 +17,14 @@ public interface SwerveModuleIO {
         public double driveVelocityRadPerSec = 0.0;
         public double driveAppliedVolts = 0.0;
         public double driveCurrentAmps = 0.0;
+        public double driveMotorTemp = 0.0;
 
         public boolean azimuthConnected = false;
         public Rotation2d azimuthPosition = new Rotation2d();
         public double azimuthVelocityRadPerSec = 0.0;
         public double azimuthAppliedVolts = 0.0;
         public double azimuthCurrentAmps = 0.0;
+        public double azimuthMotorTemp = 0.0;
 
         public double[] odometryTimestamps = new double[] {};
         public double[] odometryDrivePositionsRad = new double[] {};
