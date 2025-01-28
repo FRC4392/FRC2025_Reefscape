@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.swerve.SwerveCommands;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.Swerve;
@@ -97,9 +97,9 @@ public class RobotContainer {
 
         // Set up SysId routines
         autoChooser.addOption(
-                "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(swerve));
+                "Drive Wheel Radius Characterization", SwerveCommands.wheelRadiusCharacterization(swerve));
         autoChooser.addOption(
-                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(swerve));
+                "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
         autoChooser.addOption(
                 "Drive SysId (Quasistatic Forward)",
                 swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -123,7 +123,7 @@ public class RobotContainer {
     private void configureBindings() {
         // Default command, normal field-relative drive
         swerve.setDefaultCommand(
-                DriveCommands.joystickDrive(
+                SwerveCommands.joystickDrive(
                         swerve,
                         () -> -driveController.getLeftY(),
                         () -> -driveController.getLeftX(),
