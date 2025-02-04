@@ -42,7 +42,6 @@ public class VisionIOPhotonVisionSim extends VisionIOPhotonVision {
       // Add sim camera
       var cameraProperties = new SimCameraProperties();
 
-      
 
       cameraSim = new PhotonCameraSim(camera, cameraProperties);
       cameraSim.enableDrawWireframe(true);
