@@ -5,4 +5,6 @@
 package frc.robot.subsystems.arm;
 
 /** Add your docs here. */
-public class ArmIOTalonFX {}
+public class ArmIOTalonFX implements ArmIO {
+
+}

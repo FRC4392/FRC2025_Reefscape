@@ -5,4 +5,6 @@
 package frc.robot.subsystems.gripper;
 
 /** Add your docs here. */
-public class GripperIOSpark {}
+public class GripperIOSpark implements GripperIO {
+
+}

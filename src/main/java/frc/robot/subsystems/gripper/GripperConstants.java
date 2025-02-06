@@ -5,4 +5,5 @@
 package frc.robot.subsystems.gripper;
 
 /** Add your docs here. */
-public class GripperConstatns {}
+public class GripperConstants {
+}

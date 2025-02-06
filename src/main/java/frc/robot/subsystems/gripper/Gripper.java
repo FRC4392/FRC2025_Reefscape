@@ -4,14 +4,30 @@
 
 package frc.robot.subsystems.gripper;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Gripper extends SubsystemBase {
+
+  private final GripperIO gripperIO;
+  private final GripperIOInputsAutoLogged inputs = new GripperIOInputsAutoLogged();
+
+  private final Alert coralMotorConnectionAlert = new Alert("Coral Motor Disconnected, coral manipulator may not work", AlertType.kError);
+  private final Alert algaeMotorConnectionAlert = new Alert("Algae Motor Disconnected, algae manipulator may not work", AlertType.kError);
   /** Creates a new Gripper. */
-  public Gripper() {}
+  public Gripper(GripperIO gripperIO) {
+    this.gripperIO = gripperIO;
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    gripperIO.updateInputs(inputs);
+    Logger.processInputs("Gripper", inputs);
+
+    coralMotorConnectionAlert.set(inputs.coralMotorConnected);
+    algaeMotorConnectionAlert.set(inputs.algaeMotorConnected);
   }
 }

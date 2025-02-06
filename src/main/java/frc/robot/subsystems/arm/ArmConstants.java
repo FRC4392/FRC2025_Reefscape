@@ -5,4 +5,5 @@
 package frc.robot.subsystems.arm;
 
 /** Add your docs here. */
-public class ArmConstants {}
+public class ArmConstants {
+}

@@ -5,4 +5,6 @@
 package frc.robot.subsystems.arm;
 
 /** Add your docs here. */
-public class ArmIOSim implements ArmIO{}
+public class ArmIOSim implements ArmIO {
+
+}
