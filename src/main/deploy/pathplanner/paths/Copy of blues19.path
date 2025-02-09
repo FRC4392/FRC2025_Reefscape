@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.593865692761479,
-        "y": 4.056479193239795
+        "x": 1.5577137681166873,
+        "y": 7.2765442963141105
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.772398656728317,
-        "y": 4.065922951211734
+        "x": 1.8003220742177382,
+        "y": 7.216201858421871
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "CS1"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 4.056479193239795
       },
       "prevControl": {
-        "x": 6.530358637595663,
-        "y": 4.05168736049107
+        "x": 8.15129225127551,
+        "y": 5.684513113839285
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,20 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "drop off preload",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "load",
+      "waypointRelativePos": 0.9746898263027165,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 3.9,
@@ -48,7 +61,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -1.0615536520364206
+    "rotation": 128.70863892661401
   },
   "useDefaultConstraints": true
 }

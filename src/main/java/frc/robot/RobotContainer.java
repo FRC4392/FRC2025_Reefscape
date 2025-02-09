@@ -111,11 +111,12 @@ public class RobotContainer {
         autoChooser.addOption(
                 "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         autoChooser.addOption(
-                "19 Score", new PathPlannerAuto("19 Score"));
+                "19 automatic", new PathPlannerAuto("19 automatic"));
         autoChooser.addOption(
                 "14 Score", new PathPlannerAuto("14 Score"));
         autoChooser.addOption(
                 "8 Score", new PathPlannerAuto("8 Score"));
+        autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
 
         configureBindings();
     }

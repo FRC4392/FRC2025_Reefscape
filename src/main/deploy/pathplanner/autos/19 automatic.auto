@@ -5,41 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "blue219"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "blues19"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "blues19"
-                      }
-                    },
-                    {
-                      "type": "path",
-                      "data": {
-                        "pathName": "blues19"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "pathName": "blue219"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blues19"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of blues19"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blues19"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of blues19"
           }
         }
       ]

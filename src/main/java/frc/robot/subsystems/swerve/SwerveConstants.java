@@ -24,7 +24,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveConstants {
-    public static final double maxSpeedMetersPerSec = 5.0;
+    public static final double maxSpeedMetersPerSec = 4.8;
     public static final double odometryFrequencyHz = 100.0; // Hz
     public static final double trackWidth = Units.inchesToMeters(23.5);
     public static final double wheelBase = Units.inchesToMeters(25.5);
@@ -59,7 +59,7 @@ public class SwerveConstants {
     public static final int driveMotorStatorLimit = 80;
     public static final int driveMotorSupplyLimitHigh = 80;
     public static final int driveMotorSupplyLimitLow = 40;
-    public static final double wheelDiameterMeters = Units.inchesToMeters(2.924);
+    public static final double wheelDiameterMeters = Units.inchesToMeters(2.84);
     public static final double wheelRadiusMeters = wheelDiameterMeters / 2.0;
     public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
     public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
@@ -71,8 +71,8 @@ public class SwerveConstants {
     public static final double driveKi = 0.0;
     public static final double driveKd = 0.0;
     
-    public static final double driveKs = 0.0;
-    public static final double driveKv = 1.9;
+    public static final double driveKs = 0.15;
+    public static final double driveKv = 0.5;
     public static final double driveKa = 0.0;
 
     public static final double driveSimP = 0.05;
@@ -129,9 +129,9 @@ public class SwerveConstants {
     public static final double azimuthPIDMaxInput = 2 * Math.PI; // Radians
 
     // PathPlanner configuration
-    public static final double robotMassKg = 68.0;
-    public static final double robotMOI = 6.883;
-    public static final double wheelCOF = 1.2;
+    public static final double robotMassKg = Units.lbsToKilograms(70);
+    public static final double robotMOI = 7;
+    public static final double wheelCOF = .5;
     public static final RobotConfig ppConfig = new RobotConfig(
             robotMassKg,
             robotMOI,
