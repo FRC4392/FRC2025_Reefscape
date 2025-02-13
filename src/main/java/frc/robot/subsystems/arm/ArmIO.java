@@ -56,9 +56,18 @@ public interface ArmIO {
     public default void setAngle(Rotation2d angle) {
     }
 
+    public default void setPivotVoltage(double volts){
+    }
+
     public default void setLength(double length) {
     }
 
+    public default void setExtensionVoltage(double volts){
+    }
+
     public default void setWrist(Rotation2d angle) {
+    }
+
+    public default void setWristVoltage(double volts){
     }
 }

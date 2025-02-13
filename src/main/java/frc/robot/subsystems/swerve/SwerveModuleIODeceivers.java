@@ -175,7 +175,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         public void updateInputs(SwerveModuleIOInputs inputs) {
                 // Update drive inputs
                 var driveStatus = BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts,
-                                driveCurrent);
+                                driveCurrent, driveTemp);
 
                 inputs.driveConnected = driveConnectedDebounce.calculate(driveStatus.isOK());
                 inputs.drivePositionRad = Units.rotationsToRadians(drivePosition.getValueAsDouble());
