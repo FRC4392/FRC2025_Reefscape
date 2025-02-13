@@ -41,14 +41,14 @@ public class Arm extends SubsystemBase {
     armIO.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    pivot1DisconnectedAlert.set(inputs.basePivotMotor1Connected);
-    pivot2DisconnectedAlert.set(inputs.basePivotMotor2Connected);
-    pivot3DisconnectedAlert.set(inputs.basePivotMotor3Connected);
+    pivot1DisconnectedAlert.set(!inputs.basePivotMotor1Connected);
+    pivot2DisconnectedAlert.set(!inputs.basePivotMotor2Connected);
+    pivot3DisconnectedAlert.set(!inputs.basePivotMotor3Connected);
 
-    extension1DisconnectedAlert.set(inputs.extensionMotor1Connected);
-    extension2DisconnectedAlert.set(inputs.extensionMotor2Connected);
+    extension1DisconnectedAlert.set(!inputs.extensionMotor1Connected);
+    extension2DisconnectedAlert.set(!inputs.extensionMotor2Connected);
 
-    wristDisconnectedAlert.set(inputs.wristMotorConnected);
+    wristDisconnectedAlert.set(!inputs.wristMotorConnected);
   }
 
   public void setPosition(Rotation2d pivotRotation, double length, Rotation2d wristAngle) {

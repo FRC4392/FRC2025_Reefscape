@@ -17,7 +17,7 @@ public class ArmIOSim implements ArmIO {
     private double pivotSetVoltage = 0.0;
 
     public ArmIOSim() {
-        pivotSim = new SingleJointedArmSim(pivotGearbox, pivotGearReduction, 0.0, 1.0, Units.degreesToRadians(-29.0),
+        pivotSim = new SingleJointedArmSim(pivotGearbox, pivotGearReduction, 1.0, 1.0, Units.degreesToRadians(-29.0),
                 Units.degreesToRadians(120), true, Units.degreesToRadians(-29));
     }
 

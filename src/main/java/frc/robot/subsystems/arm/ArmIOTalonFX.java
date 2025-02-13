@@ -229,6 +229,8 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.wristMotorPositionRad = Units.rotationsToRadians(wristPosition.getValueAsDouble());
         inputs.wristMotorVelocityRadPerSec = Units.rotationsToRadians(wristVelocity.getValueAsDouble());
         inputs.wristMotorTemp = wristTemp.getValueAsDouble();
+
+        
     }
 
     @Override
