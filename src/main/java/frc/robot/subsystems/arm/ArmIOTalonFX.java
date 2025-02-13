@@ -83,8 +83,14 @@ public class ArmIOTalonFX implements ArmIO {
         tryUntilOk(5, () -> pivotMotor2.getConfigurator().apply(pivotMotorBaseConfig, .25));
         tryUntilOk(5, () -> pivotMotor3.getConfigurator().apply(pivotMotorBaseConfig, .25));
 
+        tryUntilOk(5, ()->pivotMotor1.setPosition(Units.degreesToRotations(-29.0)));
+        tryUntilOk(5, ()->pivotMotor2.setPosition(Units.degreesToRotations(-29.0)));
+        tryUntilOk(5, ()->pivotMotor3.setPosition(Units.degreesToRotations(-29.0)));
+
         tryUntilOk(5, ()->pivotMotor2.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
         tryUntilOk(5, ()->pivotMotor3.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
+
+        
 
         tryUntilOk(5, () -> extensionMotor1.getConfigurator().apply(extensionMotorBaseConfig, .25));
         tryUntilOk(5, () -> extensionMotor2.getConfigurator().apply(extensionMotorBaseConfig, .25));

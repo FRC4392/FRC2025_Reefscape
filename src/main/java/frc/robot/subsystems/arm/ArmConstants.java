@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -16,6 +17,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class ArmConstants {
@@ -52,7 +54,7 @@ public class ArmConstants {
                     .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                     .withSensorToMechanismRatio(pivotGearReduction))
             .withMotorOutput(new MotorOutputConfigs()
-                    .withInverted(InvertedValue.CounterClockwise_Positive)
+                    .withInverted(InvertedValue.Clockwise_Positive)
                     .withNeutralMode(NeutralModeValue.Brake))
             .withSlot0(new Slot0Configs()
                     .withKP(0.01)
@@ -64,7 +66,12 @@ public class ArmConstants {
                     .withKA(0.0))
             .withTorqueCurrent(new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(pivotMotorStatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(-pivotMotorStatorCurrentLimit));
+                    .withPeakReverseTorqueCurrent(-pivotMotorStatorCurrentLimit))
+        .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+                .withForwardSoftLimitThreshold(Units.degreesToRotations(95.0))
+                .withForwardSoftLimitEnable(true)
+                .withReverseSoftLimitThreshold(Units.degreesToRotations(-28.0))
+                .withReverseSoftLimitEnable(true));
 
     //Extension Constants
     public static final double extensionGearReduction = (66.0) / (11.0);

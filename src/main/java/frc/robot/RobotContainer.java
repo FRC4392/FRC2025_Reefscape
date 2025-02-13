@@ -26,113 +26,131 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmCommands;;
 
 public class RobotContainer {
 
-    // Subsystems
-    public final Swerve swerve;
-    public final Vision vision;
+        // Subsystems
+        public final Swerve swerve;
+        public final Vision vision;
+        public final Arm arm;
 
-    // Controller
-    private final CommandXboxController driveController = new CommandXboxController(0);
+        // Controller
+        private final CommandXboxController driveController = new CommandXboxController(0);
+        private final CommandXboxController operateController = new CommandXboxController(1);
 
-    // Dashboard inputs
-    private final LoggedDashboardChooser<Command> autoChooser;
+        // Dashboard inputs
+        private final LoggedDashboardChooser<Command> autoChooser;
 
-    public RobotContainer() {
+        public RobotContainer() {
 
-        driveController.setRumble(RumbleType.kBothRumble, 0);
+                driveController.setRumble(RumbleType.kBothRumble, 0);
 
-        switch (RobotConstants.currentMode) {
-            case REAL:
-                // Real robot, instantiate hardware IO implementations
-                swerve = new Swerve(
-                        new GyroIOPigeon2(),
-                        new SwerveModuleIODeceivers(0),
-                        new SwerveModuleIODeceivers(1),
-                        new SwerveModuleIODeceivers(2),
-                        new SwerveModuleIODeceivers(3));
+                switch (RobotConstants.currentMode) {
+                        case REAL:
+                                // Real robot, instantiate hardware IO implementations
+                                swerve = new Swerve(
+                                                new GyroIOPigeon2(),
+                                                new SwerveModuleIODeceivers(0),
+                                                new SwerveModuleIODeceivers(1),
+                                                new SwerveModuleIODeceivers(2),
+                                                new SwerveModuleIODeceivers(3));
 
-                vision = new Vision(swerve::addVisionMeasurement,
-                        new VisionIOLimelight(camera0Name, swerve::getRotation));
+                                vision = new Vision(swerve::addVisionMeasurement,
+                                                new VisionIOLimelight(camera0Name, swerve::getRotation));
 
-                break;
+                                arm = new Arm(new ArmIOTalonFX());
 
-            case SIM:
-                // Sim robot, instantiate physics sim IO implementations
-                swerve = new Swerve(
-                        new GyroIO() {
-                        },
-                        new SwerveModuleIOSim(),
-                        new SwerveModuleIOSim(),
-                        new SwerveModuleIOSim(),
-                        new SwerveModuleIOSim());
+                                break;
 
-                vision = new Vision(swerve::addVisionMeasurement,
-                        new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
-                break;
+                        case SIM:
+                                // Sim robot, instantiate physics sim IO implementations
+                                swerve = new Swerve(
+                                                new GyroIO() {
+                                                },
+                                                new SwerveModuleIOSim(),
+                                                new SwerveModuleIOSim(),
+                                                new SwerveModuleIOSim(),
+                                                new SwerveModuleIOSim());
 
-            default:
-                // Replayed robot, disable IO implementations
-                swerve = new Swerve(
-                        new GyroIO() {
-                        },
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        });
+                                vision = new Vision(swerve::addVisionMeasurement,
+                                                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0,
+                                                                swerve::getPose));
 
-                vision = new Vision(swerve::addVisionMeasurement,
-                        new VisionIO() {
-                        });
-                break;
+                                arm = new Arm(new ArmIOSim());
+                                break;
+
+                        default:
+                                // Replayed robot, disable IO implementations
+                                swerve = new Swerve(
+                                                new GyroIO() {
+                                                },
+                                                new SwerveModuleIO() {
+                                                },
+                                                new SwerveModuleIO() {
+                                                },
+                                                new SwerveModuleIO() {
+                                                },
+                                                new SwerveModuleIO() {
+                                                });
+
+                                vision = new Vision(swerve::addVisionMeasurement,
+                                                new VisionIO() {
+                                                });
+
+                                arm = new Arm(new ArmIO() {
+                                });
+                                break;
+                }
+
+                // Set up auto routines
+                autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+                // Set up SysId routines
+                autoChooser.addOption(
+                                "Drive Wheel Radius Characterization",
+                                SwerveCommands.wheelRadiusCharacterization(swerve));
+                autoChooser.addOption(
+                                "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
+                autoChooser.addOption(
+                                "Drive SysId (Quasistatic Forward)",
+                                swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                autoChooser.addOption(
+                                "Drive SysId (Quasistatic Reverse)",
+                                swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                autoChooser.addOption(
+                                "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                autoChooser.addOption(
+                                "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+                autoChooser.addOption(
+                                "19 automatic", new PathPlannerAuto("19 automatic"));
+                autoChooser.addOption(
+                                "14 Score", new PathPlannerAuto("14 Score"));
+                autoChooser.addOption(
+                                "8 Score", new PathPlannerAuto("8 Score"));
+                autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
+
+                configureBindings();
         }
 
-        // Set up auto routines
-        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        private void configureBindings() {
+                // Default command, normal field-relative drive
+                swerve.setDefaultCommand(
+                                SwerveCommands.joystickDrive(
+                                                swerve,
+                                                () -> -driveController.getLeftY(),
+                                                () -> -driveController.getLeftX(),
+                                                () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
+                
+                arm.setDefaultCommand(ArmCommands.joystickPivot(arm, () -> operateController.getLeftY() * -1));
 
-        // Set up SysId routines
-        autoChooser.addOption(
-                "Drive Wheel Radius Characterization", SwerveCommands.wheelRadiusCharacterization(swerve));
-        autoChooser.addOption(
-                "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Forward)",
-                swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Reverse)",
-                swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption(
-                "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption(
-                "19 automatic", new PathPlannerAuto("19 automatic"));
-        autoChooser.addOption(
-                "14 Score", new PathPlannerAuto("14 Score"));
-        autoChooser.addOption(
-                "8 Score", new PathPlannerAuto("8 Score"));
-        autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
+        }
 
-        configureBindings();
-    }
-
-    private void configureBindings() {
-        // Default command, normal field-relative drive
-        swerve.setDefaultCommand(
-                SwerveCommands.joystickDrive(
-                        swerve,
-                        () -> -driveController.getLeftY(),
-                        () -> -driveController.getLeftX(),
-                        () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
-
-    }
-
-    public Command getAutonomousCommand() {
-        return autoChooser.get();
-    }
+        public Command getAutonomousCommand() {
+                return autoChooser.get();
+        }
 }
