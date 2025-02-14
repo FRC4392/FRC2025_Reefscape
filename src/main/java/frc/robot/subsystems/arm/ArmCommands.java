@@ -22,7 +22,7 @@ import java.util.function.DoubleSupplier;
 public class ArmCommands {
 
   private static final double DEADBAND = 0.01;
-  private static final double MAX_OUTPUT = 0.1;
+  private static final double MAX_OUTPUT = 0.5;
 
   private ArmCommands() {}
 

@@ -1,0 +1,34 @@
+{
+  "name": "Deceivers",
+  "sourceUrl": "https://cad.onshape.com/documents/eeba08a27f462f02e601684e/w/0f61d86476db9c2997f2f9e2/e/d3543ebb4bf93b5d352a38fe",
+  "rotations": [
+    {
+      "axis": "z",
+      "degrees": 90
+    },
+    {
+      "axis": "y",
+      "degrees": 90
+    }
+  ],
+  "position": [0, 0, 0],
+  "cameras": [
+    {
+      "name": "Reef Camera",
+      "rotations": [
+                {
+          "axis": "z",
+          "degrees": 180
+        },
+        {
+          "axis": "y",
+          "degrees": 12
+        }
+      ],
+      "position": [-0.1003379, 0, 0.1836478],
+      "resolution": [960, 720],
+      "fov": 48.9
+    }
+  ],
+  "components": []
+}

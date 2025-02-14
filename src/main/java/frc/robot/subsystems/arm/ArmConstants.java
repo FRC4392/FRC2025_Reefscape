@@ -68,7 +68,7 @@ public class ArmConstants {
                     .withPeakForwardTorqueCurrent(pivotMotorStatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(-pivotMotorStatorCurrentLimit))
         .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
-                .withForwardSoftLimitThreshold(Units.degreesToRotations(95.0))
+                .withForwardSoftLimitThreshold(Units.degreesToRotations(120.0))
                 .withForwardSoftLimitEnable(true)
                 .withReverseSoftLimitThreshold(Units.degreesToRotations(-28.0))
                 .withReverseSoftLimitEnable(true));

@@ -26,8 +26,8 @@ public class ArmIOTalonFX implements ArmIO {
 
     // Motors
     private final TalonFX pivotMotor1 = new TalonFX(Pivot1CanId);
-    private final TalonFX pivotMotor2 = new TalonFX(Pivot1CanId);
-    private final TalonFX pivotMotor3 = new TalonFX(Pivot1CanId);
+    private final TalonFX pivotMotor2 = new TalonFX(Pivot2CanId);
+    private final TalonFX pivotMotor3 = new TalonFX(Pivot3CanId);
 
     private final TalonFX extensionMotor1 = new TalonFX(Extension1CanId);
     private final TalonFX extensionMotor2 = new TalonFX(Extension2CanId);
