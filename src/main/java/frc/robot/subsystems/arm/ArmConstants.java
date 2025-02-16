@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.arm;
 
+import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
+
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -36,6 +38,7 @@ public class ArmConstants {
     //Pivot Constants
     public static final double pivotGearReduction = (74.0 * 64.0 * 84.0) / (22.0 * 18.0 * 10.0);
     public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
+    public static final ClosedLoopControlType pivotControlType = ClosedLoopControlType.Voltage;
 
     public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(120));
     public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
@@ -81,6 +84,8 @@ public class ArmConstants {
     public static final double extensionGearReduction = (66.0) / (11.0);
     public static final DCMotor extensionGearbox = DCMotor.getKrakenX60Foc(2);
 
+    public static final ClosedLoopControlType extensionControlType = ClosedLoopControlType.Voltage;
+
     public static final double extensionMotorStatorCurrentLimit = 40;
 
     public static final TalonFXConfiguration extensionMotorBaseConfig = new TalonFXConfiguration()
@@ -121,6 +126,8 @@ public class ArmConstants {
     //Wrist Constants
     public static final double wristReduction = (56.0*40.0*36.0) / (10.0*15.0*15.0);
     public static final DCMotor wristGearbox = DCMotor.getKrakenX60Foc(1);
+
+    public static final ClosedLoopControlType wristControlType = ClosedLoopControlType.Voltage;
 
     public static final double wristMotorStatorCurrentLimit = 40;
 

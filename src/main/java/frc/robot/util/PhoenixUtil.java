@@ -25,4 +25,10 @@ public class PhoenixUtil {
         break;
     }
   }
+
+  public enum ClosedLoopControlType {
+    Voltage,
+    DutyCyle,
+    TorqueCurrentFOC
+  }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.swerve;
 
+import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
+
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -11,7 +13,6 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -64,7 +65,7 @@ public class SwerveConstants {
     public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
     public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
 //     public static final boolean driveMotorInverted = true;
-    public static final ClosedLoopOutputType driveMotorClosedLoopOutput = ClosedLoopOutputType.Voltage;
+    public static final ClosedLoopControlType driveMotorClosedLoopOutput = ClosedLoopControlType.Voltage;
 
     // Drive PID configuration
     public static final double driveKp = 0.05;

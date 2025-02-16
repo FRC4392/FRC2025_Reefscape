@@ -15,7 +15,9 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -53,15 +55,15 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
         // Voltage control requests
         private final VoltageOut voltageRequest = new VoltageOut(0);
-        // private final PositionVoltage positionVoltageRequest = new
-        // PositionVoltage(0.0);
         private final VelocityVoltage velocityVoltageRequest = new VelocityVoltage(0.0);
 
         // Torque-current control requests
         private final TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(0);
-        // private final PositionTorqueCurrentFOC positionTorqueCurrentRequest = new
-        // PositionTorqueCurrentFOC(0.0);
         private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
+
+        //Duty Cycle Control Requests
+        private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
+        private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0.0);
 
         // Inputs from drive motor
         private final StatusSignal<Angle> drivePosition;
@@ -231,6 +233,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
                                         case Voltage -> velocityVoltageRequest.withVelocity(velocityRotPerSec);
                                         case TorqueCurrentFOC ->
                                                 velocityTorqueCurrentRequest.withVelocity(velocityRotPerSec);
+                                        case DutyCyle -> velocityDutyCycle.withVelocity(velocityRotPerSec);
                                 });
         }
 
@@ -240,6 +243,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
                                 switch (driveMotorClosedLoopOutput) {
                                         case Voltage -> voltageRequest.withOutput(output);
                                         case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
+                                        case DutyCyle -> dutyCycleRequest.withOutput(output);
                                 });
         }
 
