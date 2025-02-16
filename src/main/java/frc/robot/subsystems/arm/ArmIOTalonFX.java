@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -68,14 +69,19 @@ public class ArmIOTalonFX implements ArmIO {
     private final StatusSignal<Current> wristCurrent;
     private final StatusSignal<Temperature> wristTemp;
 
-    //Connection debouncer
+    //Leader status signals
+    private final StatusSignal<Double> pivotLeaderDutyCycle;
+    private final StatusSignal<Double> extensionLeaderDutyCycle;
+    private final StatusSignal<Current> pivotLeaderTorqueCurrent;
+    private final StatusSignal<Current> extensionLeaderTorqueCurrent;
+
     // Connection debouncers
-        private final Debouncer pivot1ConnectedDebouncer = new Debouncer(0.5);
-        private final Debouncer pivot2ConnectedDebouncer = new Debouncer(0.5);
-        private final Debouncer pivot3ConnectedDebouncer = new Debouncer(0.5);
-        private final Debouncer extension1ConnectedDebouncer = new Debouncer(0.5);
-        private final Debouncer extension2ConnectedDebouncer = new Debouncer(0.5);
-        private final Debouncer wristConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer pivot1ConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer pivot2ConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer pivot3ConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer extension1ConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer extension2ConnectedDebouncer = new Debouncer(0.5);
+    private final Debouncer wristConnectedDebouncer = new Debouncer(0.5);
 
     public ArmIOTalonFX() {
         // Configure motors
@@ -83,19 +89,17 @@ public class ArmIOTalonFX implements ArmIO {
         tryUntilOk(5, () -> pivotMotor2.getConfigurator().apply(pivotMotorBaseConfig, .25));
         tryUntilOk(5, () -> pivotMotor3.getConfigurator().apply(pivotMotorBaseConfig, .25));
 
-        tryUntilOk(5, ()->pivotMotor1.setPosition(Units.degreesToRotations(-29.0)));
-        tryUntilOk(5, ()->pivotMotor2.setPosition(Units.degreesToRotations(-29.0)));
-        tryUntilOk(5, ()->pivotMotor3.setPosition(Units.degreesToRotations(-29.0)));
+        tryUntilOk(5, () -> pivotMotor1.setPosition(minAngle.getRotations()));
+        tryUntilOk(5, () -> pivotMotor2.setPosition(minAngle.getRotations()));
+        tryUntilOk(5, () -> pivotMotor3.setPosition(minAngle.getRotations()));
 
-        tryUntilOk(5, ()->pivotMotor2.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
-        tryUntilOk(5, ()->pivotMotor3.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
-
-        
+        tryUntilOk(5, () -> pivotMotor2.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
+        tryUntilOk(5, () -> pivotMotor3.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
 
         tryUntilOk(5, () -> extensionMotor1.getConfigurator().apply(extensionMotorBaseConfig, .25));
         tryUntilOk(5, () -> extensionMotor2.getConfigurator().apply(extensionMotorBaseConfig, .25));
 
-        tryUntilOk(5, ()->extensionMotor2.setControl(new Follower(extensionMotor1.getDeviceID(), false)));
+        tryUntilOk(5, () -> extensionMotor2.setControl(new Follower(extensionMotor1.getDeviceID(), false)));
 
         tryUntilOk(5, () -> wristMotor.getConfigurator().apply(wristnMotorBaseConfig, .25));
 
@@ -132,6 +136,18 @@ public class ArmIOTalonFX implements ArmIO {
         wristAppliedVolts = wristMotor.getMotorVoltage();
         wristCurrent = wristMotor.getStatorCurrent();
         wristTemp = wristMotor.getDeviceTemp();
+
+        //singnals required for follower mode
+        pivotLeaderDutyCycle = pivotMotor1.getDutyCycle();
+        extensionLeaderDutyCycle = extensionMotor1.getDutyCycle();
+        pivotLeaderTorqueCurrent = pivotMotor1.getTorqueCurrent();
+        extensionLeaderTorqueCurrent = extensionMotor1.getTorqueCurrent();
+
+        BaseStatusSignal.setUpdateFrequencyForAll(100,
+                pivotLeaderDutyCycle,
+                extensionLeaderDutyCycle,
+                pivotLeaderTorqueCurrent,
+                extensionLeaderTorqueCurrent);
 
         BaseStatusSignal.setUpdateFrequencyForAll(50,
                 pivotMotor1Position,
@@ -176,7 +192,8 @@ public class ArmIOTalonFX implements ArmIO {
 
     @Override
     public void updateInputs(ArmIOInputs inputs) {
-        var pivot1Status = BaseStatusSignal.refreshAll(pivotMotor1AppliedVolts, pivotMotor1Current, pivotMotor1Position, pivotMotor1Velocity, pivotMotor1Temp);
+        var pivot1Status = BaseStatusSignal.refreshAll(pivotMotor1AppliedVolts, pivotMotor1Current, pivotMotor1Position,
+                pivotMotor1Velocity, pivotMotor1Temp);
 
         inputs.basePivotMotor1Connected = pivot1ConnectedDebouncer.calculate(pivot1Status.isOK());
         inputs.basePivotMotor1AppliedVolts = pivotMotor1AppliedVolts.getValueAsDouble();
@@ -185,7 +202,8 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.basePivotMotor1VelocityRadPerSec = Units.rotationsToRadians(pivotMotor1Velocity.getValueAsDouble());
         inputs.basePivotMotor1Temp = pivotMotor1Temp.getValueAsDouble();
 
-        var pivot2Status = BaseStatusSignal.refreshAll(pivotMotor2AppliedVolts, pivotMotor2Current, pivotMotor2Position, pivotMotor2Velocity, pivotMotor2Temp);
+        var pivot2Status = BaseStatusSignal.refreshAll(pivotMotor2AppliedVolts, pivotMotor2Current, pivotMotor2Position,
+                pivotMotor2Velocity, pivotMotor2Temp);
 
         inputs.basePivotMotor2Connected = pivot2ConnectedDebouncer.calculate(pivot2Status.isOK());
         inputs.basePivotMotor2AppliedVolts = pivotMotor2AppliedVolts.getValueAsDouble();
@@ -194,7 +212,8 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.basePivotMotor2VelocityRadPerSec = Units.rotationsToRadians(pivotMotor2Velocity.getValueAsDouble());
         inputs.basePivotMotor2Temp = pivotMotor2Temp.getValueAsDouble();
 
-        var pivot3Status = BaseStatusSignal.refreshAll(pivotMotor3AppliedVolts, pivotMotor3Current, pivotMotor3Position, pivotMotor3Velocity, pivotMotor3Temp);
+        var pivot3Status = BaseStatusSignal.refreshAll(pivotMotor3AppliedVolts, pivotMotor3Current, pivotMotor3Position,
+                pivotMotor3Velocity, pivotMotor3Temp);
 
         inputs.basePivotMotor3Connected = pivot3ConnectedDebouncer.calculate(pivot3Status.isOK());
         inputs.basePivotMotor3AppliedVolts = pivotMotor3AppliedVolts.getValueAsDouble();
@@ -203,7 +222,8 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.basePivotMotor3VelocityRadPerSec = Units.rotationsToRadians(pivotMotor3Velocity.getValueAsDouble());
         inputs.basePivotMotor3Temp = pivotMotor3Temp.getValueAsDouble();
 
-        var extension1Status = BaseStatusSignal.refreshAll(extensionMotor1AppliedVolts, extensionMotor1Current, extensionMotor1Position, extensionMotor1Velocity, extensionMotor1Temp);
+        var extension1Status = BaseStatusSignal.refreshAll(extensionMotor1AppliedVolts, extensionMotor1Current,
+                extensionMotor1Position, extensionMotor1Velocity, extensionMotor1Temp);
 
         inputs.extensionMotor1Connected = extension1ConnectedDebouncer.calculate(extension1Status.isOK());
         inputs.extensionMotor1AppliedVolts = extensionMotor1AppliedVolts.getValueAsDouble();
@@ -212,8 +232,9 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.extensionMotor1VelocityRadPerSec = Units.rotationsToRadians(extensionMotor1Velocity.getValueAsDouble());
         inputs.extensionMotor1Temp = extensionMotor1Temp.getValueAsDouble();
 
-        var extension2Status = BaseStatusSignal.refreshAll(extensionMotor2AppliedVolts, extensionMotor2Current, extensionMotor2Position, extensionMotor2Velocity, extensionMotor2Temp);
-        
+        var extension2Status = BaseStatusSignal.refreshAll(extensionMotor2AppliedVolts, extensionMotor2Current,
+                extensionMotor2Position, extensionMotor2Velocity, extensionMotor2Temp);
+
         inputs.extensionMotor2Connected = extension2ConnectedDebouncer.calculate(extension2Status.isOK());
         inputs.extensionMotor2AppliedVolts = extensionMotor2AppliedVolts.getValueAsDouble();
         inputs.extensionMotor2CurrentAmps = extensionMotor2Current.getValueAsDouble();
@@ -221,7 +242,8 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.extensionMotor2VelocityRadPerSec = Units.rotationsToRadians(extensionMotor2Velocity.getValueAsDouble());
         inputs.extensionMotor2Temp = extensionMotor2Temp.getValueAsDouble();
 
-        var wristStatus = BaseStatusSignal.refreshAll(wristAppliedVolts, wristCurrent, wristPosition, wristVelocity, wristTemp);
+        var wristStatus = BaseStatusSignal.refreshAll(wristAppliedVolts, wristCurrent, wristPosition, wristVelocity,
+                wristTemp);
 
         inputs.wristMotorConnected = wristConnectedDebouncer.calculate(wristStatus.isOK());
         inputs.wristMotorAppliedVolts = wristAppliedVolts.getValueAsDouble();
@@ -230,7 +252,6 @@ public class ArmIOTalonFX implements ArmIO {
         inputs.wristMotorVelocityRadPerSec = Units.rotationsToRadians(wristVelocity.getValueAsDouble());
         inputs.wristMotorTemp = wristTemp.getValueAsDouble();
 
-        
     }
 
     @Override
@@ -246,6 +267,20 @@ public class ArmIOTalonFX implements ArmIO {
     @Override
     public void setWristVoltage(double volts) {
         wristMotor.setVoltage(volts);
+    }
+
+    @Override
+    public void setAngle(Rotation2d angle) {
+    }
+
+    @Override
+    public void setLength(double length) {
+        
+    }
+
+    @Override
+    public void setWrist(Rotation2d angle) {
+
     }
 
 }

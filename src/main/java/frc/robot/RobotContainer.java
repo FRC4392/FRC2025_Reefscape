@@ -146,7 +146,7 @@ public class RobotContainer {
                                                 () -> -driveController.getLeftX(),
                                                 () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
                 
-                arm.setDefaultCommand(ArmCommands.joystickPivot(arm, () -> operateController.getLeftY() * -1));
+                arm.setDefaultCommand(ArmCommands.joystickArmControl(arm, () -> operateController.getLeftY() * -1, ()-> operateController.getRightY() * -1));
 
         }
 

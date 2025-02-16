@@ -56,8 +56,13 @@ public class Arm extends SubsystemBase {
     armIO.setLength(length);
     armIO.setWrist(wristAngle);
   }
-
   public void setPivotVoltage(double voltage){
     armIO.setPivotVoltage(voltage);
+  }
+  public void setExtensionVoltage(double voltage){
+    armIO.setExtensionVoltage(voltage);
+  }
+  public void setWristVoltage(double voltage){
+    armIO.setWristVoltage(voltage);
   }
 }

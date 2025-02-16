@@ -22,28 +22,42 @@ import java.util.function.DoubleSupplier;
 public class ArmCommands {
 
   private static final double DEADBAND = 0.01;
-  private static final double MAX_OUTPUT = 0.5;
+  private static final double MAX_OUTPUT = 1;
 
   private ArmCommands() {}
 
-  public static Command joystickPivot(
+  public static Command joystickArmControl(
       Arm arm,
-      DoubleSupplier velocitySupplier) {
+      DoubleSupplier pivotSupplier,
+      DoubleSupplier extensionSupplier) {
     return Commands.run(
         () -> {
-          double velocity = MathUtil.applyDeadband(velocitySupplier.getAsDouble(), DEADBAND);
+          double pivotVelocity = MathUtil.applyDeadband(pivotSupplier.getAsDouble(), DEADBAND);
 
-          velocity = velocity * MAX_OUTPUT;
+          pivotVelocity = pivotVelocity * MAX_OUTPUT;
 
           // Square rotation value for more precise control
-          velocity = Math.copySign(velocity * velocity, velocity);
+          pivotVelocity = Math.copySign(pivotVelocity * pivotVelocity, pivotVelocity);
 
-          double voltage = velocity*12.0;
+          double pivotVoltage = pivotVelocity*12.0;
 
-          arm.setPivotVoltage(voltage);
+          arm.setPivotVoltage(pivotVoltage);
+
+          double extensionVelocity = MathUtil.applyDeadband(extensionSupplier.getAsDouble(), DEADBAND);
+
+          extensionVelocity = extensionVelocity * MAX_OUTPUT;
+
+          // Square rotation value for more precise control
+          extensionVelocity = Math.copySign(extensionVelocity * extensionVelocity, extensionVelocity);
+
+          double extensionVoltage = extensionVelocity*12.0;
+
+          arm.setExtensionVoltage(extensionVoltage);
         },
         arm);
   }
+
+  
 
   
 }

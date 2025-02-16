@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
@@ -35,6 +36,9 @@ public class ArmConstants {
     //Pivot Constants
     public static final double pivotGearReduction = (74.0 * 64.0 * 84.0) / (22.0 * 18.0 * 10.0);
     public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
+
+    public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(120));
+    public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
 
     public static final double pivotMotorStatorCurrentLimit = 40;
 
@@ -68,9 +72,9 @@ public class ArmConstants {
                     .withPeakForwardTorqueCurrent(pivotMotorStatorCurrentLimit)
                     .withPeakReverseTorqueCurrent(-pivotMotorStatorCurrentLimit))
         .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
-                .withForwardSoftLimitThreshold(Units.degreesToRotations(120.0))
+                .withForwardSoftLimitThreshold(maxAngle.getRotations())
                 .withForwardSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(Units.degreesToRotations(-28.0))
+                .withReverseSoftLimitThreshold(Units.degreesToRotations(minAngle.getRotations()))
                 .withReverseSoftLimitEnable(true));
 
     //Extension Constants
@@ -107,7 +111,12 @@ public class ArmConstants {
                     .withKA(0.0))
             .withTorqueCurrent(new TorqueCurrentConfigs()
                     .withPeakForwardTorqueCurrent(extensionMotorStatorCurrentLimit)
-                    .withPeakReverseTorqueCurrent(-extensionMotorStatorCurrentLimit));
+                    .withPeakReverseTorqueCurrent(-extensionMotorStatorCurrentLimit))
+        .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
+                    .withForwardSoftLimitThreshold(2.5)
+                    .withForwardSoftLimitEnable(true)
+                    .withReverseSoftLimitThreshold(Units.degreesToRotations(.1))
+                    .withReverseSoftLimitEnable(true));
 
     //Wrist Constants
     public static final double wristReduction = (56.0*40.0*36.0) / (10.0*15.0*15.0);
