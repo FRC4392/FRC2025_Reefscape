@@ -52,6 +52,8 @@ public class RobotContainer {
 
                 driveController.setRumble(RumbleType.kBothRumble, 0);
 
+                leds = new Leds();
+
                 switch (RobotConstants.currentMode) {
                         case REAL:
                                 // Real robot, instantiate hardware IO implementations
@@ -108,8 +110,6 @@ public class RobotContainer {
                                 });
                                 break;
                 }
-
-                leds = new Leds();
 
                 // Set up auto routines
                 autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
