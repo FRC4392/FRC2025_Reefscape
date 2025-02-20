@@ -148,6 +148,11 @@ public class RobotContainer {
                 
                 arm.setDefaultCommand(ArmCommands.joystickArmControl(arm, () -> operateController.getLeftY() * -1, ()-> operateController.getRightY() * -1));
 
+                // operateController.a().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(), 0, new Rotation2d()));
+                // operateController.b().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(90)), 0, new Rotation2d()));
+                // operateController.x().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(45)), 0, new Rotation2d()));
+                // operateController.y().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(110)), 0, new Rotation2d()));
+
         }
 
         public Command getAutonomousCommand() {

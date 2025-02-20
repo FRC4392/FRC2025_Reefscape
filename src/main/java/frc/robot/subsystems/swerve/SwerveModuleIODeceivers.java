@@ -61,7 +61,7 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
         private final TorqueCurrentFOC torqueCurrentRequest = new TorqueCurrentFOC(0);
         private final VelocityTorqueCurrentFOC velocityTorqueCurrentRequest = new VelocityTorqueCurrentFOC(0.0);
 
-        //Duty Cycle Control Requests
+        // Duty Cycle Control Requests
         private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0.0);
         private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0.0);
 

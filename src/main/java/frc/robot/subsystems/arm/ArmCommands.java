@@ -14,6 +14,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -55,5 +56,16 @@ public class ArmCommands {
           arm.setExtensionVoltage(extensionVoltage);
         },
         arm);
+  }
+
+  public static Command setArmPosition(
+    Arm arm,
+    Rotation2d armPivot,
+    double armExtension,
+    Rotation2d wristPosition
+  ) {
+    return Commands.run(() -> {
+      arm.setPosition(armPivot, armExtension, wristPosition);
+    }, arm);
   }
 }

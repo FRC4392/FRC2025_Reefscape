@@ -46,8 +46,8 @@ public class ArmConstants {
         public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
         public static final ClosedLoopControlType pivotControlType = ClosedLoopControlType.Voltage;
 
-        public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(120));
-        public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
+        public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(120.0));
+        public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29.0));
 
         public static final double pivotMotorStatorCurrentLimit = 40;
 
@@ -70,11 +70,11 @@ public class ArmConstants {
                                         .withInverted(InvertedValue.Clockwise_Positive)
                                         .withNeutralMode(NeutralModeValue.Brake))
                         .withSlot0(new Slot0Configs()
-                                        .withKP(0.01)
+                                        .withKP(5.0)
                                         .withKI(0.0)
                                         .withKD(0.0)
                                         .withKG(0)
-                                        .withKV(0.0)
+                                        .withKV(9.0)
                                         .withKS(0.0)
                                         .withKA(0.0)
                                         .withGravityType(GravityTypeValue.Arm_Cosine))

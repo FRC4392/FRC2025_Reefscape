@@ -325,20 +325,23 @@ public class ArmIOTalonFX implements ArmIO {
         @Override
         public void setLength(double length) {
 
-                
+                // radius * radians = distance
+                Rotation2d driveRotations = new Rotation2d(length / driveDiameter);
 
                 extensionMotor1.setControl(
                                 switch (extensionControlType) {
-                                        case Voltage -> extensionMotionMagicVoltage.withPosition(length);
-                                        case DutyCyle -> extensionMotionMagicDutyCycle.withPosition(length);
+                                        case Voltage ->
+                                                extensionMotionMagicVoltage.withPosition(driveRotations.getRotations());
+                                        case DutyCyle -> extensionMotionMagicDutyCycle
+                                                        .withPosition(driveRotations.getRotations());
                                         case TorqueCurrentFOC ->
-                                                extensionMotionMagicTorqueCurrentFOC.withPosition(length);
+                                                extensionMotionMagicTorqueCurrentFOC
+                                                                .withPosition(driveRotations.getRotations());
                                 });
         }
 
         @Override
         public void setWrist(Rotation2d angle) {
-                
                 wristMotor.setControl(
                                 switch (wristControlType) {
                                         case Voltage -> wristMotionMagicVoltage.withPosition(angle.getRotations());
