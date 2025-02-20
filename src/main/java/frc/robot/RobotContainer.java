@@ -29,6 +29,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmCommands;;
 
@@ -38,6 +39,7 @@ public class RobotContainer {
         public final Swerve swerve;
         public final Vision vision;
         public final Arm arm;
+        public final Leds leds;
 
         // Controller
         private final CommandXboxController driveController = new CommandXboxController(0);
@@ -106,6 +108,8 @@ public class RobotContainer {
                                 });
                                 break;
                 }
+
+                leds = new Leds();
 
                 // Set up auto routines
                 autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
