@@ -64,7 +64,7 @@ public class Leds extends SubsystemBase {
   @Override
   public void periodic() {
     loadingNotifier.stop();
-    solid(Section.FULL, Color.kBlue);
+    breath(Section.FULL, Color.kWhite, Color.kBlue, .25);
 
     leds.setData(buffer);
   }
