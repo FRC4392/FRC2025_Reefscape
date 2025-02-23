@@ -11,12 +11,16 @@
       "degrees": 90
     }
   ],
-  "position": [0, 0, 0],
+  "position": [
+    0,
+    0,
+    0
+  ],
   "cameras": [
     {
       "name": "Reef Camera",
       "rotations": [
-                {
+        {
           "axis": "z",
           "degrees": 180
         },
@@ -25,8 +29,15 @@
           "degrees": 12
         }
       ],
-      "position": [-0.1003379, 0, 0.1836478],
-      "resolution": [960, 720],
+      "position": [
+        -0.1003379,
+        0,
+        0.1836478
+      ],
+      "resolution": [
+        960,
+        720
+      ],
       "fov": 48.9
     }
   ],

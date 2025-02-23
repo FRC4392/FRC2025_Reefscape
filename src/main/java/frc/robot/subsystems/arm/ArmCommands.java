@@ -17,7 +17,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
 import java.util.function.DoubleSupplier;
 
 public class ArmCommands {
@@ -41,18 +40,20 @@ public class ArmCommands {
           // Square rotation value for more precise control
           pivotVelocity = Math.copySign(pivotVelocity * pivotVelocity, pivotVelocity);
 
-          double pivotVoltage = pivotVelocity*12.0;
+          double pivotVoltage = pivotVelocity * 12.0;
 
           arm.setPivotVoltage(pivotVoltage);
 
-          double extensionVelocity = MathUtil.applyDeadband(extensionSupplier.getAsDouble(), DEADBAND);
+          double extensionVelocity =
+              MathUtil.applyDeadband(extensionSupplier.getAsDouble(), DEADBAND);
 
           extensionVelocity = extensionVelocity * MAX_OUTPUT;
 
           // Square rotation value for more precise control
-          extensionVelocity = Math.copySign(extensionVelocity * extensionVelocity, extensionVelocity);
+          extensionVelocity =
+              Math.copySign(extensionVelocity * extensionVelocity, extensionVelocity);
 
-          double extensionVoltage = extensionVelocity*12.0;
+          double extensionVoltage = extensionVelocity * 12.0;
 
           arm.setExtensionVoltage(extensionVoltage);
 
@@ -62,7 +63,7 @@ public class ArmCommands {
 
           wristVelocity = Math.copySign(wristVelocity * wristVelocity, wristVelocity);
 
-          double wristVoltage = wristVelocity*12.0;
+          double wristVoltage = wristVelocity * 12.0;
 
           arm.setWristVoltage(wristVoltage);
         },
@@ -70,13 +71,11 @@ public class ArmCommands {
   }
 
   public static Command setArmPosition(
-    Arm arm,
-    Rotation2d armPivot,
-    double armExtension,
-    Rotation2d wristPosition
-  ) {
-    return Commands.run(() -> {
-      arm.setPosition(armPivot, armExtension, wristPosition);
-    }, arm);
+      Arm arm, Rotation2d armPivot, double armExtension, Rotation2d wristPosition) {
+    return Commands.run(
+        () -> {
+          arm.setPosition(armPivot, armExtension, wristPosition);
+        },
+        arm);
   }
 }

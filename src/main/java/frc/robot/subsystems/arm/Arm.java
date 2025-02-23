@@ -4,32 +4,33 @@
 
 package frc.robot.subsystems.arm;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
 
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  private final Alert pivot1DisconnectedAlert = new Alert("Pivot Motor 1 Disconnected, arm may fail to work",
-      AlertType.kError);
-  private final Alert pivot2DisconnectedAlert = new Alert(
-      "Pivot Motor 2 Disconnected, arm may have reduced performance", AlertType.kError);
-  private final Alert pivot3DisconnectedAlert = new Alert(
-      "Pivot Motor 3 Disconnected, arm may have reduced performance", AlertType.kError);
+  private final Alert pivot1DisconnectedAlert =
+      new Alert("Pivot Motor 1 Disconnected, arm may fail to work", AlertType.kError);
+  private final Alert pivot2DisconnectedAlert =
+      new Alert("Pivot Motor 2 Disconnected, arm may have reduced performance", AlertType.kError);
+  private final Alert pivot3DisconnectedAlert =
+      new Alert("Pivot Motor 3 Disconnected, arm may have reduced performance", AlertType.kError);
 
-  private final Alert extension1DisconnectedAlert = new Alert(
-      "Extension Motor 1 Disconnected, extension may fail to work", AlertType.kError);
-  private final Alert extension2DisconnectedAlert = new Alert(
-      "Extension Motor 2 Disconnected, extension may have reduced performance", AlertType.kError);
+  private final Alert extension1DisconnectedAlert =
+      new Alert("Extension Motor 1 Disconnected, extension may fail to work", AlertType.kError);
+  private final Alert extension2DisconnectedAlert =
+      new Alert(
+          "Extension Motor 2 Disconnected, extension may have reduced performance",
+          AlertType.kError);
 
-  private final Alert wristDisconnectedAlert = new Alert("Wrist Motor Disconnected, wrist may fail to work",
-      AlertType.kError);
+  private final Alert wristDisconnectedAlert =
+      new Alert("Wrist Motor Disconnected, wrist may fail to work", AlertType.kError);
 
   /** Creates a new Arm. */
   public Arm(ArmIO armIO) {
@@ -56,13 +57,16 @@ public class Arm extends SubsystemBase {
     armIO.setLength(length);
     armIO.setWrist(wristAngle);
   }
-  public void setPivotVoltage(double voltage){
+
+  public void setPivotVoltage(double voltage) {
     armIO.setPivotVoltage(voltage);
   }
-  public void setExtensionVoltage(double voltage){
+
+  public void setExtensionVoltage(double voltage) {
     armIO.setExtensionVoltage(voltage);
   }
-  public void setWristVoltage(double voltage){
+
+  public void setWristVoltage(double voltage) {
     armIO.setWristVoltage(voltage);
   }
 }

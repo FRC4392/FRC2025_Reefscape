@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.leds;
 
-import java.util.List;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -13,6 +11,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.List;
 
 public class Leds extends SubsystemBase {
 
@@ -58,12 +57,14 @@ public class Leds extends SubsystemBase {
                 leds.setData(buffer);
               }
             });
+
     loadingNotifier.startPeriodic(0.02);
   }
 
   @Override
   public void periodic() {
     loadingNotifier.stop();
+
     solid(Section.FULL, Color.kBlue);
 
     leds.setData(buffer);
@@ -165,6 +166,4 @@ public class Leds extends SubsystemBase {
       }
     }
   }
-
-
 }
