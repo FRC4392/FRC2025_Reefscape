@@ -46,8 +46,8 @@ public class ArmConstants {
         public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
         public static final ClosedLoopControlType pivotControlType = ClosedLoopControlType.Voltage;
 
-        public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(120.0));
-        public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29.0));
+        public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(170.0));
+        public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
 
         public static final double pivotMotorStatorCurrentLimit = 40;
 
@@ -73,7 +73,7 @@ public class ArmConstants {
                                         .withKP(5.0)
                                         .withKI(0.0)
                                         .withKD(0.0)
-                                        .withKG(0)
+                                        .withKG(.23)
                                         .withKV(9.0)
                                         .withKS(0.0)
                                         .withKA(0.0)
@@ -85,7 +85,7 @@ public class ArmConstants {
                                         .withForwardSoftLimitThreshold(maxAngle.getRotations())
                                         .withForwardSoftLimitEnable(true)
                                         .withReverseSoftLimitThreshold(
-                                                        Units.degreesToRotations(minAngle.getRotations()))
+                                                        Units.degreesToRotations(minAngle.minus(new Rotation2d(Units.degreesToRadians(10))).getRotations()))
                                         .withReverseSoftLimitEnable(true))
                         .withMotionMagic(new MotionMagicConfigs()
                                         .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(10.0))
@@ -133,7 +133,7 @@ public class ArmConstants {
                                         .withPeakForwardTorqueCurrent(extensionMotorStatorCurrentLimit)
                                         .withPeakReverseTorqueCurrent(-extensionMotorStatorCurrentLimit))
                         .withSoftwareLimitSwitch(new SoftwareLimitSwitchConfigs()
-                                        .withForwardSoftLimitThreshold(2.5)
+                                        .withForwardSoftLimitThreshold(3.5)
                                         .withForwardSoftLimitEnable(true)
                                         .withReverseSoftLimitThreshold(Units.degreesToRotations(.1))
                                         .withReverseSoftLimitEnable(true))

@@ -29,6 +29,11 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.gripper.Gripper;
+import frc.robot.subsystems.gripper.GripperCommands;
+import frc.robot.subsystems.gripper.GripperIO;
+import frc.robot.subsystems.gripper.GripperIOSIm;
+import frc.robot.subsystems.gripper.GripperIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmCommands;;
@@ -39,6 +44,7 @@ public class RobotContainer {
         public final Swerve swerve;
         public final Vision vision;
         public final Arm arm;
+        public final Gripper gripper;
         public final Leds leds;
 
         // Controller
@@ -68,6 +74,7 @@ public class RobotContainer {
                                                 new VisionIOLimelight(camera0Name, swerve::getRotation));
 
                                 arm = new Arm(new ArmIOTalonFX());
+                                gripper = new Gripper(new GripperIOSpark());
 
                                 break;
 
@@ -86,6 +93,7 @@ public class RobotContainer {
                                                                 swerve::getPose));
 
                                 arm = new Arm(new ArmIOSim());
+                                gripper = new Gripper(new GripperIOSIm());
                                 break;
 
                         default:
@@ -107,6 +115,9 @@ public class RobotContainer {
                                                 });
 
                                 arm = new Arm(new ArmIO() {
+                                });
+                                gripper = new Gripper(new GripperIO() {
+                                        
                                 });
                                 break;
                 }
@@ -150,12 +161,17 @@ public class RobotContainer {
                                                 () -> -driveController.getLeftX(),
                                                 () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
                 
-                arm.setDefaultCommand(ArmCommands.joystickArmControl(arm, () -> operateController.getLeftY() * -1, ()-> operateController.getRightY() * -1));
+                arm.setDefaultCommand(ArmCommands.joystickArmControl(arm, () -> operateController.getLeftY() * -1, ()-> operateController.getRightY() * -1, () -> operateController.getLeftTriggerAxis()-operateController.getRightTriggerAxis()));
 
                 // operateController.a().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(), 0, new Rotation2d()));
                 // operateController.b().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(90)), 0, new Rotation2d()));
                 // operateController.x().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(45)), 0, new Rotation2d()));
                 // operateController.y().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(Units.degreesToRadians(110)), 0, new Rotation2d()));
+
+                driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
+                driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
+                driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
+                driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 
         }
 

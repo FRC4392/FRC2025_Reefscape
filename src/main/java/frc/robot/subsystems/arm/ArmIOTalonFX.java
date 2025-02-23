@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -27,6 +28,8 @@ import edu.wpi.first.units.measure.Voltage;
 
 /** Add your docs here. */
 public class ArmIOTalonFX implements ArmIO {
+
+        private final ArmFeedforward pivotFeedforward = new ArmFeedforward(0, .23, 0);
 
         // Motors
         private final TalonFX pivotMotor1 = new TalonFX(Pivot1CanId);
@@ -298,7 +301,8 @@ public class ArmIOTalonFX implements ArmIO {
 
         @Override
         public void setPivotVoltage(double volts) {
-                pivotMotor1.setVoltage(volts);
+                double feedforward = pivotFeedforward.calculate(Units.rotationsToRadians(pivotMotor1Position.getValueAsDouble()), 0);
+                pivotMotor1.setVoltage(volts + feedforward);
         }
 
         @Override

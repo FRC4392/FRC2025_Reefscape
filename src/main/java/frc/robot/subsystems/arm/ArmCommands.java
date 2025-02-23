@@ -30,7 +30,8 @@ public class ArmCommands {
   public static Command joystickArmControl(
       Arm arm,
       DoubleSupplier pivotSupplier,
-      DoubleSupplier extensionSupplier) {
+      DoubleSupplier extensionSupplier,
+      DoubleSupplier wristSupplier) {
     return Commands.run(
         () -> {
           double pivotVelocity = MathUtil.applyDeadband(pivotSupplier.getAsDouble(), DEADBAND);
@@ -54,6 +55,16 @@ public class ArmCommands {
           double extensionVoltage = extensionVelocity*12.0;
 
           arm.setExtensionVoltage(extensionVoltage);
+
+          double wristVelocity = MathUtil.applyDeadband(wristSupplier.getAsDouble(), DEADBAND);
+
+          wristVelocity = wristVelocity * .5;
+
+          wristVelocity = Math.copySign(wristVelocity * wristVelocity, wristVelocity);
+
+          double wristVoltage = wristVelocity*12.0;
+
+          arm.setWristVoltage(wristVoltage);
         },
         arm);
   }
