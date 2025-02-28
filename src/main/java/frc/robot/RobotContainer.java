@@ -7,12 +7,19 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmCommands;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -55,6 +62,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     driveController.setRumble(RumbleType.kBothRumble, 0);
+    operateController.setRumble(RumbleType.kBothRumble, 0);
 
     leds = new Leds();
 
@@ -113,6 +121,10 @@ public class RobotContainer {
         arm = new Arm(new ArmIO() {});
         gripper = new Gripper(new GripperIO() {});
 
+        NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
+        NamedCommands.registerCommand(
+            "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(.5));
+
         break;
     }
 
@@ -150,31 +162,103 @@ public class RobotContainer {
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
             () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
+    // arm.setDefaultCommand(
+    //     ArmCommands.joystickArmControl(
+    //         arm,
+    //         () -> operateController.getLeftY() * -1,
+    //         () -> operateController.getRightY() * -1,
+    //         () ->
+    //             operateController.getLeftTriggerAxis() -
+    // operateController.getRightTriggerAxis()));
 
-    arm.setDefaultCommand(
-        ArmCommands.joystickArmControl(
-            arm,
-            () -> operateController.getLeftY() * -1,
-            () -> operateController.getRightY() * -1,
-            () ->
-                operateController.getLeftTriggerAxis() - operateController.getRightTriggerAxis()));
-
-    // operateController.a().onTrue(ArmCommands.setArmPosition(arm, new Rotation2d(), 0, new
-    // Rotation2d()));
-    // operateController.b().onTrue(ArmCommands.setArmPosition(arm, new
-    // Rotation2d(Units.degreesToRadians(90)), 0, new Rotation2d()));
-    // operateController.x().onTrue(ArmCommands.setArmPosition(arm, new
-    // Rotation2d(Units.degreesToRadians(45)), 0, new Rotation2d()));
-    // operateController.y().onTrue(ArmCommands.setArmPosition(arm, new
-    // Rotation2d(Units.degreesToRadians(110)), 0, new Rotation2d()));
+    // operateController
+    //     .a()
+    //     .onTrue(
+    //         ArmCommands.setArmPosition(
+    //             arm,
+    //             new Rotation2d(Units.degreesToRadians(120)),
+    //             Units.inchesToMeters(0),
+    //             new Rotation2d(Units.degreesToRadians(20))));
+    // operateController
+    //     .b()
+    //     .onTrue(
+    //         ArmCommands.setArmPosition(
+    //             arm,
+    //             new Rotation2d(Units.degreesToRadians(100)),
+    //             Units.inchesToMeters(5),
+    //             new Rotation2d(Units.degreesToRadians(15))));
+    // operateController
+    //     .x()
+    //     .onTrue(
+    //         ArmCommands.setArmPosition(
+    //             arm,
+    //             new Rotation2d(Units.degreesToRadians(80)),
+    //             Units.inchesToMeters(15),
+    //             new Rotation2d(Units.degreesToRadians(15))));
+    // operateController
+    //     .y()
+    //     .onTrue(
+    //         ArmCommands.setArmPosition(
+    //             arm,
+    //             new Rotation2d(Units.degreesToRadians(90)),
+    //             Units.inchesToMeters(10),
+    //             new Rotation2d(Units.degreesToRadians(90))));
+    // operateController
+    //     .start()
+    //     .onTrue(
+    //         ArmCommands.setArmPosition(
+    //             arm,
+    //             new Rotation2d(Units.degreesToRadians(5)),
+    //             Units.inchesToMeters(0),
+    //             new Rotation2d(Units.degreesToRadians(1))));
 
     driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
     driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
     driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
     driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+
+    driveController
+        .rightStick()
+        .and(operateController.y())
+        .onTrue(
+            Commands.sequence(
+                Commands.waitSeconds(.1),
+                ArmCommands.setArmPosition(
+                    arm,
+                    new Rotation2d(Units.degreesToRadians(80)),
+                    Units.inchesToMeters(15),
+                    new Rotation2d(Units.degreesToRadians(30)))));
+
+    Trigger testTrigger = new Trigger(() -> DriverStation.getMatchTime() < 40);
+    testTrigger.onTrue(Commands.run(() -> driveController.setRumble(RumbleType.kBothRumble, 1.0)));
   }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void OperatorLoop() {
+    if (operateController.getHID().getAButton()) {
+      arm.setArmPostion(ArmPosition.L2);
+    } else if (operateController.getHID().getXButton()) {
+      arm.setArmPostion(ArmPosition.L3);
+    } else if (operateController.getHID().getYButton()
+        && !driveController.getHID().getRightStickButton()) {
+      arm.setArmPostion(ArmPosition.L4);
+    } else if (operateController.getHID().getBButton()) {
+      arm.setArmPostion(ArmPosition.L1);
+    } else if (operateController.getHID().getStartButton()) {
+      arm.setArmPostion(ArmPosition.HOME);
+    } else if (operateController.getHID().getLeftBumperButton()) {
+      arm.setArmPostion(ArmPosition.INTAKE);
+    } else if (operateController.getHID().getPOV() == 180) {
+      arm.setArmPostion(ArmPosition.ALGAE1);
+    } else if (operateController.getHID().getPOV() == 0) {
+      arm.setArmPostion(ArmPosition.ALGAE2);
+    } else if (operateController.getHID().getPOV() == 90) {
+      arm.setArmPostion(ArmPosition.BARGE);
+    } else if (operateController.getHID().getPOV() == 270) {
+      arm.setArmPostion(ArmPosition.PROCESSOR);
+    }
   }
 }

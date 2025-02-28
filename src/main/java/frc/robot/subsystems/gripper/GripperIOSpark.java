@@ -5,7 +5,6 @@
 package frc.robot.subsystems.gripper;
 
 import static frc.robot.subsystems.gripper.GripperConstants.*;
-import static frc.robot.subsystems.swerve.SwerveConstants.odometryFrequencyHz;
 import static frc.robot.util.SparkUtil.ifOk;
 import static frc.robot.util.SparkUtil.sparkStickyFault;
 import static frc.robot.util.SparkUtil.tryUntilOk;
@@ -18,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.DigitalInput;
 import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
@@ -31,6 +31,9 @@ public class GripperIOSpark implements GripperIO {
 
   private final Debouncer coralConnectedDebounce = new Debouncer(.5);
   private final Debouncer algaeConnectedDebounce = new Debouncer(.5);
+
+  private final DigitalInput coralPresent = new DigitalInput(coralSensorPort);
+  private final DigitalInput algaePresent = new DigitalInput(algaeSensorPort);
 
   public GripperIOSpark() {
 
@@ -49,12 +52,15 @@ public class GripperIOSpark implements GripperIO {
     coralConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequencyHz))
+        .absoluteEncoderPositionPeriodMs(20)
         .absoluteEncoderVelocityAlwaysOn(true)
         .absoluteEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
         .busVoltagePeriodMs(20)
         .outputCurrentPeriodMs(20);
+
+    coralMotor.configure(
+        coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     var algaeConfig = new SparkMaxConfig();
     algaeConfig
@@ -71,7 +77,7 @@ public class GripperIOSpark implements GripperIO {
     algaeConfig
         .signals
         .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequencyHz))
+        .absoluteEncoderPositionPeriodMs(20)
         .absoluteEncoderVelocityAlwaysOn(true)
         .absoluteEncoderVelocityPeriodMs(20)
         .appliedOutputPeriodMs(20)
@@ -82,7 +88,7 @@ public class GripperIOSpark implements GripperIO {
         5,
         () ->
             algaeMotor.configure(
-                coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+                algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
     coralEncoder = coralMotor.getEncoder();
     algaeEncoder = algaeMotor.getEncoder();
@@ -115,6 +121,9 @@ public class GripperIOSpark implements GripperIO {
     ifOk(algaeMotor, algaeMotor::getOutputCurrent, (value) -> inputs.algaeMotorCurrentAmps = value);
     ifOk(algaeMotor, algaeMotor::getMotorTemperature, (value) -> inputs.algaeMotorTemp = value);
     inputs.algaeMotorConnected = algaeConnectedDebounce.calculate(!sparkStickyFault);
+
+    inputs.coralPresent = getCoralPresent();
+    inputs.algaePresent = getAlgaePresent();
   }
 
   @Override
@@ -125,5 +134,15 @@ public class GripperIOSpark implements GripperIO {
   @Override
   public void setCoralMotorVoltage(double voltage) {
     coralMotor.setVoltage(voltage);
+  }
+
+  @Override
+  public boolean getCoralPresent() {
+    return !coralPresent.get();
+  }
+
+  @Override
+  public boolean getAlgaePresent() {
+    return !algaePresent.get();
   }
 }

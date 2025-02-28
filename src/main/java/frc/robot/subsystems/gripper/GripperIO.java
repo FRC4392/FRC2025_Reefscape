@@ -23,6 +23,9 @@ public interface GripperIO {
     public double algaeMotorAppliedVolts = 0.0;
     public double algaeMotorCurrentAmps = 0.0;
     public double algaeMotorTemp = 0.0;
+
+    public boolean coralPresent = false;
+    public boolean algaePresent = false;
   }
 
   public default void updateInputs(GripperIOInputs inputs) {}
@@ -30,4 +33,12 @@ public interface GripperIO {
   public default void setAlgaeMotorVoltage(double voltage) {}
 
   public default void setCoralMotorVoltage(double voltage) {}
+
+  public default boolean getCoralPresent() {
+    return false;
+  }
+
+  public default boolean getAlgaePresent() {
+    return false;
+  }
 }

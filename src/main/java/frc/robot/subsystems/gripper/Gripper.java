@@ -28,8 +28,8 @@ public class Gripper extends SubsystemBase {
     gripperIO.updateInputs(inputs);
     Logger.processInputs("Gripper", inputs);
 
-    coralMotorConnectionAlert.set(inputs.coralMotorConnected);
-    algaeMotorConnectionAlert.set(inputs.algaeMotorConnected);
+    coralMotorConnectionAlert.set(!inputs.coralMotorConnected);
+    algaeMotorConnectionAlert.set(!inputs.algaeMotorConnected);
   }
 
   public void setCoralVoltage(double voltage) {

@@ -24,6 +24,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
 public class ArmIOTalonFX implements ArmIO {
@@ -117,10 +118,15 @@ public class ArmIOTalonFX implements ArmIO {
     tryUntilOk(5, () -> extensionMotor1.getConfigurator().apply(extensionMotorBaseConfig, .25));
     tryUntilOk(5, () -> extensionMotor2.getConfigurator().apply(extensionMotorBaseConfig, .25));
 
+    tryUntilOk(5, () -> extensionMotor1.setPosition(minAngle.getRotations()));
+    tryUntilOk(5, () -> extensionMotor2.setPosition(minAngle.getRotations()));
+
     tryUntilOk(
         5, () -> extensionMotor2.setControl(new Follower(extensionMotor1.getDeviceID(), false)));
 
     tryUntilOk(5, () -> wristMotor.getConfigurator().apply(wristnMotorBaseConfig, .25));
+
+    tryUntilOk(5, () -> wristMotor.setPosition(minAngle.getRotations()));
 
     // Configure status signals
     pivotMotor1Position = pivotMotor1.getPosition();
@@ -356,8 +362,12 @@ public class ArmIOTalonFX implements ArmIO {
   @Override
   public void setLength(double length) {
 
+    Logger.recordOutput("Extension/Length", length);
+
     // radius * radians = distance
-    Rotation2d driveRotations = new Rotation2d(length / driveDiameter);
+    Rotation2d driveRotations = new Rotation2d(length / driveRadius);
+
+    Logger.recordOutput("Extension/Radians", driveRotations.getRotations());
 
     extensionMotor1.setControl(
         switch (extensionControlType) {

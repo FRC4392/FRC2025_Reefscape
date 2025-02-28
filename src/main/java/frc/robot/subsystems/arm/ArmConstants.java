@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
@@ -47,7 +48,7 @@ public class ArmConstants {
   public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(170.0));
   public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
 
-  public static final double pivotMotorStatorCurrentLimit = 40;
+  public static final double pivotMotorStatorCurrentLimit = 120;
 
   public static final TalonFXConfiguration pivotMotorBaseConfig =
       new TalonFXConfiguration()
@@ -61,8 +62,8 @@ public class ArmConstants {
                   .withStatorCurrentLimit(pivotMotorStatorCurrentLimit)
                   .withStatorCurrentLimitEnable(true)
                   .withSupplyCurrentLimit(80)
-                  .withSupplyCurrentLowerLimit(30)
-                  .withSupplyCurrentLowerTime(1)
+                  .withSupplyCurrentLowerLimit(40)
+                  .withSupplyCurrentLowerTime(3)
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
@@ -74,11 +75,11 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(5.0)
+                  .withKP(100.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(.23)
-                  .withKV(9.0)
+                  .withKV(11.0)
                   .withKS(0.0)
                   .withKA(0.0)
                   .withGravityType(GravityTypeValue.Arm_Cosine))
@@ -90,18 +91,14 @@ public class ArmConstants {
               new SoftwareLimitSwitchConfigs()
                   .withForwardSoftLimitThreshold(maxAngle.getRotations())
                   .withForwardSoftLimitEnable(true)
-                  .withReverseSoftLimitThreshold(
-                      Units.degreesToRotations(
-                          minAngle
-                              .minus(new Rotation2d(Units.degreesToRadians(10)))
-                              .getRotations()))
+                  .withReverseSoftLimitThreshold(Degrees.of(-29))
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(10.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(10.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0))
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(100.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(1000.0).in(RotationsPerSecondPerSecond)));
 
   // Extension Constants
   public static final double extensionGearReduction = (66.0) / (11.0);
@@ -124,9 +121,9 @@ public class ArmConstants {
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimit(extensionMotorStatorCurrentLimit)
                   .withStatorCurrentLimitEnable(true)
-                  .withSupplyCurrentLimit(80)
+                  .withSupplyCurrentLimit(180)
                   .withSupplyCurrentLowerLimit(30)
-                  .withSupplyCurrentLowerTime(1)
+                  .withSupplyCurrentLowerTime(3)
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
@@ -138,11 +135,11 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(0.01)
+                  .withKP(300.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
-                  .withKV(0.0)
+                  .withKV(.75)
                   .withKS(0.0)
                   .withKA(0.0))
           .withTorqueCurrent(
@@ -151,16 +148,16 @@ public class ArmConstants {
                   .withPeakReverseTorqueCurrent(-extensionMotorStatorCurrentLimit))
           .withSoftwareLimitSwitch(
               new SoftwareLimitSwitchConfigs()
-                  .withForwardSoftLimitThreshold(3.5)
+                  .withForwardSoftLimitThreshold(3.0)
                   .withForwardSoftLimitEnable(true)
-                  .withReverseSoftLimitThreshold(Units.degreesToRotations(.1))
+                  .withReverseSoftLimitThreshold(Units.degreesToRotations(0))
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(10.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(10.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(6000.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(3000.0))
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(100.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(200000.0).in(RotationsPerSecondPerSecond)));
 
   // Wrist Constants
   public static final double wristReduction = (56.0 * 40.0 * 36.0) / (10.0 * 15.0 * 15.0);
@@ -195,22 +192,28 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(0.01)
+                  .withKP(300.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
-                  .withKV(0.0)
+                  .withKV(7.0)
                   .withKS(0.0)
                   .withKA(0.0))
           .withTorqueCurrent(
               new TorqueCurrentConfigs()
                   .withPeakForwardTorqueCurrent(wristMotorStatorCurrentLimit)
                   .withPeakReverseTorqueCurrent(-wristMotorStatorCurrentLimit))
+          .withSoftwareLimitSwitch(
+              new SoftwareLimitSwitchConfigs()
+                  .withForwardSoftLimitThreshold(.75)
+                  .withForwardSoftLimitEnable(true)
+                  .withReverseSoftLimitThreshold(Units.degreesToRotations(0))
+                  .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(10.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(10.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0))
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(100.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(3600.0).in(RotationsPerSecondPerSecond)));
   ;
 }

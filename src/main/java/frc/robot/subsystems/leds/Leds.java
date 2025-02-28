@@ -4,28 +4,30 @@
 
 package frc.robot.subsystems.leds;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Leds extends SubsystemBase {
 
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
   private final Notifier loadingNotifier;
 
-  private static final int length = 100;
+  private static final int length = 50;
 
   private static final double strobeFastDuration = 0.1;
-  private static final double strobeSlowDuration = 0.2;
+  private static final double strobeSlowDuration = 0.25;
   private static final double breathDuration = 1.0;
   private static final double rainbowCycleLength = 25.0;
-  private static final double rainbowDuration = 0.25;
+  private static final double rainbowDuration = 1.0;
   private static final double waveExponent = 0.4;
   private static final double waveFastCycleLength = 25.0;
   private static final double waveFastDuration = 0.25;
@@ -33,12 +35,15 @@ public class Leds extends SubsystemBase {
   private static final double waveSlowDuration = 3.0;
   private static final double waveAllianceCycleLength = 15.0;
   private static final double waveAllianceDuration = 2.0;
-  private static final double autoFadeTime = 2.5; // 3s nominal
-  private static final double autoFadeMaxTime = 5.0; // Return to normal
+  private static final double autoFadeTime = 2.5;
+  private static final double autoFadeMaxTime = 5.0;
+  private static final int stripeLength = 3;
+  private static final double stripeDuration = 1.0;
 
   /** Creates a new Leds. */
   public Leds() {
     leds = new AddressableLED(0);
+    leds.setColorOrder(ColorOrder.kRGB);
     buffer = new AddressableLEDBuffer(length);
     leds.setLength(length);
     leds.setData(buffer);
@@ -52,7 +57,7 @@ public class Leds extends SubsystemBase {
                     Section.FULL,
                     Color.kWhite,
                     Color.kBlack,
-                    0.25,
+                    strobeSlowDuration,
                     System.currentTimeMillis() / 1000.0);
                 leds.setData(buffer);
               }
@@ -63,9 +68,18 @@ public class Leds extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     loadingNotifier.stop();
 
-    solid(Section.FULL, Color.kBlue);
+    if (!DriverStation.isDSAttached()) {
+      strobe(Section.FULL, Color.kRed, strobeSlowDuration);
+    } else if (DriverStation.isDisabled()) {
+      stripes(Section.FULL, List.of(Color.kWhite, Color.kBlue), stripeLength, stripeDuration);
+    } else if (DriverStation.isAutonomous()) {
+      rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
+    } else {
+      wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
+    }
 
     leds.setData(buffer);
   }
@@ -75,12 +89,6 @@ public class Leds extends SubsystemBase {
       for (int i = section.start(); i < section.end(); i++) {
         buffer.setLED(i, color);
       }
-    }
-  }
-
-  private void solid(double percent, Color color) {
-    for (int i = 0; i < MathUtil.clamp(length * percent, 0, length); i++) {
-      buffer.setLED(i, color);
     }
   }
 

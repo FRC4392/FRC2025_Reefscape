@@ -110,7 +110,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.OperatorLoop();
+  }
 
   @Override
   public void teleopExit() {}
