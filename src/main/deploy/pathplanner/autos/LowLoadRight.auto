@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blue219"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropOffLow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blues17"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "load"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

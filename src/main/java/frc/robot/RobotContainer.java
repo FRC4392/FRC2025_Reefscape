@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -121,12 +120,12 @@ public class RobotContainer {
         arm = new Arm(new ArmIO() {});
         gripper = new Gripper(new GripperIO() {});
 
-        NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
-        NamedCommands.registerCommand(
-            "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(.5));
-
         break;
     }
+
+    NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
+    NamedCommands.registerCommand(
+        "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(.5));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -146,8 +145,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption("19 automatic", new PathPlannerAuto("19 automatic"));
-    autoChooser.addOption("14 Score", new PathPlannerAuto("14 Score"));
+    autoChooser.addOption("LowLoadLeft", new PathPlannerAuto("LowLoadLeft"));
+    autoChooser.addOption("LowLoadRight", new PathPlannerAuto("LowLoadRight"));
     autoChooser.addOption("8 Score", new PathPlannerAuto("8 Score"));
     autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
 
@@ -219,15 +218,15 @@ public class RobotContainer {
 
     driveController
         .rightStick()
-        .and(operateController.y())
+        .and(() -> (arm.getArmSetPosition() == ArmPosition.L4))
         .onTrue(
             Commands.sequence(
-                Commands.waitSeconds(.1),
+                Commands.waitUntil(() -> !gripper.getCoralPresent()),
                 ArmCommands.setArmPosition(
                     arm,
-                    new Rotation2d(Units.degreesToRadians(80)),
-                    Units.inchesToMeters(15),
-                    new Rotation2d(Units.degreesToRadians(30)))));
+                    ArmPosition.L4.pivot(),
+                    ArmPosition.L4.extension(),
+                    ArmPosition.L4.wrist().plus(Rotation2d.fromDegrees(20)))));
 
     Trigger testTrigger = new Trigger(() -> DriverStation.getMatchTime() < 40);
     testTrigger.onTrue(Commands.run(() -> driveController.setRumble(RumbleType.kBothRumble, 1.0)));

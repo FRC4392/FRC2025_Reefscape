@@ -33,7 +33,7 @@ public class Arm extends SubsystemBase {
     PROCESSOR,
     UNKNOWN;
 
-    private Rotation2d pivot() {
+    public Rotation2d pivot() {
       switch (this) {
         case HOME:
           return minAngle;
@@ -62,7 +62,7 @@ public class Arm extends SubsystemBase {
       }
     }
 
-    private double extension() {
+    public double extension() {
       switch (this) {
         case HOME:
           return Units.inchesToMeters(0);
@@ -91,7 +91,7 @@ public class Arm extends SubsystemBase {
       }
     }
 
-    private Rotation2d wrist() {
+    public Rotation2d wrist() {
       switch (this) {
         case HOME:
           return new Rotation2d();
@@ -104,11 +104,11 @@ public class Arm extends SubsystemBase {
         case L4:
           return Rotation2d.fromDegrees(15);
         case ALGAE1:
-          return Rotation2d.fromDegrees(0);
+          return Rotation2d.fromDegrees(20);
         case ALGAE2:
-          return Rotation2d.fromDegrees(10);
+          return Rotation2d.fromDegrees(30);
         case BARGE:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(110);
         case CLIMB:
           return Rotation2d.fromDegrees(90);
         case INTAKE:
@@ -252,6 +252,10 @@ public class Arm extends SubsystemBase {
 
   public boolean getArmInPosition() {
     return getExtensionInPosition() && getPivotInPosition() && getWristInPosition();
+  }
+
+  public ArmPosition getArmSetPosition() {
+    return currentPosition;
   }
 
   public void setArmPostion(ArmPosition destinationPosition) {
@@ -817,12 +821,7 @@ public class Arm extends SubsystemBase {
   public Command getDropOffLowCommand() {
     ArmPosition destinationPosition = ArmPosition.L1;
     return Commands.sequence(
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        currentPosition.extension(),
-                        currentPosition.wrist()))
+        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
             .until(() -> getArmInPosition()),
         this.run(
                 () ->

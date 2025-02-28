@@ -120,7 +120,7 @@ public class SwerveConstants {
 
   // Azimuth motor configuration
   public static final boolean azimuthInverted = true;
-  public static final int azimuthMotorCurrentLimit = 20;
+  public static final int azimuthMotorCurrentLimit = 25;
   public static final double azimuthMotorReduction = (32 * 20 * 63) / (8 * 14 * 18);
   public static final DCMotor azimuthGearbox = DCMotor.getNeo550(1);
 
@@ -129,7 +129,7 @@ public class SwerveConstants {
   public static final double azimuthEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
   public static final double azimuthEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
   // Azimuth PID configuration
-  public static final double azimuthKp = 6.0;
+  public static final double azimuthKp = 4.0;
   public static final double azimuthKd = 0.0;
   public static final double azimuthSimP = 8.0;
   public static final double azimuthSimD = 0.0;

@@ -39,4 +39,12 @@ public class Gripper extends SubsystemBase {
   public void setAlgaeVoltage(double voltage) {
     gripperIO.setAlgaeMotorVoltage(voltage);
   }
+
+  public boolean getCoralPresent() {
+    return gripperIO.getCoralPresent();
+  }
+
+  public boolean getAlgaePresent() {
+    return gripperIO.getAlgaePresent();
+  }
 }

@@ -38,7 +38,7 @@ public class GripperCommands {
           gripper.setAlgaeVoltage(12);
         },
         () -> {
-          gripper.setAlgaeVoltage(0);
+          gripper.setAlgaeVoltage(2);
         },
         gripper);
   }
@@ -49,7 +49,7 @@ public class GripperCommands {
           gripper.setAlgaeVoltage(-12);
         },
         () -> {
-          gripper.setAlgaeVoltage(0);
+          gripper.setAlgaeVoltage(-2);
         },
         gripper);
   }
