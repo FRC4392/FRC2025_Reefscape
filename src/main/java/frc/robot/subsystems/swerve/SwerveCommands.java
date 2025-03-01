@@ -13,6 +13,7 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,6 +23,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -31,6 +34,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -44,6 +48,11 @@ public class SwerveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
+  private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-reef");
+
+  // txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
+  // tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
 
   private SwerveCommands() {}
 
@@ -68,15 +77,20 @@ public class SwerveCommands {
       Swerve drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier omegaSupplier,
+      BooleanSupplier fastMode) {
     return Commands.run(
         () -> {
+          double multiplier = fastMode.getAsBoolean() ? 1 : .75;
           // Get linear velocity
           Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              getLinearVelocityFromJoysticks(
+                  xSupplier.getAsDouble() * multiplier, ySupplier.getAsDouble() * multiplier);
 
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+
+          omega = omega * multiplier;
 
           // Square rotation value for more precise control
           omega = Math.copySign(omega * omega, omega);
@@ -285,6 +299,33 @@ public class SwerveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
+  }
+
+  public static Command autoAlignCommand(Swerve swerve, DoubleSupplier forwardValue) {
+    return Commands.run(
+        () -> {
+          ProfiledPIDController angleController =
+              new ProfiledPIDController(
+                  ANGLE_KP,
+                  0.0,
+                  ANGLE_KD,
+                  new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+          angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+          PIDController strafeController = new PIDController(0.1, 0, 0);
+          PIDController forwardController = new PIDController(0.1, 0, 0);
+
+          double strafeAngle = table.getValue("tx").getDouble();
+          double forwardAngle = table.getValue("ty").getDouble();
+
+          double strafeSpeed = strafeController.calculate(strafeAngle, 3.5);
+
+          ChassisSpeeds chassisSpeeds =
+              new ChassisSpeeds(forwardValue.getAsDouble(), -strafeSpeed, 0);
+
+          swerve.runVelocity(chassisSpeeds);
+        },
+        swerve);
   }
 
   private static class WheelRadiusCharacterizationState {

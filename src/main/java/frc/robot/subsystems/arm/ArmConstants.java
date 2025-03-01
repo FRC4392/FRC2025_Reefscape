@@ -205,7 +205,7 @@ public class ArmConstants {
                   .withPeakReverseTorqueCurrent(-wristMotorStatorCurrentLimit))
           .withSoftwareLimitSwitch(
               new SoftwareLimitSwitchConfigs()
-                  .withForwardSoftLimitThreshold(Degrees.of(120))
+                  .withForwardSoftLimitThreshold(Degrees.of(180))
                   .withForwardSoftLimitEnable(true)
                   .withReverseSoftLimitThreshold(Degrees.of(0))
                   .withReverseSoftLimitEnable(true))

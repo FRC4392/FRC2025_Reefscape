@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -124,8 +123,11 @@ public class RobotContainer {
     }
 
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
+    NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
-        "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(.5));
+        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, () -> -.35).withTimeout(3));
+    NamedCommands.registerCommand(
+        "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -147,7 +149,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("LowLoadLeft", new PathPlannerAuto("LowLoadLeft"));
     autoChooser.addOption("LowLoadRight", new PathPlannerAuto("LowLoadRight"));
-    autoChooser.addOption("8 Score", new PathPlannerAuto("8 Score"));
+    autoChooser.addOption("LowLoadHide", new PathPlannerAuto("LowLoadHide"));
+    autoChooser.addOption("StraightAuto", new PathPlannerAuto("StraightAuto"));
     autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
 
     configureBindings();
@@ -160,7 +163,8 @@ public class RobotContainer {
             swerve,
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
-            () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis()));
+            () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis(),
+            () -> driveController.getHID().getLeftBumperButton()));
     // arm.setDefaultCommand(
     //     ArmCommands.joystickArmControl(
     //         arm,
@@ -211,10 +215,79 @@ public class RobotContainer {
     //             Units.inchesToMeters(0),
     //             new Rotation2d(Units.degreesToRadians(1))));
 
-    driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
-    driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
-    driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
-    driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+    // driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
+
+    driveController
+        .leftStick()
+        .and(
+            () -> {
+              switch (arm.getArmSetPosition()) {
+                case ALGAE1:
+                case ALGAE2:
+                case BARGE:
+                case PROCESSOR:
+                  return true;
+                default:
+                  return false;
+              }
+            })
+        .whileTrue(GripperCommands.algaeIntake(gripper));
+
+    driveController
+        .leftStick()
+        .and(
+            () -> {
+              switch (arm.getArmSetPosition()) {
+                case ALGAE1:
+                case ALGAE2:
+                case BARGE:
+                case PROCESSOR:
+                  return false;
+                default:
+                  return true;
+              }
+            })
+        .whileTrue(GripperCommands.coralIntake(gripper));
+
+    driveController
+        .rightStick()
+        .and(
+            () -> {
+              switch (arm.getArmSetPosition()) {
+                case ALGAE1:
+                case ALGAE2:
+                case BARGE:
+                case PROCESSOR:
+                  return true;
+                default:
+                  return false;
+              }
+            })
+        .whileTrue(GripperCommands.algaeOutake(gripper));
+
+    driveController
+        .rightStick()
+        .and(
+            () -> {
+              switch (arm.getArmSetPosition()) {
+                case ALGAE1:
+                case ALGAE2:
+                case BARGE:
+                case PROCESSOR:
+                  return false;
+                default:
+                  return true;
+              }
+            })
+        .whileTrue(GripperCommands.coralOuttake(gripper));
+
+    // driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
+    // driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
+    // driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+
+    driveController
+        .y()
+        .whileTrue(SwerveCommands.autoAlignCommand(swerve, () -> driveController.getLeftY()));
 
     driveController
         .rightStick()
@@ -228,8 +301,30 @@ public class RobotContainer {
                     ArmPosition.L4.extension(),
                     ArmPosition.L4.wrist().plus(Rotation2d.fromDegrees(20)))));
 
-    Trigger testTrigger = new Trigger(() -> DriverStation.getMatchTime() < 40);
-    testTrigger.onTrue(Commands.run(() -> driveController.setRumble(RumbleType.kBothRumble, 1.0)));
+    Trigger testTrigger =
+        new Trigger(
+            () -> {
+              return operateController.getLeftTriggerAxis()
+                      + operateController.getRightTriggerAxis()
+                  > 0;
+            });
+    testTrigger.onTrue(
+        Commands.sequence(
+            ArmCommands.setArmPosition(
+                    arm, Rotation2d.fromDegrees(90), 0, Rotation2d.fromDegrees(50))
+                .until(() -> arm.getArmInPosition()),
+            ArmCommands.joystickArmControl(
+                    arm,
+                    () -> {
+                      return operateController.getLeftY();
+                    },
+                    () -> {
+                      return 0.0;
+                    },
+                    () -> {
+                      return 0.0;
+                    })
+                .until(testTrigger.negate())));
   }
 
   public Command getAutonomousCommand() {
@@ -237,27 +332,30 @@ public class RobotContainer {
   }
 
   public void OperatorLoop() {
-    if (operateController.getHID().getAButton()) {
-      arm.setArmPostion(ArmPosition.L2);
-    } else if (operateController.getHID().getXButton()) {
-      arm.setArmPostion(ArmPosition.L3);
-    } else if (operateController.getHID().getYButton()
-        && !driveController.getHID().getRightStickButton()) {
-      arm.setArmPostion(ArmPosition.L4);
-    } else if (operateController.getHID().getBButton()) {
-      arm.setArmPostion(ArmPosition.L1);
-    } else if (operateController.getHID().getStartButton()) {
-      arm.setArmPostion(ArmPosition.HOME);
-    } else if (operateController.getHID().getLeftBumperButton()) {
-      arm.setArmPostion(ArmPosition.INTAKE);
-    } else if (operateController.getHID().getPOV() == 180) {
-      arm.setArmPostion(ArmPosition.ALGAE1);
-    } else if (operateController.getHID().getPOV() == 0) {
-      arm.setArmPostion(ArmPosition.ALGAE2);
-    } else if (operateController.getHID().getPOV() == 90) {
-      arm.setArmPostion(ArmPosition.BARGE);
-    } else if (operateController.getHID().getPOV() == 270) {
-      arm.setArmPostion(ArmPosition.PROCESSOR);
+    if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
+      if (operateController.getHID().getAButton()) {
+        arm.setArmPostion(ArmPosition.L2);
+      } else if (operateController.getHID().getXButton()) {
+        arm.setArmPostion(ArmPosition.L3);
+      } else if (operateController.getHID().getYButton()
+          && !driveController.getHID().getRightStickButton()) {
+        arm.setArmPostion(ArmPosition.L4);
+      } else if (operateController.getHID().getBButton()) {
+        arm.setArmPostion(ArmPosition.L1);
+      } else if (operateController.getHID().getStartButton()) {
+        arm.setArmPostion(ArmPosition.HOME);
+      } else if (operateController.getHID().getLeftBumperButton()
+          || operateController.getHID().getRightBumperButton()) {
+        arm.setArmPostion(ArmPosition.INTAKE);
+      } else if (operateController.getHID().getPOV() == 180) {
+        arm.setArmPostion(ArmPosition.ALGAE1);
+      } else if (operateController.getHID().getPOV() == 0) {
+        arm.setArmPostion(ArmPosition.ALGAE2);
+      } else if (operateController.getHID().getPOV() == 90) {
+        arm.setArmPostion(ArmPosition.BARGE);
+      } else if (operateController.getHID().getPOV() == 270) {
+        arm.setArmPostion(ArmPosition.PROCESSOR);
+      }
     }
   }
 }

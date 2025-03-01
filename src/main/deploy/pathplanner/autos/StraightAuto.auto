@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "19 SCORE"
+            "pathName": "8 SC0RE"
           }
         },
         {
@@ -17,7 +17,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "DropOffLow"
+                  "name": "L3ScorePosition"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlign"
                 }
               },
               {
@@ -27,6 +33,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": " blue218"
           }
         }
       ]
