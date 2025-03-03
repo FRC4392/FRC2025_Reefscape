@@ -321,7 +321,10 @@ public class SwerveCommands {
           double strafeSpeed = strafeController.calculate(strafeAngle, 3.5);
 
           ChassisSpeeds chassisSpeeds =
-              new ChassisSpeeds(forwardValue.getAsDouble(), -strafeSpeed, 0);
+              new ChassisSpeeds(
+                  forwardValue.getAsDouble() * swerve.getMaxLinearSpeedMetersPerSec() * .5,
+                  -strafeSpeed,
+                  0);
 
           swerve.runVelocity(chassisSpeeds);
         },

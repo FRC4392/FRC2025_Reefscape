@@ -122,7 +122,7 @@ public class ArmConstants {
                   .withStatorCurrentLimit(extensionMotorStatorCurrentLimit)
                   .withStatorCurrentLimitEnable(true)
                   .withSupplyCurrentLimit(180)
-                  .withSupplyCurrentLowerLimit(30)
+                  .withSupplyCurrentLowerLimit(40)
                   .withSupplyCurrentLowerTime(3)
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
@@ -139,7 +139,7 @@ public class ArmConstants {
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
-                  .withKV(.75)
+                  .withKV(.25)
                   .withKS(0.0)
                   .withKA(0.0))
           .withTorqueCurrent(
@@ -178,8 +178,8 @@ public class ArmConstants {
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimit(wristMotorStatorCurrentLimit)
                   .withStatorCurrentLimitEnable(true)
-                  .withSupplyCurrentLimit(80)
-                  .withSupplyCurrentLowerLimit(30)
+                  .withSupplyCurrentLimit(50)
+                  .withSupplyCurrentLowerLimit(20)
                   .withSupplyCurrentLowerTime(1)
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(

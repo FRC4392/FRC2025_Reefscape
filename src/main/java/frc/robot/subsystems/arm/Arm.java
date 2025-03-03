@@ -56,7 +56,7 @@ public class Arm extends SubsystemBase {
         case INTAKE:
           return Rotation2d.fromDegrees(25);
         case PROCESSOR:
-          return Rotation2d.fromDegrees(0);
+          return minAngle.plus(Rotation2d.fromDegrees(15));
         default:
           return new Rotation2d();
       }
@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
         case L2:
           return Units.inchesToMeters(0);
         case L3:
-          return Units.inchesToMeters(3);
+          return Units.inchesToMeters(4.5);
         case L4:
           return Units.inchesToMeters(14);
         case ALGAE1:
@@ -85,7 +85,7 @@ public class Arm extends SubsystemBase {
         case INTAKE:
           return Units.inchesToMeters(0);
         case PROCESSOR:
-          return Units.inchesToMeters(0);
+          return Units.inchesToMeters(2);
         default:
           return Units.inchesToMeters(0);
       }
@@ -819,9 +819,14 @@ public class Arm extends SubsystemBase {
   }
 
   public Command getDropOffLowCommand() {
-    ArmPosition destinationPosition = ArmPosition.L1;
+    ArmPosition destinationPosition = ArmPosition.L2;
     return Commands.sequence(
-        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
+        this.run(
+                () ->
+                    setPosition(
+                        Rotation2d.fromDegrees(70),
+                        currentPosition.extension(),
+                        destinationPosition.wrist()))
             .until(() -> getArmInPosition()),
         this.run(
                 () ->
