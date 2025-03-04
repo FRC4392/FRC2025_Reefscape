@@ -23,13 +23,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.vision.Vision;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -49,10 +49,8 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-reef");
-
-  // txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
-  // tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
+  private static PIDController strafeController = new PIDController(0.1, 0, 0);
+  private static PIDController forwardController = new PIDController(0.1, 0, 0);
 
   private SwerveCommands() {}
 
@@ -301,7 +299,7 @@ public class SwerveCommands {
                     })));
   }
 
-  public static Command autoAlignCommand(Swerve swerve, DoubleSupplier forwardValue) {
+  public static Command autoAlignCommand(Swerve swerve, Vision vision, DoubleSupplier forwardValue) {
     return Commands.run(
         () -> {
           ProfiledPIDController angleController =
@@ -312,11 +310,8 @@ public class SwerveCommands {
                   new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
           angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-          PIDController strafeController = new PIDController(0.1, 0, 0);
-          PIDController forwardController = new PIDController(0.1, 0, 0);
-
-          double strafeAngle = table.getValue("tx").getDouble();
-          double forwardAngle = table.getValue("ty").getDouble();
+          double strafeAngle = vision.getTargetX(0).getDegrees();
+          double forwardAngle = vision.getTargetY(0).getDegrees();
 
           double strafeSpeed = strafeController.calculate(strafeAngle, 3.5);
 
