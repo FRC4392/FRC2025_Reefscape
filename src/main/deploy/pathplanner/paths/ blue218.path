@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 5.817888393764858,
-        "y": 0.4694017894847953
+        "y": 0.46940178948479505
       },
       "isLocked": false,
       "linkedName": "Test4"
@@ -45,7 +45,7 @@
     "rotation": -128.52493348120615
   },
   "reversed": false,
-  "folder": null,
+  "folder": "MilfordMess",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -60.53278854042385
