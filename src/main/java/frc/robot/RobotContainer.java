@@ -160,6 +160,7 @@ public class RobotContainer {
     autoChooser.addOption("StraightAuto", new PathPlannerAuto("StraightAuto"));
     autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
     autoChooser.addOption("19Score", new PathPlannerAuto("19 Score"));
+    autoChooser.addOption("Preset Test 1", new PathPlannerAuto("Preset Test 1"));
 
     configureBindings();
   }

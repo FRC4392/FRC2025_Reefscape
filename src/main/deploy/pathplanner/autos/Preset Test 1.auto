@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "19 SCORE"
+            "pathName": "Start_J"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "L3ScorePosition"
+                  "name": "DropOffLow"
                 }
               },
               {
@@ -34,17 +34,11 @@
               }
             ]
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hide"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "MilfordMess",
+  "folder": null,
   "choreoAuto": false
 }
