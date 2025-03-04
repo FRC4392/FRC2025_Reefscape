@@ -132,7 +132,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
-        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, () -> 0).withTimeout(3));
+        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, vision, () -> 0).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -296,7 +296,7 @@ public class RobotContainer {
 
     driveController
         .y()
-        .whileTrue(SwerveCommands.autoAlignCommand(swerve, () -> driveController.getLeftY() * 1.5));
+        .whileTrue(SwerveCommands.autoAlignCommand(swerve, vision, () -> driveController.getLeftY() * 1.5));
 
     driveController
         .rightStick()
