@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1445484893176021,
-        "y": 2.159612962372448
+        "x": 5.629478804976851,
+        "y": 2.076962890624999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3329580781056087,
-        "y": 0.552051861232244
+        "x": 5.817888393764858,
+        "y": 0.46940178948479505
       },
       "isLocked": false,
       "linkedName": "Test4"
@@ -45,7 +45,7 @@
     "rotation": -128.52493348120615
   },
   "reversed": false,
-  "folder": null,
+  "folder": "MilfordMess",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -60.53278854042385

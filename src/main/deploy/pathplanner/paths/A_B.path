@@ -3,55 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8275,
-        "y": 4.171250000003827
+        "x": 2.8470000000000004,
+        "y": 4.26875
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8471163162763373,
-        "y": 5.671312199807349
+        "x": 3.153237802321718,
+        "y": 4.294518356516443
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "A"
     },
     {
       "anchor": {
-        "x": 1.228499999994169,
-        "y": 6.969499999994905
+        "x": 1.2285000000000001,
+        "y": 4.063999999999999
       },
       "prevControl": {
-        "x": 1.00287841416944,
-        "y": 7.139470509737186
+        "x": 1.3747500000000001,
+        "y": 4.405249999999999
       },
       "nextControl": {
-        "x": 2.837783054869413,
-        "y": 5.757157394756557
+        "x": 1.0855656008621561,
+        "y": 3.730486402011697
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8275,
-        "y": 4.171250000003827
+        "x": 2.8470000000000004,
+        "y": 3.9177499999999994
       },
       "prevControl": {
-        "x": 2.791232421738447,
-        "y": 3.9238946629539826
+        "x": 2.263115233964891,
+        "y": 4.117409460285679
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "B"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.9617554858934255,
-      "rotationDegrees": 126.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 0.6,
+        "y": 3.75
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.4,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
@@ -66,7 +72,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "MilfordMess",
+  "folder": "Braedon'sTrials",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
