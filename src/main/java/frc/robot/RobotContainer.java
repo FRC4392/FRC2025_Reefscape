@@ -83,7 +83,8 @@ public class RobotContainer {
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
-                new VisionIOLimelight(camera0Name, swerve::getRotation));
+                new VisionIOLimelight(camera0Name, swerve::getRotation),
+                new VisionIOLimelight(camera1Name, swerve::getRotation));
 
         arm = new Arm(new ArmIOTalonFX());
         gripper = new Gripper(new GripperIOSpark());
@@ -103,6 +104,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
 
         arm = new Arm(new ArmIOSim());
@@ -130,7 +132,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
-        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, () -> -.35).withTimeout(3));
+        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, () -> 0).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -157,6 +159,7 @@ public class RobotContainer {
     autoChooser.addOption("LowLoadHide", new PathPlannerAuto("LowLoadHide"));
     autoChooser.addOption("StraightAuto", new PathPlannerAuto("StraightAuto"));
     autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
+    autoChooser.addOption("19Score", new PathPlannerAuto("19 Score"));
 
     configureBindings();
   }

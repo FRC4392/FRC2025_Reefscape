@@ -59,7 +59,7 @@ public class SwerveConstants {
   public static final int driveMotorStatorLimit = 80;
   public static final int driveMotorSupplyLimitHigh = 80;
   public static final int driveMotorSupplyLimitLow = 40;
-  public static final double wheelDiameterMeters = Units.inchesToMeters(2.84);
+  public static final double wheelDiameterMeters = Units.inchesToMeters(3.0); // 2.84
   public static final double wheelRadiusMeters = wheelDiameterMeters / 2.0;
   public static final double driveMotorReduction = (45.0 * 28.0) / (20.0 * 15.0);
   public static final DCMotor driveGearbox = DCMotor.getKrakenX60Foc(1);
@@ -138,7 +138,7 @@ public class SwerveConstants {
 
   // PathPlanner configuration
   public static final double robotMassKg = Units.lbsToKilograms(115);
-  public static final double robotMOI = 7;
+  public static final double robotMOI = 10;
   public static final double wheelCOF = .5;
   public static final RobotConfig ppConfig =
       new RobotConfig(
