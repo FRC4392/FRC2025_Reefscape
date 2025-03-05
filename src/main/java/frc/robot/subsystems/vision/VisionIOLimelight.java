@@ -44,7 +44,7 @@ public class VisionIOLimelight implements VisionIO {
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
-    tidSubscriber = table.getDoubleTopic("tid").subscribe(0); //This might need to be an int
+    tidSubscriber = table.getDoubleTopic("tid").subscribe(0); // This might need to be an int
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     megatag2Subscriber =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
@@ -59,7 +59,9 @@ public class VisionIOLimelight implements VisionIO {
     // Update target observation
     inputs.latestTargetObservation =
         new TargetObservation(
-            Rotation2d.fromDegrees(txSubscriber.get()), Rotation2d.fromDegrees(tySubscriber.get()), tidSubscriber.get());
+            Rotation2d.fromDegrees(txSubscriber.get()),
+            Rotation2d.fromDegrees(tySubscriber.get()),
+            tidSubscriber.get());
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(
@@ -84,7 +86,7 @@ public class VisionIOLimelight implements VisionIO {
               parsePose(rawSample.value),
 
               // Ambiguity, using only the first tag because ambiguity isn't applicable for
-              //multitag
+              // multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
 
               // Tag count

@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.vision.Vision;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -299,7 +298,8 @@ public class SwerveCommands {
                     })));
   }
 
-  public static Command autoAlignCommand(Swerve swerve, Vision vision, DoubleSupplier forwardValue) {
+  public static Command autoAlignCommand(
+      Swerve swerve, Vision vision, DoubleSupplier forwardValue) {
     return Commands.run(
         () -> {
           ProfiledPIDController angleController =

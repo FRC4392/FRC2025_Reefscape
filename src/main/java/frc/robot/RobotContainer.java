@@ -296,7 +296,9 @@ public class RobotContainer {
 
     driveController
         .y()
-        .whileTrue(SwerveCommands.autoAlignCommand(swerve, vision, () -> driveController.getLeftY() * 1.5));
+        .whileTrue(
+            SwerveCommands.autoAlignCommand(
+                swerve, vision, () -> driveController.getLeftY() * 1.5));
 
     driveController
         .rightStick()

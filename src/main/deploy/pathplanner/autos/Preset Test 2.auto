@@ -23,12 +23,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AutoAlign"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "ejectCoral"
                 }
               }
@@ -49,12 +43,6 @@
                 "type": "named",
                 "data": {
                   "name": "DropOffLow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlign"
                 }
               },
               {
