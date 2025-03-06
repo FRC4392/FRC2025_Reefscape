@@ -73,7 +73,7 @@ public class Arm extends SubsystemBase {
         case L3:
           return Units.inchesToMeters(4.5);
         case L4:
-          return Units.inchesToMeters(14);
+          return Units.inchesToMeters(15);
         case ALGAE1:
           return Units.inchesToMeters(0);
         case ALGAE2:
