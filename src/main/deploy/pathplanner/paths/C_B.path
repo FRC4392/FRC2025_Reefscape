@@ -1,0 +1,81 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.7439999999999998,
+        "y": 2.94275
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.274965066564661,
+        "y": 2.7359484489352623
+      },
+      "isLocked": false,
+      "linkedName": "C"
+    },
+    {
+      "anchor": {
+        "x": 1.2285000000000001,
+        "y": 4.015249999999999
+      },
+      "prevControl": {
+        "x": 2.01930458339983,
+        "y": 3.594624256066688
+      },
+      "nextControl": {
+        "x": 1.0077801678524754,
+        "y": 4.132649981672777
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2175,
+        "y": 3.8787499999999993
+      },
+      "prevControl": {
+        "x": 2.3452648639290774,
+        "y": 3.612437358712703
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.0,
+        "y": 4.25
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.9,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 1050.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Braedon'sTrials",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

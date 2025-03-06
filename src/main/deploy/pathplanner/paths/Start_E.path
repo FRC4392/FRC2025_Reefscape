@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.629478804976851,
-        "y": 2.076962890624999
+        "x": 7.53675,
+        "y": 2.8257499999999993
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.817888393764858,
-        "y": 0.46940178948479505
+        "x": 8.158759678349318,
+        "y": 2.8565893236803723
       },
       "isLocked": false,
-      "linkedName": "Test4"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4005653175147805,
-        "y": 1.3712851034628375
+        "x": 5.04075,
+        "y": 2.8257499999999993
       },
       "prevControl": {
-        "x": 3.010731959987334,
-        "y": 1.2147789207664699
+        "x": 4.392596817988098,
+        "y": 2.8291082950941244
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "E"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -128.52493348120615
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "MilfordMess",
+  "folder": "Braedon'sTrials",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -60.53278854042385
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
