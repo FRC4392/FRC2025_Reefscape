@@ -41,7 +41,7 @@ public class ArmConstants {
   public static final int WristCanId = 41;
 
   // Pivot Constants
-  public static final double pivotGearReduction = (74.0 * 64.0 * 84.0) / (22.0 * 18.0 * 10.0);
+  public static final double pivotGearReduction = (52.0 * 64.0 * 84.0) / (14.0 * 18.0 * 10.0);
   public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
   public static final ClosedLoopControlType pivotControlType = ClosedLoopControlType.Voltage;
 
