@@ -83,6 +83,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Braedon'sTrials",
   "choreoAuto": false
 }

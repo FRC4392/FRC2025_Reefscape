@@ -23,6 +23,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "AutoAlign"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "ejectCoral"
                 }
               }
@@ -33,6 +39,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Braedon'sTrials",
   "choreoAuto": false
 }
