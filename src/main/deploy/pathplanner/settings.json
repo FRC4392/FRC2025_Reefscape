@@ -3,13 +3,10 @@
   "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
-    "MilfordMess",
     "Braedon'sTrials",
     "Test Routines"
   ],
   "autoFolders": [
-    "MilfordMess",
-    "New Folder",
     "Braedon'sTrials"
   ],
   "defaultMaxVel": 5.0,
