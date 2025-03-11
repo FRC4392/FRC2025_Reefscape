@@ -48,8 +48,24 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static PIDController strafeController = new PIDController(0.1, 0, 0);
-  private static PIDController forwardController = new PIDController(0.1, 0, 0);
+  private static int targetID = 0;
+  private static boolean invertOffset = false;
+  private static double alignmentAngle = 0;
+
+  private static PIDController strafeController = new PIDController(0.08, 0, 0);
+  private static PIDController forwardController = new PIDController(0.08, 0, 0);
+
+  private static ProfiledPIDController angleController =
+      new ProfiledPIDController(
+          ANGLE_KP,
+          0.0,
+          ANGLE_KD,
+          new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+
+  public static enum ReefSide {
+    left,
+    right;
+  }
 
   private SwerveCommands() {}
 
@@ -298,32 +314,91 @@ public class SwerveCommands {
                     })));
   }
 
-  public static Command autoAlignCommand(
-      Swerve swerve, Vision vision, DoubleSupplier forwardValue) {
-    return Commands.run(
-        () -> {
-          ProfiledPIDController angleController =
-              new ProfiledPIDController(
-                  ANGLE_KP,
-                  0.0,
-                  ANGLE_KD,
-                  new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-          angleController.enableContinuousInput(-Math.PI, Math.PI);
+  public static Command autoAlignCommand(Swerve swerve, Vision vision, ReefSide side) {
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+    return Commands.sequence(
+        Commands.runOnce(
+            () -> {
+              targetID = vision.getTargetId(2);
 
-          double strafeAngle = vision.getTargetX(0).getDegrees();
-          double forwardAngle = vision.getTargetY(0).getDegrees();
+              // determine offset
+              if ((targetID >= 20 && targetID <= 22) || (targetID >= 9 && targetID <= 11)) {
+                invertOffset = true;
+              } else {
+                invertOffset = false;
+              }
 
-          double strafeSpeed = strafeController.calculate(strafeAngle, 3.5);
+              switch (targetID) {
+                case 6:
+                  alignmentAngle = -60;
+                  break;
+                case 7:
+                  alignmentAngle = 0;
+                  break;
+                case 8:
+                  alignmentAngle = 60;
+                  break;
+                case 9:
+                  alignmentAngle = 120;
+                  break;
+                case 10:
+                  alignmentAngle = 180;
+                  break;
+                case 11:
+                  alignmentAngle = -120;
+                  break;
+                case 17:
+                  alignmentAngle = -120;
+                  break;
+                case 18:
+                  alignmentAngle = 180;
+                  break;
+                case 19:
+                  alignmentAngle = 120;
+                  break;
+                case 20:
+                  alignmentAngle = 60;
+                  break;
+                case 21:
+                  alignmentAngle = 0;
+                  break;
+                case 22:
+                  alignmentAngle = -60;
+                  break;
 
-          ChassisSpeeds chassisSpeeds =
-              new ChassisSpeeds(
-                  forwardValue.getAsDouble() * swerve.getMaxLinearSpeedMetersPerSec() * .5,
-                  -strafeSpeed,
-                  0);
+                default:
+                  alignmentAngle = 99999;
+                  break;
+              }
+            }),
+        Commands.run(
+            () -> {
+              double rotateSpeed = 0;
+              if (alignmentAngle <= 180) {
+                rotateSpeed =
+                    angleController.calculate(
+                        swerve.getRotation().getRadians(),
+                        Rotation2d.fromDegrees(alignmentAngle).getRadians());
+              }
 
-          swerve.runVelocity(chassisSpeeds);
-        },
-        swerve);
+              double strafeVelocity = 0;
+              double forwardVelocity = 0;
+
+              if (vision.getTargetId(2) == targetID) {
+                double strafeAngle = vision.getTargetX(2).getDegrees();
+
+                strafeVelocity = -strafeController.calculate(strafeAngle, 11.5);
+
+                double forwardAngle = vision.getTargetY(2).getDegrees();
+
+                forwardVelocity = -forwardController.calculate(forwardAngle, -3);
+              }
+              ChassisSpeeds chassisSpeeds =
+                  new ChassisSpeeds(forwardVelocity, strafeVelocity, rotateSpeed);
+
+              swerve.runVelocity(chassisSpeeds);
+            },
+            swerve));
   }
 
   private static class WheelRadiusCharacterizationState {

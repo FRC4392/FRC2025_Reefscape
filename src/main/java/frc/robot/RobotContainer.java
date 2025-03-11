@@ -34,6 +34,7 @@ import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
+import frc.robot.subsystems.swerve.SwerveCommands.ReefSide;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
@@ -84,7 +85,8 @@ public class RobotContainer {
             new Vision(
                 swerve::addVisionMeasurement,
                 new VisionIOLimelight(camera0Name, swerve::getRotation),
-                new VisionIOLimelight(camera1Name, swerve::getRotation));
+                new VisionIOLimelight(camera1Name, swerve::getRotation),
+                new VisionIOLimelight(camera2Name, swerve::getRotation));
 
         arm = new Arm(new ArmIOTalonFX());
         gripper = new Gripper(new GripperIOSpark());
@@ -104,6 +106,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
 
@@ -132,7 +135,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
-        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, vision, () -> 0).withTimeout(3));
+        "AutoAlign", SwerveCommands.autoAlignCommand(swerve, vision, ReefSide.left).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -294,11 +297,22 @@ public class RobotContainer {
     // driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
     // driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 
+    // driveController
+    //     .y()
+    //     .whileTrue(
+    //         SwerveCommands.autoAlignCommand(
+    //             swerve, vision, () -> driveController.getLeftY() * 1.5));
+
     driveController
-        .y()
-        .whileTrue(
-            SwerveCommands.autoAlignCommand(
-                swerve, vision, () -> driveController.getLeftY() * 1.5));
+        .leftBumper()
+        .onTrue(
+            SwerveCommands.autoAlignCommand(swerve, vision, ReefSide.left)
+                .onlyWhile(driveController.leftBumper()));
+    driveController
+        .rightBumper()
+        .onTrue(
+            SwerveCommands.autoAlignCommand(swerve, vision, ReefSide.right)
+                .onlyWhile(driveController.rightBumper()));
 
     driveController
         .rightStick()
