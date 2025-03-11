@@ -15,11 +15,16 @@ public interface VisionIO {
     public TargetObservation latestTargetObservation =
         new TargetObservation(new Rotation2d(), new Rotation2d(), 0);
     public PoseObservation[] poseObservations = new PoseObservation[0];
+    public targetPoseObservation lastTargetPoseObservation =
+        new targetPoseObservation(new Pose3d(), 0);
     public int[] tagIds = new int[0];
   }
 
   /** Represents the angle to a simple target, not used for pose estimation. */
   public static record TargetObservation(Rotation2d tx, Rotation2d ty, double tid) {}
+
+  /** Represents the targets pose in robot space, not used for pose estimation */
+  public static record targetPoseObservation(Pose3d targetPose, int targetID) {}
 
   /** Represents a robot pose sample used for pose estimation. */
   public static record PoseObservation(

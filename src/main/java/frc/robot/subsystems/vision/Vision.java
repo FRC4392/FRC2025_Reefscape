@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.VisionIO.targetPoseObservation;
+
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -73,6 +75,10 @@ public class Vision extends SubsystemBase {
     return ((int) inputs[cameraIndex].latestTargetObservation.tid());
   }
 
+  public targetPoseObservation getLastTargetPoseObservation(int cameraIndex){
+    return inputs[cameraIndex].lastTargetPoseObservation;
+  }
+
   @Override
   public void periodic() {
     for (int i = 0; i < io.length; i++) {
@@ -119,8 +125,7 @@ public class Vision extends SubsystemBase {
                 || observation.pose().getX() < 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
                 || observation.pose().getY() < 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth()
-                || observation.type() == PoseObservationType.MEGATAG_1;
+                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
 
         // Add pose to log
         robotPoses.add(observation.pose());

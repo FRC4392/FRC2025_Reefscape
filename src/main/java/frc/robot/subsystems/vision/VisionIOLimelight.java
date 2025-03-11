@@ -30,6 +30,7 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleSubscriber tidSubscriber;
   private final DoubleArraySubscriber megatag1Subscriber;
   private final DoubleArraySubscriber megatag2Subscriber;
+  private final DoubleArraySubscriber targetPoseSubscriber;
 
   /**
    * Creates a new VisionIOLimelight.
@@ -48,6 +49,8 @@ public class VisionIOLimelight implements VisionIO {
     megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     megatag2Subscriber =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+    targetPoseSubscriber =
+        table.getDoubleArrayTopic("targetpose_robotspace").subscribe(new double[] {});
   }
 
   @Override
@@ -62,6 +65,19 @@ public class VisionIOLimelight implements VisionIO {
             Rotation2d.fromDegrees(txSubscriber.get()),
             Rotation2d.fromDegrees(tySubscriber.get()),
             tidSubscriber.get());
+
+    // Update target pose observation
+    inputs.lastTargetPoseObservation =
+        new targetPoseObservation(
+            new Pose3d(
+                targetPoseSubscriber.get()[0],
+                targetPoseSubscriber.get()[1],
+                targetPoseSubscriber.get()[2],
+                new Rotation3d(
+                    targetPoseSubscriber.get()[5],
+                    targetPoseSubscriber.get()[3],
+                    targetPoseSubscriber.get()[4])),
+            (int) txSubscriber.get());
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(
