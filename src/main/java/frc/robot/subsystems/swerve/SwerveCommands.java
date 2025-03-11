@@ -17,9 +17,11 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -29,6 +31,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO.targetPoseObservation;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -48,8 +51,12 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
+  private static final double ReefOffsetRight = 0;
+  private static final double ReefOffsetLeft = 0;
+  private static final double ReffOffsetForward = 0;
+
   private static int targetID = 0;
-  private static boolean invertOffset = false;
+  //private static boolean invertOffset = false;
   private static double alignmentAngle = 0;
 
   private static PIDController strafeController = new PIDController(0.08, 0, 0);
@@ -314,7 +321,7 @@ public class SwerveCommands {
                     })));
   }
 
-  public static Command autoAlignCommand(Swerve swerve, Vision vision, ReefSide side) {
+  public static Command autoAlignCommand2d(Swerve swerve, Vision vision, ReefSide side) {
     angleController.enableContinuousInput(-Math.PI, Math.PI);
     return Commands.sequence(
         Commands.runOnce(
@@ -399,6 +406,71 @@ public class SwerveCommands {
               swerve.runVelocity(chassisSpeeds);
             },
             swerve));
+  }
+
+  public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
+    return Commands.run(
+        () -> {
+          ReefSide targetSide = side;
+          // Get all the targets we are looking at
+          List<targetPoseObservation> targets = new LinkedList<>();
+
+          for (int i = 0; i < 3; i++) {
+            targets.add(vision.getLastTargetPoseObservation(i));
+          }
+
+          // Find closest target
+          int closestTag = -1;
+          double closest = -1;
+          for (int i = 0; i < targets.size(); i++) {
+            double distance =
+                targets.get(i).targetPose().getTranslation().getDistance(new Translation3d());
+
+            if ((distance < closest) || ((closest == -1) && (distance > 0))) {
+              closest = distance;
+              closestTag = i;
+            }
+          }
+
+          if (closestTag == -1) {
+            return;
+          }
+          int closestTagID = targets.get(closestTag).targetID();
+          Pose3d closestTagPose = targets.get(closestTagID).targetPose();
+
+          // Determine which way to offset
+          boolean invertSide = false;
+          if ((targetID >= 20 && targetID <= 22) || (targetID >= 9 && targetID <= 11)) {
+            invertSide = true;
+          } else {
+            invertSide = false;
+          }
+
+          if (invertSide && side == ReefSide.left) {
+            targetSide = ReefSide.right;
+          } else if (invertSide && side == ReefSide.right) {
+            targetSide = ReefSide.left;
+          }
+
+          // Determine offset Position
+          double positionOffset = 0;
+          if (targetSide == ReefSide.left) {
+            positionOffset = ReefOffsetLeft;
+          } else if (targetSide == ReefSide.right) {
+            positionOffset = ReefOffsetRight;
+          }
+
+          //Determine Rotation
+          Rotation2d rotationTarget = swerve.getRotation().plus(closestTagPose.getRotation().toRotation2d()); //is this the right axis?
+
+          // Position to offset position
+          double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
+          double forwadSpeed = forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
+          double rotation = angleController.calculate(swerve.getRotation().getRadians(), rotationTarget.getRadians());
+
+          ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
+          swerve.runVelocity(speeds);
+        });
   }
 
   private static class WheelRadiusCharacterizationState {
