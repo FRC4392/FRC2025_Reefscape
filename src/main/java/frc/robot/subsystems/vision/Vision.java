@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIO.targetPoseObservation;
-
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -75,7 +74,7 @@ public class Vision extends SubsystemBase {
     return ((int) inputs[cameraIndex].latestTargetObservation.tid());
   }
 
-  public targetPoseObservation getLastTargetPoseObservation(int cameraIndex){
+  public targetPoseObservation getLastTargetPoseObservation(int cameraIndex) {
     return inputs[cameraIndex].lastTargetPoseObservation;
   }
 
@@ -91,11 +90,17 @@ public class Vision extends SubsystemBase {
     List<Pose3d> allRobotPoses = new LinkedList<>();
     List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
     List<Pose3d> allRobotPosesRejected = new LinkedList<>();
+    List<Pose3d> allTargetPoseObservations = new LinkedList<>();
 
     // Loop over cameras
     for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
       // Update disconnected alert
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
+
+      // Update target pose observations
+      if (inputs[cameraIndex].lastTargetPoseObservation.targetID() != 0) {
+        allTargetPoseObservations.add(inputs[cameraIndex].lastTargetPoseObservation.targetPose());
+      }
 
       // Initialize logging values
       List<Pose3d> tagPoses = new LinkedList<>();
@@ -178,6 +183,10 @@ public class Vision extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
+
+      Logger.recordOutput(
+          "Vision/Camera" + Integer.toString(cameraIndex) + "/TargetPose",
+          inputs[cameraIndex].lastTargetPoseObservation);
     }
 
     // Log summary data
@@ -191,6 +200,9 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+    Logger.recordOutput(
+        "Vision/Summary/TargetPoses",
+        allTargetPoseObservations.toArray(new Pose3d[allTargetPoseObservations.size()]));
   }
 
   @FunctionalInterface
