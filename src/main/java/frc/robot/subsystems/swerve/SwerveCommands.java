@@ -56,7 +56,7 @@ public class SwerveCommands {
   private static final double ReffOffsetForward = 0;
 
   private static int targetID = 0;
-  //private static boolean invertOffset = false;
+  private static boolean invertOffset = false;
   private static double alignmentAngle = 0;
 
   private static PIDController strafeController = new PIDController(0.08, 0, 0);
@@ -460,13 +460,19 @@ public class SwerveCommands {
             positionOffset = ReefOffsetRight;
           }
 
-          //Determine Rotation
-          Rotation2d rotationTarget = swerve.getRotation().plus(closestTagPose.getRotation().toRotation2d()); //is this the right axis?
+          // Determine Rotation
+          Rotation2d rotationTarget =
+              swerve
+                  .getRotation()
+                  .plus(closestTagPose.getRotation().toRotation2d()); // is this the right axis?
 
           // Position to offset position
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
-          double forwadSpeed = forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
-          double rotation = angleController.calculate(swerve.getRotation().getRadians(), rotationTarget.getRadians());
+          double forwadSpeed =
+              forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
+          double rotation =
+              angleController.calculate(
+                  swerve.getRotation().getRadians(), rotationTarget.getRadians());
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
           swerve.runVelocity(speeds);
