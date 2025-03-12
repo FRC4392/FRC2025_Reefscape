@@ -177,58 +177,7 @@ public class RobotContainer {
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
             () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis(),
-            () -> driveController.getHID().getLeftBumperButton()));
-    // arm.setDefaultCommand(
-    //     ArmCommands.joystickArmControl(
-    //         arm,
-    //         () -> operateController.getLeftY() * -1,
-    //         () -> operateController.getRightY() * -1,
-    //         () ->
-    //             operateController.getLeftTriggerAxis() -
-    // operateController.getRightTriggerAxis()));
-
-    // operateController
-    //     .a()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(120)),
-    //             Units.inchesToMeters(0),
-    //             new Rotation2d(Units.degreesToRadians(20))));
-    // operateController
-    //     .b()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(100)),
-    //             Units.inchesToMeters(5),
-    //             new Rotation2d(Units.degreesToRadians(15))));
-    // operateController
-    //     .x()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(80)),
-    //             Units.inchesToMeters(15),
-    //             new Rotation2d(Units.degreesToRadians(15))));
-    // operateController
-    //     .y()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(90)),
-    //             Units.inchesToMeters(10),
-    //             new Rotation2d(Units.degreesToRadians(90))));
-    // operateController
-    //     .start()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(5)),
-    //             Units.inchesToMeters(0),
-    //             new Rotation2d(Units.degreesToRadians(1))));
-
-    // driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
+            () -> driveController.getHID().getAButton()));
 
     driveController
         .leftStick()
@@ -307,25 +256,13 @@ public class RobotContainer {
     driveController
         .leftBumper()
         .onTrue(
-            SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left)
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
                 .onlyWhile(driveController.leftBumper()));
     driveController
         .rightBumper()
         .onTrue(
-            SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.right)
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
                 .onlyWhile(driveController.rightBumper()));
-
-    driveController
-        .rightStick()
-        .and(() -> (arm.getArmSetPosition() == ArmPosition.L4))
-        .onTrue(
-            Commands.sequence(
-                Commands.waitUntil(() -> !gripper.getCoralPresent()),
-                ArmCommands.setArmPosition(
-                    arm,
-                    ArmPosition.L4.pivot(),
-                    ArmPosition.L4.extension(),
-                    ArmPosition.L4.wrist().plus(Rotation2d.fromDegrees(20)))));
 
     Trigger testTrigger =
         new Trigger(
