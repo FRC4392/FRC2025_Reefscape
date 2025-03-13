@@ -55,7 +55,7 @@ public class SwerveCommands {
 
   private static final double ReefOffsetRight = Units.inchesToMeters(-6); // Meters
   private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
-  private static final double ReffOffsetForward = .5; // Meters
+  private static final double ReffOffsetForward = 1.5; // Meters
 
   private static int targetID = 0;
   private static boolean invertOffset = false;
@@ -482,7 +482,7 @@ public class SwerveCommands {
                   .plus(closestTagPose.getRotation().toRotation2d().minus(Rotation2d.k180deg));
 
           // Position to offset position
-          double strafeSpeed = -strafeController.calculate(closestTagPose.getX(), positionOffset);
+          double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
           double forwadSpeed =
               -forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
           // double rotation =
