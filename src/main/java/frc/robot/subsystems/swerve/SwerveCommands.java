@@ -440,7 +440,7 @@ public class SwerveCommands {
             return;
           }
           int closestTagID = targets.get(closestTag).targetID();
-          Pose3d closestTagPose = targets.get(closestTagID).targetPose();
+          Pose3d closestTagPose = targets.get(closestTag).targetPose();
 
           // Determine which way to offset
           boolean invertSide = false;
