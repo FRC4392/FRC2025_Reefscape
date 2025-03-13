@@ -13,6 +13,9 @@ import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
+
+import static edu.wpi.first.units.Units.Degrees;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,9 +77,9 @@ public class VisionIOLimelight implements VisionIO {
                 targetPoseSubscriber.get()[1],
                 targetPoseSubscriber.get()[2],
                 new Rotation3d(
-                    targetPoseSubscriber.get()[5],
-                    targetPoseSubscriber.get()[3],
-                    targetPoseSubscriber.get()[4])),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[5]),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[3]),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[4]))),
             (int) txSubscriber.get());
 
     // Update orientation for MegaTag 2
