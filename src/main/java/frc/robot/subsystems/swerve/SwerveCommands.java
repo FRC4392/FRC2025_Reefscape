@@ -59,8 +59,8 @@ public class SwerveCommands {
   private static boolean invertOffset = false;
   private static double alignmentAngle = 0;
 
-  private static PIDController strafeController = new PIDController(0.08, 0, 0);
-  private static PIDController forwardController = new PIDController(0.08, 0, 0);
+  private static PIDController strafeController = new PIDController(1, 0, 0); //0.08
+  private static PIDController forwardController = new PIDController(1, 0, 0); //0.08
 
   private static ProfiledPIDController angleController =
       new ProfiledPIDController(
@@ -434,6 +434,7 @@ public class SwerveCommands {
           }
 
           if (closestTag == -1) {
+            swerve.runVelocity(new ChassisSpeeds());
             return;
           }
           
@@ -477,10 +478,10 @@ public class SwerveCommands {
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
           double forwadSpeed =
               forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
-          double rotation =
-              -angleController.calculate(
-                  swerve.getRotation().getRadians(), rotationTarget.getRadians());
-          // double rotation = 0;
+          // double rotation =
+          //     -angleController.calculate(
+          //         swerve.getRotation().getRadians(), rotationTarget.getRadians());
+           double rotation = 0;
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
           swerve.runVelocity(speeds);
