@@ -478,7 +478,7 @@ public class SwerveCommands {
           double forwadSpeed =
               forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
           double rotation =
-              angleController.calculate(
+              -angleController.calculate(
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
           // double rotation = 0;
 
