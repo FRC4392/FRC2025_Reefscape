@@ -164,6 +164,9 @@ public class RobotContainer {
     autoChooser.addOption("19Score", new PathPlannerAuto("19 Score"));
     autoChooser.addOption("Preset Test 1", new PathPlannerAuto("Preset Test 1"));
 
+    // Set up LED suppliers
+    leds.setGripperSupplier(gripper::getState);
+
     configureBindings();
   }
 
@@ -178,26 +181,20 @@ public class RobotContainer {
             () -> driveController.getHID().getAButton()));
 
     // Smart Intake
-    driveController
-        .leftStick()
-        .whileTrue(GripperCommands.coralIntake(gripper));
+    driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
 
     // Smart Outttake
-    driveController
-        .rightStick()
-        .whileTrue(GripperCommands.coralOuttake(gripper));
+    driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 
     // Auto align to left branch from driver view
     driveController
         .leftBumper()
-        .whileTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
+        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
 
     // Auto align to right branch from driver view
     driveController
         .rightBumper()
-        .whileTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
+        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
 
     // Reset gyro rotation, maintin position
     driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
@@ -232,7 +229,7 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  //This need to be replaced
+  // This need to be replaced
   public void OperatorLoop() {
     if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
       if (operateController.getHID().getAButton()) {

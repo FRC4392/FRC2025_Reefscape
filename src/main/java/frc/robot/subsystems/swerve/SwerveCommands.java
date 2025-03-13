@@ -419,6 +419,10 @@ public class SwerveCommands {
             targets.add(vision.getLastTargetPoseObservation(i));
           }
 
+          if (targets.size() == 0){
+            return;
+          }
+
           // Find closest target
           int closestTag = -1;
           double closest = -1;
