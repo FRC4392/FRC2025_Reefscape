@@ -287,6 +287,16 @@ public class Swerve extends SubsystemBase {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
+  public void resetGyro() {
+    var pose = poseEstimator.getEstimatedPosition();
+    var rotation =
+        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+            ? new Rotation2d()
+            : Rotation2d.k180deg;
+    Pose2d newPose = new Pose2d(pose.getTranslation(), rotation);
+    poseEstimator.resetPose(newPose);
+  }
+
   /** Adds a new timestamped vision measurement. */
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,

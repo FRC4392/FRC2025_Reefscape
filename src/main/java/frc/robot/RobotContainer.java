@@ -264,6 +264,8 @@ public class RobotContainer {
             SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
                 .onlyWhile(driveController.rightBumper()));
 
+    driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
+
     Trigger testTrigger =
         new Trigger(
             () -> {
