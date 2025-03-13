@@ -477,7 +477,7 @@ public class SwerveCommands {
           // Position to offset position
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
           double forwadSpeed =
-              forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
+              -forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
           // double rotation =
           //     -angleController.calculate(
           //         swerve.getRotation().getRadians(), rotationTarget.getRadians());
