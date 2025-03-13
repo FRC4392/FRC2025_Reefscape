@@ -60,11 +60,13 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  // Roobot Alerts
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected", AlertType.kError);
   Alert operatorControllerAlert = new Alert("Operator Controller Disconnected", AlertType.kError);
 
   public RobotContainer() {
 
+    // Disable rumble
     driveController.setRumble(RumbleType.kBothRumble, 0);
     operateController.setRumble(RumbleType.kBothRumble, 0);
 
@@ -80,7 +82,6 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
                 new SwerveModuleIODeceivers(3));
-
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -90,7 +91,6 @@ public class RobotContainer {
 
         arm = new Arm(new ArmIOTalonFX());
         gripper = new Gripper(new GripperIOSpark());
-
         break;
 
       case SIM:
@@ -102,14 +102,12 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim());
-
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
-
         arm = new Arm(new ArmIOSim());
         gripper = new Gripper(new GripperIOSIm());
         break;
@@ -123,15 +121,13 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {});
-
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
-
         arm = new Arm(new ArmIO() {});
         gripper = new Gripper(new GripperIO() {});
-
         break;
     }
 
+    // Set up named commands
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
@@ -158,6 +154,8 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    // Set up auto routines
     autoChooser.addOption("LowLoadLeft", new PathPlannerAuto("LowLoadLeft"));
     autoChooser.addOption("LowLoadRight", new PathPlannerAuto("LowLoadRight"));
     autoChooser.addOption("LowLoadHide", new PathPlannerAuto("LowLoadHide"));
@@ -179,91 +177,29 @@ public class RobotContainer {
             () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis(),
             () -> driveController.getHID().getAButton()));
 
+    // Smart Intake
     driveController
         .leftStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return true;
-                default:
-                  return false;
-              }
-            })
-        .whileTrue(GripperCommands.algaeIntake(gripper));
-
-    driveController
-        .leftStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return false;
-                default:
-                  return true;
-              }
-            })
         .whileTrue(GripperCommands.coralIntake(gripper));
 
+    // Smart Outttake
     driveController
         .rightStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return true;
-                default:
-                  return false;
-              }
-            })
-        .whileTrue(GripperCommands.algaeOutake(gripper));
-
-    driveController
-        .rightStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return false;
-                default:
-                  return true;
-              }
-            })
         .whileTrue(GripperCommands.coralOuttake(gripper));
 
-    // driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
-    // driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
-    // driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
-
-    // driveController
-    //     .y()
-    //     .whileTrue(
-    //         SwerveCommands.autoAlignCommand(
-    //             swerve, vision, () -> driveController.getLeftY() * 1.5));
-
+    // Auto align to left branch from driver view
     driveController
         .leftBumper()
-        .onTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
-                .onlyWhile(driveController.leftBumper()));
+        .whileTrue(
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
+
+    // Auto align to right branch from driver view
     driveController
         .rightBumper()
-        .onTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
-                .onlyWhile(driveController.rightBumper()));
+        .whileTrue(
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
 
+    // Reset gyro rotation, maintin position
     driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
 
     Trigger testTrigger =
@@ -296,6 +232,7 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  //This need to be replaced
   public void OperatorLoop() {
     if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
       if (operateController.getHID().getAButton()) {
@@ -324,6 +261,7 @@ public class RobotContainer {
     }
   }
 
+  // Periodically check if controllers are attached
   public void controllerCheckLoop() {
     driverControllerAlert.set(!driveController.isConnected());
     operatorControllerAlert.set(!operateController.isConnected());
