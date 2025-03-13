@@ -55,7 +55,7 @@ public class SwerveCommands {
 
   private static final double ReefOffsetRight = Units.inchesToMeters(-6); // Meters
   private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
-  private static final double ReffOffsetForward = 1.5; // Meters
+  private static final double ReffOffsetForward = -1.5; // Meters
 
   private static int targetID = 0;
   private static boolean invertOffset = false;
