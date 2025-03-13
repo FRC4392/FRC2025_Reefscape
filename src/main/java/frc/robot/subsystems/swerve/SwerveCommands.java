@@ -485,10 +485,10 @@ public class SwerveCommands {
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
           double forwadSpeed =
               -forwardController.calculate(closestTagPose.getZ(), ReffOffsetForward);
-          // double rotation =
-          //     -angleController.calculate(
-          //         swerve.getRotation().getRadians(), rotationTarget.getRadians());
-           double rotation = 0;
+          double rotation =
+              -angleController.calculate(
+                  swerve.getRotation().getRadians(), rotationTarget.getRadians());
+          //  double rotation = 0;
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
           swerve.runVelocity(speeds);
