@@ -409,6 +409,7 @@ public class SwerveCommands {
   }
 
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
     return Commands.run(
         () -> {
           ReefSide targetSide = side;
@@ -435,6 +436,7 @@ public class SwerveCommands {
           if (closestTag == -1) {
             return;
           }
+          
           int closestTagID = targets.get(closestTag).targetID();
           Pose3d closestTagPose = targets.get(closestTag).targetPose();
 
@@ -476,7 +478,7 @@ public class SwerveCommands {
           double forwadSpeed =
               forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
           double rotation =
-              -angleController.calculate(
+              angleController.calculate(
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
           // double rotation = 0;
 
