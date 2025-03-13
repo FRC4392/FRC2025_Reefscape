@@ -189,12 +189,12 @@ public class RobotContainer {
     // Auto align to left branch from driver view
     driveController
         .leftBumper()
-        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
+        .onTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
 
     // Auto align to right branch from driver view
     driveController
         .rightBumper()
-        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
+        .onTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
 
     // Reset gyro rotation, maintin position
     driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
