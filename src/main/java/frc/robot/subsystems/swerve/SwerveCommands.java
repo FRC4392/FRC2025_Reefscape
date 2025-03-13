@@ -51,9 +51,9 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static final double ReefOffsetRight = 0;
-  private static final double ReefOffsetLeft = 0;
-  private static final double ReffOffsetForward = 0;
+  private static final double ReefOffsetRight = Units.inchesToMeters(6); // Meters
+  private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
+  private static final double ReffOffsetForward = .5; // Meters
 
   private static int targetID = 0;
   private static boolean invertOffset = false;
@@ -446,6 +446,11 @@ public class SwerveCommands {
             invertSide = false;
           }
 
+          // invert if on the other side of the field
+          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            invertSide = !invertSide;
+          }
+
           if (invertSide && side == ReefSide.left) {
             targetSide = ReefSide.right;
           } else if (invertSide && side == ReefSide.right) {
@@ -464,7 +469,7 @@ public class SwerveCommands {
           Rotation2d rotationTarget =
               swerve
                   .getRotation()
-                  .plus(closestTagPose.getRotation().toRotation2d()); // is this the right axis?
+                  .plus(closestTagPose.getRotation().toRotation2d().minus(Rotation2d.k180deg));
 
           // Position to offset position
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
@@ -473,6 +478,7 @@ public class SwerveCommands {
           double rotation =
               angleController.calculate(
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
+          // double rotation = 0;
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
           swerve.runVelocity(speeds);
