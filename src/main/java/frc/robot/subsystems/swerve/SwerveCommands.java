@@ -419,10 +419,6 @@ public class SwerveCommands {
             targets.add(vision.getLastTargetPoseObservation(i));
           }
 
-          if (targets.size() == 0){
-            return;
-          }
-
           // Find closest target
           int closestTag = -1;
           double closest = -1;
@@ -480,7 +476,7 @@ public class SwerveCommands {
           double forwadSpeed =
               forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
           double rotation =
-              angleController.calculate(
+              -angleController.calculate(
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
           // double rotation = 0;
 
