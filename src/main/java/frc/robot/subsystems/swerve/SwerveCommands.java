@@ -429,7 +429,7 @@ public class SwerveCommands {
             double distance =
                 targets.get(i).targetPose().getTranslation().getDistance(new Translation3d());
 
-            if ((distance < closest) || ((closest == -1) && (distance > 0))) {
+            if ((distance < closest && distance > 0) || ((closest == -1) && (distance > 0))) {
               closest = distance;
               closestTag = i;
             }
