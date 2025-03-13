@@ -3,32 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 5.80125,
+        "y": 3.825
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.25,
-        "y": 7.0
+        "x": 5.8304999999985965,
+        "y": 2.0262499999970838
+      },
+      "isLocked": false,
+      "linkedName": "G"
+    },
+    {
+      "anchor": {
+        "x": 1.6770000000046037,
+        "y": 2.1042499999955795
+      },
+      "prevControl": {
+        "x": 5.206499999998597,
+        "y": 1.9384999999970842
+      },
+      "nextControl": {
+        "x": 0.9345126537785883,
+        "y": 2.139118190287704
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 3.188249999998597,
+        "y": 3.825
       },
       "prevControl": {
-        "x": 1.75,
-        "y": 7.0
+        "x": 2.4082499999971936,
+        "y": 3.766249999997085
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0047244094488121,
+      "rotationDegrees": 176.00239232874793
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Student's Inner Machinations",
