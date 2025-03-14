@@ -65,8 +65,8 @@ public class Leds extends SubsystemBase {
               synchronized (this) {
                 breath(
                     Section.FULL,
+                    Color.kBlue,
                     Color.kWhite,
-                    Color.kBlack,
                     strobeSlowDuration,
                     System.currentTimeMillis() / 1000.0);
                 leds.setData(buffer);
@@ -96,6 +96,7 @@ public class Leds extends SubsystemBase {
       // In teleop or any other mode
       switch (gripperState) {
         case OFF:
+          wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
           break;
         case IntakeOuttakeWithNone:
           strobe(Section.FULL, Color.kBlue, strobeSlowDuration);
@@ -118,7 +119,6 @@ public class Leds extends SubsystemBase {
           stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);
           break;
       }
-      wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
     }
 
     leds.setData(buffer);
