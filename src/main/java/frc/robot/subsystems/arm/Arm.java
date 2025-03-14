@@ -14,129 +14,24 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
 
-  public static enum ArmPosition {
-    HOME,
-    L1,
-    L2,
-    L3,
-    L4,
-    ALGAE1,
-    ALGAE2,
-    BARGE,
-    CLIMB,
-    INTAKE,
-    PROCESSOR,
-    UNKNOWN;
-
-    public Rotation2d pivot() {
-      switch (this) {
-        case HOME:
-          return minAngle;
-        case L1:
-          return Rotation2d.fromDegrees(100);
-        case L2:
-          return Rotation2d.fromDegrees(90);
-        case L3:
-          return Rotation2d.fromDegrees(80);
-        case L4:
-          return Rotation2d.fromDegrees(80);
-        case ALGAE1:
-          return Rotation2d.fromDegrees(100);
-        case ALGAE2:
-          return Rotation2d.fromDegrees(90);
-        case BARGE:
-          return Rotation2d.fromDegrees(70);
-        case CLIMB:
-          return Rotation2d.fromDegrees(90);
-        case INTAKE:
-          return Rotation2d.fromDegrees(25);
-        case PROCESSOR:
-          return minAngle.plus(Rotation2d.fromDegrees(15));
-        default:
-          return new Rotation2d();
-      }
-    }
-
-    public double extension() {
-      switch (this) {
-        case HOME:
-          return Units.inchesToMeters(0);
-        case L1:
-          return Units.inchesToMeters(0);
-        case L2:
-          return Units.inchesToMeters(0);
-        case L3:
-          return Units.inchesToMeters(4.5);
-        case L4:
-          return Units.inchesToMeters(15);
-        case ALGAE1:
-          return Units.inchesToMeters(0);
-        case ALGAE2:
-          return Units.inchesToMeters(7);
-        case BARGE:
-          return Units.inchesToMeters(17);
-        case CLIMB:
-          return Units.inchesToMeters(0);
-        case INTAKE:
-          return Units.inchesToMeters(0);
-        case PROCESSOR:
-          return Units.inchesToMeters(2);
-        default:
-          return Units.inchesToMeters(0);
-      }
-    }
-
-    public Rotation2d wrist() {
-      switch (this) {
-        case HOME:
-          return new Rotation2d();
-        case L1:
-          return Rotation2d.fromDegrees(0);
-        case L2:
-          return Rotation2d.fromDegrees(0);
-        case L3:
-          return Rotation2d.fromDegrees(10);
-        case L4:
-          return Rotation2d.fromDegrees(15);
-        case ALGAE1:
-          return Rotation2d.fromDegrees(5);
-        case ALGAE2:
-          return Rotation2d.fromDegrees(10);
-        case BARGE:
-          return Rotation2d.fromDegrees(115);
-        case CLIMB:
-          return Rotation2d.fromDegrees(90);
-        case INTAKE:
-          return Rotation2d.fromDegrees(90);
-        case PROCESSOR:
-          return Rotation2d.fromDegrees(90);
-        default:
-          return new Rotation2d();
-      }
-    }
-  }
-
-  public enum ArmState {
-    TRAVELING,
-    INPOSITION,
-    UNKNOWN;
-  }
-
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  private ArmPosition targetPosition = ArmPosition.HOME;
-  private ArmPosition currentPosition = ArmPosition.HOME;
-  private ArmState armState = ArmState.INPOSITION;
-
-  private Rotation2d pivotSetpoint = minAngle;
+  // Save setpoints for in tolerance measurements
+  private Rotation2d pivotSetpoint = minAngle; // convert to angle
   private double extensionSetPoint = 0.0;
-  private Rotation2d wristSetpoint = new Rotation2d();
+  private Rotation2d wristSetpoint = new Rotation2d(); //convert to angle
+
+  private final Graph<ArmState,EdgeCommand> graph = new DefaultDirectedGraph<>(null)
 
   private final Alert pivot1DisconnectedAlert =
       new Alert("Pivot Motor 1 Disconnected, arm may fail to work", AlertType.kError);
@@ -184,12 +79,12 @@ public class Arm extends SubsystemBase {
     armIO.setWrist(wristAngle);
   }
 
-  public void setPosition(ArmPosition position) {
-    currentPosition = position;
-    armIO.setAngle(position.pivot());
-    armIO.setLength(position.extension());
-    armIO.setWrist(position.wrist());
-  }
+  // public void setPosition(ArmState position) {
+  //   currentPosition = position;
+  //   armIO.setAngle(position.pivot());
+  //   armIO.setLength(position.extension());
+  //   armIO.setWrist(position.wrist());
+  // }
 
   public void setPivotPosition(Rotation2d pivotRotation) {
     pivotSetpoint = pivotRotation;
@@ -254,644 +149,656 @@ public class Arm extends SubsystemBase {
     return getExtensionInPosition() && getPivotInPosition() && getWristInPosition();
   }
 
-  public ArmPosition getArmSetPosition() {
-    return currentPosition;
-  }
+  // public ArmPosition getArmSetPosition() {
+  //   return currentPosition;
+  // }
 
-  public void setArmPostion(ArmPosition destinationPosition) {
-    if (this.getCurrentCommand() != null) {
-      this.getCurrentCommand().cancel();
+  // public void setArmPostion(ArmPosition destinationPosition) {
+  //   if (this.getCurrentCommand() != null) {
+  //     this.getCurrentCommand().cancel();
+  //   }
+  //   switch (destinationPosition) {
+  //     case HOME:
+  //       if (currentPosition == ArmPosition.INTAKE || currentPosition == ArmPosition.PROCESSOR) {
+  //         Commands.sequence(
+  //                 this.run(
+  //                         () ->
+  //                             setPosition(
+  //                                 currentPosition.pivot(),
+  //                                 destinationPosition.extension(),
+  //                                 destinationPosition.wrist()))
+  //                     .until(() -> getArmInPosition()),
+  //                 this.run(() -> setPosition(destinationPosition)))
+  //             .schedule();
+  //       } else if ((currentPosition != ArmPosition.HOME)) {
+  //         Commands.sequence(
+  //                 this.run(
+  //                         () ->
+  //                             setPosition(
+  //                                 Rotation2d.fromDegrees(70),
+  //                                 currentPosition.extension(),
+  //                                 currentPosition.wrist()))
+  //                     .until(() -> getArmInPosition()),
+  //                 this.run(
+  //                         () ->
+  //                             setPosition(
+  //                                 Rotation2d.fromDegrees(70),
+  //                                 destinationPosition.extension(),
+  //                                 destinationPosition.wrist()))
+  //                     .until(() -> getArmInPosition()),
+  //                 this.run(() -> setPosition(destinationPosition)))
+  //             .schedule();
+  //       }
+  //       break;
+  //     case L1:
+  //       switch (currentPosition) {
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case L1:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case L2:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case L2:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case L3:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case L3:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case L4:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case L4:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case ALGAE1:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE2:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case ALGAE1:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case ALGAE2:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case HOME:
+  //         case CLIMB:
+  //         case BARGE:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case ALGAE2:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case BARGE:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case CLIMB:
+  //         case HOME:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case BARGE:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case CLIMB:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case BARGE:
+  //         case HOME:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case CLIMB:
+  //           this.run(() -> setPosition(destinationPosition));
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case INTAKE:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case BARGE:
+  //         case CLIMB:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           this.run(() -> setPosition(destinationPosition)).schedule();
+  //           break;
+  //         case HOME:
+  //           this.run(() -> setPosition(destinationPosition)).schedule();
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     case PROCESSOR:
+  //       switch (currentPosition) {
+  //         case L1:
+  //         case L2:
+  //         case L3:
+  //         case L4:
+  //         case ALGAE1:
+  //         case ALGAE2:
+  //         case BARGE:
+  //         case CLIMB:
+  //           Commands.sequence(
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   currentPosition.extension(),
+  //                                   currentPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(
+  //                           () ->
+  //                               setPosition(
+  //                                   Rotation2d.fromDegrees(70),
+  //                                   destinationPosition.extension(),
+  //                                   destinationPosition.wrist()))
+  //                       .until(() -> getArmInPosition()),
+  //                   this.run(() -> setPosition(destinationPosition)))
+  //               .schedule();
+  //           break;
+  //         case INTAKE:
+  //         case PROCESSOR:
+  //           this.run(() -> setPosition(destinationPosition)).schedule();
+  //           break;
+  //         case HOME:
+  //           this.run(() -> setPosition(destinationPosition)).schedule();
+  //           break;
+  //         case UNKNOWN:
+  //           break;
+  //       }
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+  // public Command getDropOffLowCommand() {
+  //   ArmPosition destinationPosition = ArmPosition.L2;
+  //   return Commands.sequence(
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       currentPosition.extension(),
+  //                       destinationPosition.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       destinationPosition.extension(),
+  //                       destinationPosition.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+  // }
+
+  // public Command getL3ArmCommand() {
+  //   ArmPosition destinationPosition = ArmPosition.L3;
+  //   return Commands.sequence(
+  //       this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       destinationPosition.extension(),
+  //                       destinationPosition.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+  // }
+
+  // public Command getL4ArmCommand() {
+  //   ArmPosition destinationPosition = ArmPosition.L4;
+  //   return Commands.sequence(
+  //       this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       destinationPosition.extension(),
+  //                       destinationPosition.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+  // }
+
+  // public Command getL4ScoreCommand() {
+  //   ArmPosition destinationPosition = ArmPosition.L4;
+  //   return Commands.sequence(
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       destinationPosition.pivot(),
+  //                       destinationPosition.extension(),
+  //                       destinationPosition.wrist().plus(Rotation2d.fromDegrees(20))))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       currentPosition.extension(),
+  //                       currentPosition.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(
+  //               () ->
+  //                   setPosition(
+  //                       Rotation2d.fromDegrees(70),
+  //                       ArmPosition.INTAKE.extension(),
+  //                       ArmPosition.INTAKE.wrist()))
+  //           .until(() -> getArmInPosition()),
+  //       this.run(() -> setPosition(ArmPosition.INTAKE)));
+  // }
+
+  public static class EdgeCommand extends DefaultEdge {
+    private final Command command;
+
+    public EdgeCommand(Command newCommand){
+      command = newCommand;
     }
-    switch (destinationPosition) {
-      case HOME:
-        if (currentPosition == ArmPosition.INTAKE || currentPosition == ArmPosition.PROCESSOR) {
-          Commands.sequence(
-                  this.run(
-                          () ->
-                              setPosition(
-                                  currentPosition.pivot(),
-                                  destinationPosition.extension(),
-                                  destinationPosition.wrist()))
-                      .until(() -> getArmInPosition()),
-                  this.run(() -> setPosition(destinationPosition)))
-              .schedule();
-        } else if ((currentPosition != ArmPosition.HOME)) {
-          Commands.sequence(
-                  this.run(
-                          () ->
-                              setPosition(
-                                  Rotation2d.fromDegrees(70),
-                                  currentPosition.extension(),
-                                  currentPosition.wrist()))
-                      .until(() -> getArmInPosition()),
-                  this.run(
-                          () ->
-                              setPosition(
-                                  Rotation2d.fromDegrees(70),
-                                  destinationPosition.extension(),
-                                  destinationPosition.wrist()))
-                      .until(() -> getArmInPosition()),
-                  this.run(() -> setPosition(destinationPosition)))
-              .schedule();
-        }
-        break;
-      case L1:
-        switch (currentPosition) {
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case L1:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case L2:
-        switch (currentPosition) {
-          case L1:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case L2:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case L3:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case L3:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case L4:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case ALGAE1:
-          case ALGAE2:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case L4:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case ALGAE1:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE2:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case ALGAE1:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case ALGAE2:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case HOME:
-          case CLIMB:
-          case BARGE:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case ALGAE2:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case BARGE:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case CLIMB:
-          case HOME:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case BARGE:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case CLIMB:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case BARGE:
-          case HOME:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case CLIMB:
-            this.run(() -> setPosition(destinationPosition));
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case INTAKE:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case BARGE:
-          case CLIMB:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            this.run(() -> setPosition(destinationPosition)).schedule();
-            break;
-          case HOME:
-            this.run(() -> setPosition(destinationPosition)).schedule();
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      case PROCESSOR:
-        switch (currentPosition) {
-          case L1:
-          case L2:
-          case L3:
-          case L4:
-          case ALGAE1:
-          case ALGAE2:
-          case BARGE:
-          case CLIMB:
-            Commands.sequence(
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    destinationPosition.extension(),
-                                    destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(() -> setPosition(destinationPosition)))
-                .schedule();
-            break;
-          case INTAKE:
-          case PROCESSOR:
-            this.run(() -> setPosition(destinationPosition)).schedule();
-            break;
-          case HOME:
-            this.run(() -> setPosition(destinationPosition)).schedule();
-            break;
-          case UNKNOWN:
-            break;
-        }
-        break;
-      default:
-        break;
+
+    public Command getCommand() {
+      return command;
     }
-  }
-
-  public Command getDropOffLowCommand() {
-    ArmPosition destinationPosition = ArmPosition.L2;
-    return Commands.sequence(
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        currentPosition.extension(),
-                        destinationPosition.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
-  }
-
-  public Command getL3ArmCommand() {
-    ArmPosition destinationPosition = ArmPosition.L3;
-    return Commands.sequence(
-        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
-            .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
-  }
-
-  public Command getL4ArmCommand() {
-    ArmPosition destinationPosition = ArmPosition.L4;
-    return Commands.sequence(
-        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
-            .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
-  }
-
-  public Command getL4ScoreCommand() {
-    ArmPosition destinationPosition = ArmPosition.L4;
-    return Commands.sequence(
-        this.run(
-                () ->
-                    setPosition(
-                        destinationPosition.pivot(),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist().plus(Rotation2d.fromDegrees(20))))
-            .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        currentPosition.extension(),
-                        currentPosition.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        ArmPosition.INTAKE.extension(),
-                        ArmPosition.INTAKE.wrist()))
-            .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(ArmPosition.INTAKE)));
   }
 }

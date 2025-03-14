@@ -24,7 +24,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
 public class ArmIOTalonFX implements ArmIO {
@@ -361,13 +360,7 @@ public class ArmIOTalonFX implements ArmIO {
 
   @Override
   public void setLength(double length) {
-
-    Logger.recordOutput("Extension/Length", length);
-
-    // radius * radians = distance
     Rotation2d driveRotations = new Rotation2d(length / driveRadius);
-
-    Logger.recordOutput("Extension/Radians", driveRotations.getRotations());
 
     extensionMotor1.setControl(
         switch (extensionControlType) {

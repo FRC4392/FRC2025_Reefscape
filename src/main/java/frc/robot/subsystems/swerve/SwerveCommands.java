@@ -322,12 +322,11 @@ public class SwerveCommands {
     forwardController.setTolerance(Units.inchesToMeters(2));
 
     ProfiledPIDController angleController =
-    new ProfiledPIDController(
-        ANGLE_KP,
-        0.0,
-        ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
 
     angleController.enableContinuousInput(-Math.PI, Math.PI);
     angleController.setTolerance(Units.degreesToRadians(1));
@@ -410,7 +409,9 @@ public class SwerveCommands {
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
           //  double rotation = 0;
 
-          if(strafeController.atSetpoint() && forwardController.atSetpoint() && angleController.atSetpoint()){
+          if (strafeController.atSetpoint()
+              && forwardController.atSetpoint()
+              && angleController.atSetpoint()) {
             swerve.setSwerveState(SwerveState.autoAlignDone);
           } else {
             swerve.setSwerveState(SwerveState.autoAlignInProgress);

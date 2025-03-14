@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmCommands;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -128,8 +127,8 @@ public class RobotContainer {
     }
 
     // Set up named commands
-    NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
-    NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
+    // NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
+    // NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -154,7 +153,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser.addOption("Secret Auto", new PathPlannerAuto("Secret Auto"));
-    
+
     autoChooser.addOption("Left 1", new PathPlannerAuto("Preset_Left_Test_1"));
     autoChooser.addOption("Left 2", new PathPlannerAuto("Preset_Left_Test_2"));
     autoChooser.addOption("Left 3", new PathPlannerAuto("Preset_Left_Test_3"));
@@ -234,33 +233,33 @@ public class RobotContainer {
   }
 
   // This need to be replaced
-  public void OperatorLoop() {
-    if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
-      if (operateController.getHID().getAButton()) {
-        arm.setArmPostion(ArmPosition.L2);
-      } else if (operateController.getHID().getXButton()) {
-        arm.setArmPostion(ArmPosition.L3);
-      } else if (operateController.getHID().getYButton()
-          && !driveController.getHID().getRightStickButton()) {
-        arm.setArmPostion(ArmPosition.L4);
-      } else if (operateController.getHID().getBButton()) {
-        arm.setArmPostion(ArmPosition.L1);
-      } else if (operateController.getHID().getStartButton()) {
-        arm.setArmPostion(ArmPosition.HOME);
-      } else if (operateController.getHID().getLeftBumperButton()
-          || operateController.getHID().getRightBumperButton()) {
-        arm.setArmPostion(ArmPosition.INTAKE);
-      } else if (operateController.getHID().getPOV() == 180) {
-        arm.setArmPostion(ArmPosition.ALGAE1);
-      } else if (operateController.getHID().getPOV() == 0) {
-        arm.setArmPostion(ArmPosition.ALGAE2);
-      } else if (operateController.getHID().getPOV() == 90) {
-        arm.setArmPostion(ArmPosition.BARGE);
-      } else if (operateController.getHID().getPOV() == 270) {
-        arm.setArmPostion(ArmPosition.PROCESSOR);
-      }
-    }
-  }
+  // public void OperatorLoop() {
+  //   if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
+  //     if (operateController.getHID().getAButton()) {
+  //       arm.setArmPostion(ArmPosition.L2);
+  //     } else if (operateController.getHID().getXButton()) {
+  //       arm.setArmPostion(ArmPosition.L3);
+  //     } else if (operateController.getHID().getYButton()
+  //         && !driveController.getHID().getRightStickButton()) {
+  //       arm.setArmPostion(ArmPosition.L4);
+  //     } else if (operateController.getHID().getBButton()) {
+  //       arm.setArmPostion(ArmPosition.L1);
+  //     } else if (operateController.getHID().getStartButton()) {
+  //       arm.setArmPostion(ArmPosition.HOME);
+  //     } else if (operateController.getHID().getLeftBumperButton()
+  //         || operateController.getHID().getRightBumperButton()) {
+  //       arm.setArmPostion(ArmPosition.INTAKE);
+  //     } else if (operateController.getHID().getPOV() == 180) {
+  //       arm.setArmPostion(ArmPosition.ALGAE1);
+  //     } else if (operateController.getHID().getPOV() == 0) {
+  //       arm.setArmPostion(ArmPosition.ALGAE2);
+  //     } else if (operateController.getHID().getPOV() == 90) {
+  //       arm.setArmPostion(ArmPosition.BARGE);
+  //     } else if (operateController.getHID().getPOV() == 270) {
+  //       arm.setArmPostion(ArmPosition.PROCESSOR);
+  //     }
+  //   }
+  // }
 
   // Periodically check if controllers are attached
   public void controllerCheckLoop() {

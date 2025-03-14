@@ -98,51 +98,51 @@ public class Leds extends SubsystemBase {
     } else {
       // In teleop or any other mode
       if (swerveState == SwerveState.joystickDrive || swerveState == SwerveState.other) {
-      switch (gripperState) {
-        case OFF:
-          wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
-          break;
-        case IntakeOuttakeWithNone:
-          strobe(Section.FULL, Color.kBlue, strobeSlowDuration);
-          break;
-        case IntakeOuttakeWithBoth:
-          break;
-        case IntakeOuttakeWithAlgae:
-          strobe(Section.FULL, Color.kTeal, breathDuration);
-          break;
-        case IntakeOuttakeWithCoral:
-          strobe(Section.FULL, Color.kWhite, breathDuration);
-          break;
-        case HasAlgae:
-          solid(Section.FULL, Color.kTeal);
-          break;
-        case HasCoral:
-          solid(Section.FULL, Color.kWhite);
-          break;
-        case HasBoth:
-          stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);
-          break;
+        switch (gripperState) {
+          case OFF:
+            wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
+            break;
+          case IntakeOuttakeWithNone:
+            strobe(Section.FULL, Color.kBlue, strobeSlowDuration);
+            break;
+          case IntakeOuttakeWithBoth:
+            break;
+          case IntakeOuttakeWithAlgae:
+            strobe(Section.FULL, Color.kTeal, breathDuration);
+            break;
+          case IntakeOuttakeWithCoral:
+            strobe(Section.FULL, Color.kWhite, breathDuration);
+            break;
+          case HasAlgae:
+            solid(Section.FULL, Color.kTeal);
+            break;
+          case HasCoral:
+            solid(Section.FULL, Color.kWhite);
+            break;
+          case HasBoth:
+            stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);
+            break;
+        }
+      } else {
+        switch (swerveState) {
+          case other:
+          case joystickDrive:
+            strobe(Section.FULL, Color.kDarkRed, strobeFastDuration);
+            break;
+          case autoAlignDone:
+            strobe(Section.FULL, Color.kGreen, strobeFastDuration);
+            break;
+          case autoAlignFail:
+            strobe(Section.FULL, Color.kRed, strobeFastDuration);
+            break;
+          case autoAlignInProgress:
+            solid(Section.FULL, Color.kYellow);
+            break;
+          case stopWithX:
+            solid(Section.FULL, Color.kRed);
+            break;
+        }
       }
-    } else {
-      switch (swerveState) {
-        case other:
-        case joystickDrive:
-        strobe(Section.FULL, Color.kDarkRed, strobeFastDuration);
-        break;
-        case autoAlignDone:
-          strobe(Section.FULL, Color.kGreen, strobeFastDuration);
-          break;
-        case autoAlignFail:
-          strobe(Section.FULL, Color.kRed, strobeFastDuration);
-          break;
-        case autoAlignInProgress:
-        solid(Section.FULL, Color.kYellow);
-          break;
-        case stopWithX:
-        solid(Section.FULL, Color.kRed);
-          break;
-      }
-    }
     }
 
     leds.setData(buffer);

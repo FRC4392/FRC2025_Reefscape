@@ -12,31 +12,31 @@ import edu.wpi.first.units.measure.Distance;
 
 /** Add your docs here. */
 public class ArmStateData {
-    private Angle pivotAngle;
-    private Angle wristAngle;
-    private Distance extensionDistance;
+  private Angle pivotAngle;
+  private Angle wristAngle;
+  private Distance extensionDistance;
 
-    public ArmStateData(){
-        pivotAngle = Degree.of(0);
-        extensionDistance = Inch.of(0);
-        wristAngle = Degree.of(0);
-    }
+  public ArmStateData() {
+    pivotAngle = Degree.of(0);
+    extensionDistance = Inch.of(0);
+    wristAngle = Degree.of(0);
+  }
 
-    public ArmStateData(Angle pivot, Distance extension, Angle wrist){
-        pivotAngle = pivot;
-        extensionDistance = extension;
-        wristAngle = wrist;
-    }
+  public ArmStateData(Angle pivot, Distance extension, Angle wrist) {
+    pivotAngle = pivot;
+    extensionDistance = extension;
+    wristAngle = wrist;
+  }
 
-    public Angle getPivot(){
-        return pivotAngle;
-    }
+  public Angle getPivot() {
+    return pivotAngle;
+  }
 
-    public Distance getExtension(){
-        return extensionDistance;
-    }
+  public Distance getExtension() {
+    return extensionDistance;
+  }
 
-    public Angle getWrist(){
-        return wristAngle;
-    }
+  public Angle getWrist() {
+    return wristAngle;
+  }
 }

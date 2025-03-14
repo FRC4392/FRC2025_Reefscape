@@ -49,6 +49,15 @@ public class ArmIOSim implements ArmIO {
     inputs.basePivotMotor3CurrentAmps = pivotSim.getCurrentDrawAmps();
     inputs.basePivotMotor3PositionRad = pivotSim.getAngleRads();
     inputs.basePivotMotor3VelocityRadPerSec = pivotSim.getVelocityRadPerSec();
+
+    inputs.basePivotMotor1Connected = true;
+    inputs.basePivotMotor2Connected = true;
+    inputs.basePivotMotor3Connected = true;
+
+    inputs.extensionMotor1Connected = true;
+    inputs.extensionMotor2Connected = true;
+
+    inputs.wristMotorConnected = true;
   }
 
   @Override
