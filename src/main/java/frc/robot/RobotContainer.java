@@ -130,9 +130,6 @@ public class RobotContainer {
     // Set up named commands
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
-    // NamedCommands.registerCommand(
-    //     "AutoAlign",
-    //     SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -156,13 +153,17 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Set up auto routines
-    autoChooser.addOption("LowLoadLeft", new PathPlannerAuto("LowLoadLeft"));
-    autoChooser.addOption("LowLoadRight", new PathPlannerAuto("LowLoadRight"));
-    autoChooser.addOption("LowLoadHide", new PathPlannerAuto("LowLoadHide"));
-    autoChooser.addOption("StraightAuto", new PathPlannerAuto("StraightAuto"));
-    autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
-    autoChooser.addOption("19Score", new PathPlannerAuto("19 Score"));
-    autoChooser.addOption("Preset Test 1", new PathPlannerAuto("Preset Test 1"));
+    autoChooser.addOption("Secret Auto", new PathPlannerAuto("Secret Auto"));
+    
+    autoChooser.addOption("Left 1", new PathPlannerAuto("Preset_Left_Test_1"));
+    autoChooser.addOption("Left 2", new PathPlannerAuto("Preset_Left_Test_2"));
+    autoChooser.addOption("Left 3", new PathPlannerAuto("Preset_Left_Test_3"));
+    autoChooser.addOption("Left 4", new PathPlannerAuto("Preset_Left_Test_4"));
+
+    autoChooser.addOption("Right 1", new PathPlannerAuto("Preset_Right_Test_1"));
+    autoChooser.addOption("Right 2", new PathPlannerAuto("Preset_Right_Test_2"));
+    autoChooser.addOption("Right 3", new PathPlannerAuto("Preset_Right_Test_3"));
+    autoChooser.addOption("Right 4", new PathPlannerAuto("Preset_Right_Test_4"));
 
     // Set up LED suppliers
     leds.setGripperSupplier(gripper::getState);
