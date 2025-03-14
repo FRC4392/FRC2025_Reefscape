@@ -60,11 +60,13 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  // Roobot Alerts
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected", AlertType.kError);
   Alert operatorControllerAlert = new Alert("Operator Controller Disconnected", AlertType.kError);
 
   public RobotContainer() {
 
+    // Disable rumble
     driveController.setRumble(RumbleType.kBothRumble, 0);
     operateController.setRumble(RumbleType.kBothRumble, 0);
 
@@ -80,7 +82,6 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
                 new SwerveModuleIODeceivers(3));
-
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -90,7 +91,6 @@ public class RobotContainer {
 
         arm = new Arm(new ArmIOTalonFX());
         gripper = new Gripper(new GripperIOSpark());
-
         break;
 
       case SIM:
@@ -102,14 +102,12 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim());
-
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose),
                 new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, swerve::getPose));
-
         arm = new Arm(new ArmIOSim());
         gripper = new Gripper(new GripperIOSIm());
         break;
@@ -123,20 +121,15 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {});
-
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
-
         arm = new Arm(new ArmIO() {});
         gripper = new Gripper(new GripperIO() {});
-
         break;
     }
 
+    // Set up named commands
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
-    NamedCommands.registerCommand(
-        "AutoAlign",
-        SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -158,13 +151,23 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption("LowLoadLeft", new PathPlannerAuto("LowLoadLeft"));
-    autoChooser.addOption("LowLoadRight", new PathPlannerAuto("LowLoadRight"));
-    autoChooser.addOption("LowLoadHide", new PathPlannerAuto("LowLoadHide"));
-    autoChooser.addOption("StraightAuto", new PathPlannerAuto("StraightAuto"));
-    autoChooser.addOption("Test Drive Forward", new PathPlannerAuto("Test Drive Forward"));
-    autoChooser.addOption("19Score", new PathPlannerAuto("19 Score"));
-    autoChooser.addOption("Preset Test 1", new PathPlannerAuto("Preset Test 1"));
+
+    // Set up auto routines
+    autoChooser.addOption("Secret Auto", new PathPlannerAuto("Secret Auto"));
+    
+    autoChooser.addOption("Left 1", new PathPlannerAuto("Preset_Left_Test_1"));
+    autoChooser.addOption("Left 2", new PathPlannerAuto("Preset_Left_Test_2"));
+    autoChooser.addOption("Left 3", new PathPlannerAuto("Preset_Left_Test_3"));
+    autoChooser.addOption("Left 4", new PathPlannerAuto("Preset_Left_Test_4"));
+
+    autoChooser.addOption("Right 1", new PathPlannerAuto("Preset_Right_Test_1"));
+    autoChooser.addOption("Right 2", new PathPlannerAuto("Preset_Right_Test_2"));
+    autoChooser.addOption("Right 3", new PathPlannerAuto("Preset_Right_Test_3"));
+    autoChooser.addOption("Right 4", new PathPlannerAuto("Preset_Right_Test_4"));
+
+    // Set up LED suppliers
+    leds.setGripperSupplier(gripper::getState);
+    leds.setSwerveSupplier(swerve::getSwerveState);
 
     configureBindings();
   }
@@ -177,155 +180,28 @@ public class RobotContainer {
             () -> -driveController.getLeftY(),
             () -> -driveController.getLeftX(),
             () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis(),
-            () -> driveController.getHID().getLeftBumperButton()));
-    // arm.setDefaultCommand(
-    //     ArmCommands.joystickArmControl(
-    //         arm,
-    //         () -> operateController.getLeftY() * -1,
-    //         () -> operateController.getRightY() * -1,
-    //         () ->
-    //             operateController.getLeftTriggerAxis() -
-    // operateController.getRightTriggerAxis()));
+            () -> driveController.getHID().getAButton()));
 
-    // operateController
-    //     .a()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(120)),
-    //             Units.inchesToMeters(0),
-    //             new Rotation2d(Units.degreesToRadians(20))));
-    // operateController
-    //     .b()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(100)),
-    //             Units.inchesToMeters(5),
-    //             new Rotation2d(Units.degreesToRadians(15))));
-    // operateController
-    //     .x()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(80)),
-    //             Units.inchesToMeters(15),
-    //             new Rotation2d(Units.degreesToRadians(15))));
-    // operateController
-    //     .y()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(90)),
-    //             Units.inchesToMeters(10),
-    //             new Rotation2d(Units.degreesToRadians(90))));
-    // operateController
-    //     .start()
-    //     .onTrue(
-    //         ArmCommands.setArmPosition(
-    //             arm,
-    //             new Rotation2d(Units.degreesToRadians(5)),
-    //             Units.inchesToMeters(0),
-    //             new Rotation2d(Units.degreesToRadians(1))));
+    // Smart Intake
+    driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
 
-    // driveController.a().whileTrue(GripperCommands.algaeIntake(gripper));
+    // Smart Outttake
+    driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 
-    driveController
-        .leftStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return true;
-                default:
-                  return false;
-              }
-            })
-        .whileTrue(GripperCommands.algaeIntake(gripper));
-
-    driveController
-        .leftStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return false;
-                default:
-                  return true;
-              }
-            })
-        .whileTrue(GripperCommands.coralIntake(gripper));
-
-    driveController
-        .rightStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return true;
-                default:
-                  return false;
-              }
-            })
-        .whileTrue(GripperCommands.algaeOutake(gripper));
-
-    driveController
-        .rightStick()
-        .and(
-            () -> {
-              switch (arm.getArmSetPosition()) {
-                case ALGAE1:
-                case ALGAE2:
-                case BARGE:
-                case PROCESSOR:
-                  return false;
-                default:
-                  return true;
-              }
-            })
-        .whileTrue(GripperCommands.coralOuttake(gripper));
-
-    // driveController.b().whileTrue(GripperCommands.algaeOutake(gripper));
-    // driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
-    // driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
-
-    // driveController
-    //     .y()
-    //     .whileTrue(
-    //         SwerveCommands.autoAlignCommand(
-    //             swerve, vision, () -> driveController.getLeftY() * 1.5));
-
+    // Auto align to left branch from driver view
     driveController
         .leftBumper()
-        .onTrue(
-            SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left)
-                .onlyWhile(driveController.leftBumper()));
+        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
+
+    // Auto align to right branch from driver view
     driveController
         .rightBumper()
-        .onTrue(
-            SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.right)
-                .onlyWhile(driveController.rightBumper()));
+        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
 
-    driveController
-        .rightStick()
-        .and(() -> (arm.getArmSetPosition() == ArmPosition.L4))
-        .onTrue(
-            Commands.sequence(
-                Commands.waitUntil(() -> !gripper.getCoralPresent()),
-                ArmCommands.setArmPosition(
-                    arm,
-                    ArmPosition.L4.pivot(),
-                    ArmPosition.L4.extension(),
-                    ArmPosition.L4.wrist().plus(Rotation2d.fromDegrees(20)))));
+    // Reset gyro rotation, maintin position
+    driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
+
+    driveController.x().whileTrue(SwerveCommands.stopWithX(swerve));
 
     Trigger testTrigger =
         new Trigger(
@@ -357,6 +233,7 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  // This need to be replaced
   public void OperatorLoop() {
     if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
       if (operateController.getHID().getAButton()) {
@@ -385,6 +262,7 @@ public class RobotContainer {
     }
   }
 
+  // Periodically check if controllers are attached
   public void controllerCheckLoop() {
     driverControllerAlert.set(!driveController.isConnected());
     operatorControllerAlert.set(!operateController.isConnected());

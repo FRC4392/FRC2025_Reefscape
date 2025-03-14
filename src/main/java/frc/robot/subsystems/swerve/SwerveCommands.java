@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.vision.Vision;
@@ -51,23 +52,9 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static final double ReefOffsetRight = 0;
-  private static final double ReefOffsetLeft = 0;
-  private static final double ReffOffsetForward = 0;
-
-  private static int targetID = 0;
-  private static boolean invertOffset = false;
-  private static double alignmentAngle = 0;
-
-  private static PIDController strafeController = new PIDController(0.08, 0, 0);
-  private static PIDController forwardController = new PIDController(0.08, 0, 0);
-
-  private static ProfiledPIDController angleController =
-      new ProfiledPIDController(
-          ANGLE_KP,
-          0.0,
-          ANGLE_KD,
-          new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+  private static final double ReefOffsetRight = Units.inchesToMeters(-6); // Meters
+  private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
+  private static final double ReffOffsetForward = -1.5; // Meters
 
   public static enum ReefSide {
     left,
@@ -101,6 +88,7 @@ public class SwerveCommands {
       BooleanSupplier fastMode) {
     return Commands.run(
         () -> {
+          drive.setSwerveState(SwerveState.joystickDrive);
           double multiplier = fastMode.getAsBoolean() ? 1 : .75;
           // Get linear velocity
           Translation2d linearVelocity =
@@ -157,6 +145,7 @@ public class SwerveCommands {
     // Construct command
     return Commands.run(
             () -> {
+              drive.setSwerveState(SwerveState.joystickDrive);
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
@@ -204,6 +193,7 @@ public class SwerveCommands {
             () -> {
               velocitySamples.clear();
               voltageSamples.clear();
+              drive.setSwerveState(SwerveState.other);
             }),
 
         // Allow modules to orient
@@ -263,6 +253,7 @@ public class SwerveCommands {
             Commands.runOnce(
                 () -> {
                   limiter.reset(0.0);
+                  drive.setSwerveState(SwerveState.other);
                 }),
 
             // Turn in place, accelerating up to full speed
@@ -321,94 +312,25 @@ public class SwerveCommands {
                     })));
   }
 
-  public static Command autoAlignCommand2d(Swerve swerve, Vision vision, ReefSide side) {
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-    return Commands.sequence(
-        Commands.runOnce(
-            () -> {
-              targetID = vision.getTargetId(2);
-
-              // determine offset
-              if ((targetID >= 20 && targetID <= 22) || (targetID >= 9 && targetID <= 11)) {
-                invertOffset = true;
-              } else {
-                invertOffset = false;
-              }
-
-              switch (targetID) {
-                case 6:
-                  alignmentAngle = -60;
-                  break;
-                case 7:
-                  alignmentAngle = 0;
-                  break;
-                case 8:
-                  alignmentAngle = 60;
-                  break;
-                case 9:
-                  alignmentAngle = 120;
-                  break;
-                case 10:
-                  alignmentAngle = 180;
-                  break;
-                case 11:
-                  alignmentAngle = -120;
-                  break;
-                case 17:
-                  alignmentAngle = -120;
-                  break;
-                case 18:
-                  alignmentAngle = 180;
-                  break;
-                case 19:
-                  alignmentAngle = 120;
-                  break;
-                case 20:
-                  alignmentAngle = 60;
-                  break;
-                case 21:
-                  alignmentAngle = 0;
-                  break;
-                case 22:
-                  alignmentAngle = -60;
-                  break;
-
-                default:
-                  alignmentAngle = 99999;
-                  break;
-              }
-            }),
-        Commands.run(
-            () -> {
-              double rotateSpeed = 0;
-              if (alignmentAngle <= 180) {
-                rotateSpeed =
-                    angleController.calculate(
-                        swerve.getRotation().getRadians(),
-                        Rotation2d.fromDegrees(alignmentAngle).getRadians());
-              }
-
-              double strafeVelocity = 0;
-              double forwardVelocity = 0;
-
-              if (vision.getTargetId(2) == targetID) {
-                double strafeAngle = vision.getTargetX(2).getDegrees();
-
-                strafeVelocity = -strafeController.calculate(strafeAngle, 11.5);
-
-                double forwardAngle = vision.getTargetY(2).getDegrees();
-
-                forwardVelocity = -forwardController.calculate(forwardAngle, -3);
-              }
-              ChassisSpeeds chassisSpeeds =
-                  new ChassisSpeeds(forwardVelocity, strafeVelocity, rotateSpeed);
-
-              swerve.runVelocity(chassisSpeeds);
-            },
-            swerve));
-  }
-
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
+    @SuppressWarnings("resource")
+    PIDController strafeController = new PIDController(1, 0, 0); // 0.08
+    @SuppressWarnings("resource")
+    PIDController forwardController = new PIDController(1, 0, 0); // 0.08
+
+    strafeController.setTolerance(Units.inchesToMeters(2));
+    forwardController.setTolerance(Units.inchesToMeters(2));
+
+    ProfiledPIDController angleController =
+    new ProfiledPIDController(
+        ANGLE_KP,
+        0.0,
+        ANGLE_KD,
+        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+
+
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(Units.degreesToRadians(1));
     return Commands.run(
         () -> {
           ReefSide targetSide = side;
@@ -426,24 +348,37 @@ public class SwerveCommands {
             double distance =
                 targets.get(i).targetPose().getTranslation().getDistance(new Translation3d());
 
-            if ((distance < closest) || ((closest == -1) && (distance > 0))) {
+            if ((distance < closest && distance > 0) || ((closest == -1) && (distance > 0))) {
               closest = distance;
               closestTag = i;
             }
           }
 
           if (closestTag == -1) {
+            swerve.runVelocity(new ChassisSpeeds());
+            swerve.setSwerveState(SwerveState.autoAlignFail);
             return;
           }
+
           int closestTagID = targets.get(closestTag).targetID();
-          Pose3d closestTagPose = targets.get(closestTagID).targetPose();
+          Pose3d closestTagPose = targets.get(closestTag).targetPose();
+
+          SmartDashboard.putNumber("closestTagID", closestTagID);
+          SmartDashboard.putNumber("ClosestTagPose", closest);
+          SmartDashboard.putNumber("closestTagIndex", closestTag);
 
           // Determine which way to offset
           boolean invertSide = false;
-          if ((targetID >= 20 && targetID <= 22) || (targetID >= 9 && targetID <= 11)) {
+          if ((closestTagID >= 20 && closestTagID <= 22)
+              || (closestTagID >= 9 && closestTagID <= 11)) {
             invertSide = true;
           } else {
             invertSide = false;
+          }
+
+          // invert if on the other side of the field
+          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            invertSide = !invertSide;
           }
 
           if (invertSide && side == ReefSide.left) {
@@ -464,19 +399,35 @@ public class SwerveCommands {
           Rotation2d rotationTarget =
               swerve
                   .getRotation()
-                  .plus(closestTagPose.getRotation().toRotation2d()); // is this the right axis?
+                  .plus(closestTagPose.getRotation().toRotation2d().minus(Rotation2d.k180deg));
 
           // Position to offset position
           double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
           double forwadSpeed =
-              forwardController.calculate(closestTagPose.getY(), ReffOffsetForward);
+              -forwardController.calculate(closestTagPose.getZ(), ReffOffsetForward);
           double rotation =
               angleController.calculate(
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
+          //  double rotation = 0;
+
+          if(strafeController.atSetpoint() && forwardController.atSetpoint() && angleController.atSetpoint()){
+            swerve.setSwerveState(SwerveState.autoAlignDone);
+          } else {
+            swerve.setSwerveState(SwerveState.autoAlignInProgress);
+          }
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
           swerve.runVelocity(speeds);
         });
+  }
+
+  public static Command stopWithX(Swerve swerve) {
+    return Commands.run(
+        () -> {
+          swerve.stopWithX();
+          swerve.setSwerveState(SwerveState.stopWithX);
+        },
+        swerve);
   }
 
   private static class WheelRadiusCharacterizationState {

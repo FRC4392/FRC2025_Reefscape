@@ -58,6 +58,8 @@ public class Swerve extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private SwerveState state = SwerveState.other;
+
   /** Creates a new swerve. */
   public Swerve(
       GyroIO gyroIO,
@@ -238,6 +240,16 @@ public class Swerve extends SubsystemBase {
     return states;
   }
 
+  /** Returns the current state of the swerve base on commands running the swerve */
+  @AutoLogOutput(key = "Drive/State")
+  public SwerveState getSwerveState() {
+    return state;
+  }
+
+  public void setSwerveState(SwerveState newState) {
+    state = newState;
+  }
+
   /** Returns the module positions (azimuth angles and drive positions) for all of the modules. */
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
@@ -285,6 +297,16 @@ public class Swerve extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+  }
+
+  public void resetGyro() {
+    var pose = poseEstimator.getEstimatedPosition();
+    var rotation =
+        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+            ? new Rotation2d()
+            : Rotation2d.k180deg;
+    Pose2d newPose = new Pose2d(pose.getTranslation(), rotation);
+    poseEstimator.resetPose(newPose);
   }
 
   /** Adds a new timestamped vision measurement. */

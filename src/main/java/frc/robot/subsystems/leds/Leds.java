@@ -12,17 +12,19 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.gripper.Gripper.GripperState;
+import frc.robot.subsystems.swerve.SwerveState;
 import java.util.List;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class Leds extends SubsystemBase {
-
+  // LED data
   private final AddressableLED leds;
   private final AddressableLEDBuffer buffer;
-  private final Notifier loadingNotifier;
-
   private static final int length = 50;
 
+  // Pattern Constants
   private static final double strobeFastDuration = 0.1;
   private static final double strobeSlowDuration = 0.25;
   private static final double breathDuration = 1.0;
@@ -40,8 +42,18 @@ public class Leds extends SubsystemBase {
   private static final int stripeLength = 3;
   private static final double stripeDuration = 1.0;
 
+  // Startup notifier
+  private final Notifier loadingNotifier;
+
+  // Subsystem states
+  private GripperState gripperState = GripperState.OFF;
+  private Supplier<GripperState> gripperSupplier;
+  private SwerveState swerveState = SwerveState.other;
+  private Supplier<SwerveState> swerveSupplier;
+
   /** Creates a new Leds. */
   public Leds() {
+    // Configure LED strip
     leds = new AddressableLED(0);
     leds.setColorOrder(ColorOrder.kRGB);
     buffer = new AddressableLEDBuffer(length);
@@ -49,14 +61,15 @@ public class Leds extends SubsystemBase {
     leds.setData(buffer);
     leds.start();
 
+    // Start pattern while robot is booting
     loadingNotifier =
         new Notifier(
             () -> {
               synchronized (this) {
                 breath(
                     Section.FULL,
+                    Color.kBlue,
                     Color.kWhite,
-                    Color.kBlack,
                     strobeSlowDuration,
                     System.currentTimeMillis() / 1000.0);
                 leds.setData(buffer);
@@ -68,22 +81,74 @@ public class Leds extends SubsystemBase {
 
   @Override
   public void periodic() {
+    gripperState = gripperSupplier.get();
 
+    // Stop loading pattern after it has booted
     loadingNotifier.stop();
 
     if (!DriverStation.isDSAttached()) {
+      // No driverstation attached
       strobe(Section.FULL, Color.kRed, strobeSlowDuration);
     } else if (DriverStation.isDisabled()) {
+      // Disabled
       stripes(Section.FULL, List.of(Color.kWhite, Color.kBlue), stripeLength, stripeDuration);
     } else if (DriverStation.isAutonomous()) {
+      // In Autonomous
       rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
     } else {
-      wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
+      // In teleop or any other mode
+      if (swerveState == SwerveState.joystickDrive || swerveState == SwerveState.other) {
+      switch (gripperState) {
+        case OFF:
+          wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
+          break;
+        case IntakeOuttakeWithNone:
+          strobe(Section.FULL, Color.kBlue, strobeSlowDuration);
+          break;
+        case IntakeOuttakeWithBoth:
+          break;
+        case IntakeOuttakeWithAlgae:
+          strobe(Section.FULL, Color.kTeal, breathDuration);
+          break;
+        case IntakeOuttakeWithCoral:
+          strobe(Section.FULL, Color.kWhite, breathDuration);
+          break;
+        case HasAlgae:
+          solid(Section.FULL, Color.kTeal);
+          break;
+        case HasCoral:
+          solid(Section.FULL, Color.kWhite);
+          break;
+        case HasBoth:
+          stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);
+          break;
+      }
+    } else {
+      switch (swerveState) {
+        case other:
+        case joystickDrive:
+        strobe(Section.FULL, Color.kDarkRed, strobeFastDuration);
+        break;
+        case autoAlignDone:
+          strobe(Section.FULL, Color.kGreen, strobeFastDuration);
+          break;
+        case autoAlignFail:
+          strobe(Section.FULL, Color.kRed, strobeFastDuration);
+          break;
+        case autoAlignInProgress:
+        solid(Section.FULL, Color.kYellow);
+          break;
+        case stopWithX:
+        solid(Section.FULL, Color.kRed);
+          break;
+      }
+    }
     }
 
     leds.setData(buffer);
   }
 
+  // Display a solid color
   private void solid(Section section, Color color) {
     if (color != null) {
       for (int i = section.start(); i < section.end(); i++) {
@@ -92,15 +157,18 @@ public class Leds extends SubsystemBase {
     }
   }
 
+  // Strobe color on and off
   private void strobe(Section section, Color color, double duration) {
     boolean on = ((Timer.getFPGATimestamp() % duration) / duration) > 0.5;
     solid(section, on ? color : Color.kBlack);
   }
 
+  // Breath between two colors (fad in and out)
   private void breath(Section section, Color c1, Color c2, double duration) {
     breath(section, c1, c2, duration, Timer.getFPGATimestamp());
   }
 
+  // Breath between two colors (fad in and out)
   private void breath(Section section, Color c1, Color c2, double duration, double timestamp) {
     double x = ((timestamp % breathDuration) / breathDuration) * 2.0 * Math.PI;
     double ratio = (Math.sin(x) + 1.0) / 2.0;
@@ -110,6 +178,7 @@ public class Leds extends SubsystemBase {
     solid(section, new Color(red, green, blue));
   }
 
+  // Display a moving rainbow
   private void rainbow(Section section, double cycleLength, double duration) {
     double x = (1 - ((Timer.getFPGATimestamp() / duration) % 1.0)) * 180.0;
     double xDiffPerLed = 180.0 / cycleLength;
@@ -122,6 +191,7 @@ public class Leds extends SubsystemBase {
     }
   }
 
+  // Display a moving wave between two colors (gradient between two colors that moves)
   private void wave(Section section, Color c1, Color c2, double cycleLength, double duration) {
     double x = (1 - ((Timer.getFPGATimestamp() % duration) / duration)) * 2.0 * Math.PI;
     double xDiffPerLed = (2.0 * Math.PI) / cycleLength;
@@ -143,6 +213,7 @@ public class Leds extends SubsystemBase {
     }
   }
 
+  // Display stipes of multiple colors
   private void stripes(Section section, List<Color> colors, int length, double duration) {
     int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
     for (int i = section.start(); i < section.end(); i++) {
@@ -173,5 +244,13 @@ public class Leds extends SubsystemBase {
           return length;
       }
     }
+  }
+
+  public void setGripperSupplier(Supplier<GripperState> newSupplier) {
+    gripperSupplier = newSupplier;
+  }
+
+  public void setSwerveSupplier(Supplier<SwerveState> newSupplier) {
+    swerveSupplier = newSupplier;
   }
 }

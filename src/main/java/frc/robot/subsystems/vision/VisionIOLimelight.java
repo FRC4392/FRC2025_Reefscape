@@ -74,9 +74,9 @@ public class VisionIOLimelight implements VisionIO {
                 targetPoseSubscriber.get()[1],
                 targetPoseSubscriber.get()[2],
                 new Rotation3d(
-                    targetPoseSubscriber.get()[5],
-                    targetPoseSubscriber.get()[3],
-                    targetPoseSubscriber.get()[4])),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[5]),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[3]),
+                    Units.degreesToRadians(targetPoseSubscriber.get()[4]))),
             (int) txSubscriber.get());
 
     // Update orientation for MegaTag 2
