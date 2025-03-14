@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.gripper.Gripper.GripperState;
+import frc.robot.subsystems.swerve.SwerveState;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -47,6 +48,8 @@ public class Leds extends SubsystemBase {
   // Subsystem states
   private GripperState gripperState = GripperState.OFF;
   private Supplier<GripperState> gripperSupplier;
+  private SwerveState swerveState = SwerveState.other;
+  private Supplier<SwerveState> swerveSupplier;
 
   /** Creates a new Leds. */
   public Leds() {
@@ -94,6 +97,7 @@ public class Leds extends SubsystemBase {
       rainbow(Section.FULL, rainbowCycleLength, rainbowDuration);
     } else {
       // In teleop or any other mode
+      if (swerveState == SwerveState.joystickDrive || swerveState == SwerveState.other) {
       switch (gripperState) {
         case OFF:
           wave(Section.FULL, Color.kBlue, Color.kWhite, waveSlowCycleLength, waveSlowDuration);
@@ -119,6 +123,26 @@ public class Leds extends SubsystemBase {
           stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);
           break;
       }
+    } else {
+      switch (swerveState) {
+        case other:
+        case joystickDrive:
+        strobe(Section.FULL, Color.kDarkRed, strobeFastDuration);
+        break;
+        case autoAlignDone:
+          strobe(Section.FULL, Color.kGreen, strobeFastDuration);
+          break;
+        case autoAlignFail:
+          strobe(Section.FULL, Color.kRed, strobeFastDuration);
+          break;
+        case autoAlignInProgress:
+        solid(Section.FULL, Color.kYellow);
+          break;
+        case stopWithX:
+        solid(Section.FULL, Color.kRed);
+          break;
+      }
+    }
     }
 
     leds.setData(buffer);
@@ -224,5 +248,9 @@ public class Leds extends SubsystemBase {
 
   public void setGripperSupplier(Supplier<GripperState> newSupplier) {
     gripperSupplier = newSupplier;
+  }
+
+  public void setSwerveSupplier(Supplier<SwerveState> newSupplier) {
+    swerveSupplier = newSupplier;
   }
 }

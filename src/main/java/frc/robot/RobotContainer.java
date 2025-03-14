@@ -130,9 +130,9 @@ public class RobotContainer {
     // Set up named commands
     NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
     NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
-    NamedCommands.registerCommand(
-        "AutoAlign",
-        SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left).withTimeout(3));
+    // NamedCommands.registerCommand(
+    //     "AutoAlign",
+    //     SwerveCommands.autoAlignCommand2d(swerve, vision, ReefSide.left).withTimeout(3));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
 
@@ -166,6 +166,7 @@ public class RobotContainer {
 
     // Set up LED suppliers
     leds.setGripperSupplier(gripper::getState);
+    leds.setSwerveSupplier(swerve::getSwerveState);
 
     configureBindings();
   }
@@ -198,6 +199,8 @@ public class RobotContainer {
 
     // Reset gyro rotation, maintin position
     driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
+
+    driveController.x().whileTrue(SwerveCommands.stopWithX(swerve));
 
     Trigger testTrigger =
         new Trigger(

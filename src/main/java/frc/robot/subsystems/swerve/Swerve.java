@@ -58,6 +58,8 @@ public class Swerve extends SubsystemBase {
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private SwerveState state = SwerveState.other;
+
   /** Creates a new swerve. */
   public Swerve(
       GyroIO gyroIO,
@@ -236,6 +238,16 @@ public class Swerve extends SubsystemBase {
       states[i] = modules[i].getState();
     }
     return states;
+  }
+
+  /** Returns the current state of the swerve base on commands running the swerve */
+  @AutoLogOutput(key = "Drive/State")
+  public SwerveState getSwerveState() {
+    return state;
+  }
+
+  public void setSwerveState(SwerveState newState) {
+    state = newState;
   }
 
   /** Returns the module positions (azimuth angles and drive positions) for all of the modules. */

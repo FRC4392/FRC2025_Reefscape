@@ -7,6 +7,7 @@ package frc.robot.subsystems.gripper;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Gripper extends SubsystemBase {
@@ -82,6 +83,7 @@ public class Gripper extends SubsystemBase {
   }
 
   // Get the current state of the gripper
+  @AutoLogOutput(key = "Gripper/State")
   public GripperState getState() {
     return state;
   }
