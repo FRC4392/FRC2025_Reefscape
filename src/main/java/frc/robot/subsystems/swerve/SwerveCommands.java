@@ -56,17 +56,6 @@ public class SwerveCommands {
   private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
   private static final double ReffOffsetForward = -1.5; // Meters
 
-  // private static int targetID = 0;
-  // private static boolean invertOffset = false;
-  // private static double alignmentAngle = 0;
-
-
-
-
-
-
-
-
   public static enum ReefSide {
     left,
     right;
@@ -323,96 +312,10 @@ public class SwerveCommands {
                     })));
   }
 
-  // public static Command autoAlignCommand2d(Swerve swerve, Vision vision, ReefSide side) {
-  //   angleController.enableContinuousInput(-Math.PI, Math.PI);
-  //   return Commands.sequence(
-  //       Commands.runOnce(
-  //           () -> {
-  //             swerve.setSwerveState(SwerveState.autoAlignInProgress);
-  //             targetID = vision.getTargetId(2);
-
-  //             // determine offset
-  //             if ((targetID >= 20 && targetID <= 22) || (targetID >= 9 && targetID <= 11)) {
-  //               invertOffset = true;
-  //             } else {
-  //               invertOffset = false;
-  //             }
-
-  //             switch (targetID) {
-  //               case 6:
-  //                 alignmentAngle = -60;
-  //                 break;
-  //               case 7:
-  //                 alignmentAngle = 0;
-  //                 break;
-  //               case 8:
-  //                 alignmentAngle = 60;
-  //                 break;
-  //               case 9:
-  //                 alignmentAngle = 120;
-  //                 break;
-  //               case 10:
-  //                 alignmentAngle = 180;
-  //                 break;
-  //               case 11:
-  //                 alignmentAngle = -120;
-  //                 break;
-  //               case 17:
-  //                 alignmentAngle = -120;
-  //                 break;
-  //               case 18:
-  //                 alignmentAngle = 180;
-  //                 break;
-  //               case 19:
-  //                 alignmentAngle = 120;
-  //                 break;
-  //               case 20:
-  //                 alignmentAngle = 60;
-  //                 break;
-  //               case 21:
-  //                 alignmentAngle = 0;
-  //                 break;
-  //               case 22:
-  //                 alignmentAngle = -60;
-  //                 break;
-
-  //               default:
-  //                 alignmentAngle = 99999;
-  //                 break;
-  //             }
-  //           }),
-  //       Commands.run(
-  //           () -> {
-  //             double rotateSpeed = 0;
-  //             if (alignmentAngle <= 180) {
-  //               rotateSpeed =
-  //                   angleController.calculate(
-  //                       swerve.getRotation().getRadians(),
-  //                       Rotation2d.fromDegrees(alignmentAngle).getRadians());
-  //             }
-
-  //             double strafeVelocity = 0;
-  //             double forwardVelocity = 0;
-
-  //             if (vision.getTargetId(2) == targetID) {
-  //               double strafeAngle = vision.getTargetX(2).getDegrees();
-
-  //               strafeVelocity = -strafeController.calculate(strafeAngle, 11.5);
-
-  //               double forwardAngle = vision.getTargetY(2).getDegrees();
-
-  //               forwardVelocity = -forwardController.calculate(forwardAngle, -3);
-  //             }
-  //             ChassisSpeeds chassisSpeeds =
-  //                 new ChassisSpeeds(forwardVelocity, strafeVelocity, rotateSpeed);
-
-  //             swerve.runVelocity(chassisSpeeds);
-  //           },
-  //           swerve));
-  // }
-
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
+    @SuppressWarnings("resource")
     PIDController strafeController = new PIDController(1, 0, 0); // 0.08
+    @SuppressWarnings("resource")
     PIDController forwardController = new PIDController(1, 0, 0); // 0.08
 
     strafeController.setTolerance(Units.inchesToMeters(2));
