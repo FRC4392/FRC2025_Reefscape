@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 
 public class SwerveCommands {
   private static final double DEADBAND = 0.01;
-  private static final double ANGLE_KP = 5.0;
+  private static final double ANGLE_KP = 4.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
@@ -54,7 +54,7 @@ public class SwerveCommands {
 
   private static final double ReefOffsetRight = Units.inchesToMeters(-6); // Meters
   private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
-  private static final double ReffOffsetForward = -1.5; // Meters
+  private static final double ReffOffsetForward = -.5; // Meters
 
   public static enum ReefSide {
     left,
@@ -314,20 +314,19 @@ public class SwerveCommands {
 
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
     @SuppressWarnings("resource")
-    PIDController strafeController = new PIDController(1, 0, 0); // 0.08
+    PIDController strafeController = new PIDController(2, 0, 0); // 0.08
     @SuppressWarnings("resource")
-    PIDController forwardController = new PIDController(1, 0, 0); // 0.08
+    PIDController forwardController = new PIDController(2, 0, 0); // 0.08
 
     strafeController.setTolerance(Units.inchesToMeters(2));
     forwardController.setTolerance(Units.inchesToMeters(2));
 
     ProfiledPIDController angleController =
-    new ProfiledPIDController(
-        ANGLE_KP,
-        0.0,
-        ANGLE_KD,
-        new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
 
     angleController.enableContinuousInput(-Math.PI, Math.PI);
     angleController.setTolerance(Units.degreesToRadians(1));
@@ -410,7 +409,9 @@ public class SwerveCommands {
                   swerve.getRotation().getRadians(), rotationTarget.getRadians());
           //  double rotation = 0;
 
-          if(strafeController.atSetpoint() && forwardController.atSetpoint() && angleController.atSetpoint()){
+          if (strafeController.atSetpoint()
+              && forwardController.atSetpoint()
+              && angleController.atSetpoint()) {
             swerve.setSwerveState(SwerveState.autoAlignDone);
           } else {
             swerve.setSwerveState(SwerveState.autoAlignInProgress);

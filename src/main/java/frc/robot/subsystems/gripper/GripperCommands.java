@@ -14,11 +14,11 @@ public class GripperCommands {
     return Commands.runEnd(
         () -> {
           gripper.setCoralVoltage(12);
-          // gripper.setAlgaeVoltage(12);
+          gripper.setAlgaeVoltage(12);
         },
         () -> {
           gripper.setCoralVoltage(0);
-          // gripper.setAlgaeVoltage(2);
+          gripper.setAlgaeVoltage(0);
         },
         gripper);
   }
@@ -26,11 +26,11 @@ public class GripperCommands {
   public static Command coralOuttake(Gripper gripper) {
     return Commands.runEnd(
         () -> {
-          // gripper.setAlgaeVoltage(-12);
+          gripper.setAlgaeVoltage(-12);
           gripper.setCoralVoltage(-12);
         },
         () -> {
-          // gripper.setAlgaeVoltage(-2);
+          gripper.setAlgaeVoltage(0);
           gripper.setCoralVoltage(0);
         },
         gripper);

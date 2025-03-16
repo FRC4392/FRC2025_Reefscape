@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -40,6 +41,10 @@ public class ArmIOTalonFX implements ArmIO {
   private final TalonFX extensionMotor2 = new TalonFX(Extension2CanId);
 
   private final TalonFX wristMotor = new TalonFX(WristCanId);
+
+  // Absolute Encoders
+  private final CANcoder pivotCancoder = new CANcoder(PivotCanCoderID);
+  private final CANcoder wristCancoder = new CANcoder(WristCanCoderID);
 
   // Status Signals
   private final StatusSignal<Angle> pivotMotor1Position;
@@ -103,6 +108,9 @@ public class ArmIOTalonFX implements ArmIO {
   private final Debouncer wristConnectedDebouncer = new Debouncer(0.5);
 
   public ArmIOTalonFX() {
+
+    // Configure absolute encoders
+
     // Configure motors
     tryUntilOk(5, () -> pivotMotor1.getConfigurator().apply(pivotMotorBaseConfig, .25));
     tryUntilOk(5, () -> pivotMotor2.getConfigurator().apply(pivotMotorBaseConfig, .25));

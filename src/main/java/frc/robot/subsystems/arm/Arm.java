@@ -38,13 +38,13 @@ public class Arm extends SubsystemBase {
         case HOME:
           return minAngle;
         case L1:
-          return Rotation2d.fromDegrees(100);
+          return Rotation2d.fromDegrees(90);
         case L2:
           return Rotation2d.fromDegrees(90);
         case L3:
-          return Rotation2d.fromDegrees(80);
+          return Rotation2d.fromDegrees(90);
         case L4:
-          return Rotation2d.fromDegrees(80);
+          return Rotation2d.fromDegrees(88);
         case ALGAE1:
           return Rotation2d.fromDegrees(100);
         case ALGAE2:
@@ -56,7 +56,7 @@ public class Arm extends SubsystemBase {
         case INTAKE:
           return Rotation2d.fromDegrees(25);
         case PROCESSOR:
-          return minAngle.plus(Rotation2d.fromDegrees(15));
+          return minAngle.plus(Rotation2d.fromDegrees(14));
         default:
           return new Rotation2d();
       }
@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
         case L2:
           return Units.inchesToMeters(0);
         case L3:
-          return Units.inchesToMeters(4.5);
+          return Units.inchesToMeters(3);
         case L4:
           return Units.inchesToMeters(15);
         case ALGAE1:
@@ -98,11 +98,11 @@ public class Arm extends SubsystemBase {
         case L1:
           return Rotation2d.fromDegrees(0);
         case L2:
-          return Rotation2d.fromDegrees(0);
+          return Rotation2d.fromDegrees(30);
         case L3:
-          return Rotation2d.fromDegrees(10);
+          return Rotation2d.fromDegrees(30);
         case L4:
-          return Rotation2d.fromDegrees(15);
+          return Rotation2d.fromDegrees(30);
         case ALGAE1:
           return Rotation2d.fromDegrees(5);
         case ALGAE2:
@@ -114,7 +114,7 @@ public class Arm extends SubsystemBase {
         case INTAKE:
           return Rotation2d.fromDegrees(90);
         case PROCESSOR:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(160);
         default:
           return new Rotation2d();
       }
