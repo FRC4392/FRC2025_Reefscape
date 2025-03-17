@@ -114,7 +114,7 @@ public class Arm extends SubsystemBase {
         case INTAKE:
           return Rotation2d.fromDegrees(90);
         case PROCESSOR:
-          return Rotation2d.fromDegrees(160);
+          return Rotation2d.fromDegrees(170);
         default:
           return new Rotation2d();
       }
