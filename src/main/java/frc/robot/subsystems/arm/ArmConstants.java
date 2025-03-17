@@ -196,7 +196,7 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(100.0)
+                  .withKP(200.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
@@ -209,13 +209,13 @@ public class ArmConstants {
                   .withPeakReverseTorqueCurrent(-wristMotorStatorCurrentLimit))
           .withSoftwareLimitSwitch(
               new SoftwareLimitSwitchConfigs()
-                  .withForwardSoftLimitThreshold(Degrees.of(180))
+                  .withForwardSoftLimitThreshold(Degrees.of(190))
                   .withForwardSoftLimitEnable(true)
                   .withReverseSoftLimitThreshold(Degrees.of(0))
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 2.0)) // 2
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 3.0)) // 2
                   .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0 / 2.0)) // 2
                   .withMotionMagicJerk(
                       DegreesPerSecondPerSecond.of(3600.0 / 4.0)
