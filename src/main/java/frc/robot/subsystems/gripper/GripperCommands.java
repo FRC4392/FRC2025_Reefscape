@@ -13,7 +13,7 @@ public class GripperCommands {
   public static Command coralIntake(Gripper gripper) {
     return Commands.runEnd(
         () -> {
-          gripper.setCoralVoltage(12);
+          gripper.setCoralVoltage(8);
           gripper.setAlgaeVoltage(12);
         },
         () -> {
