@@ -44,7 +44,7 @@ public class Arm extends SubsystemBase {
         case L3:
           return Rotation2d.fromDegrees(90);
         case L4:
-          return Rotation2d.fromDegrees(88);
+          return Rotation2d.fromDegrees(90);
         case ALGAE1:
           return Rotation2d.fromDegrees(100);
         case ALGAE2:
@@ -73,7 +73,7 @@ public class Arm extends SubsystemBase {
         case L3:
           return Units.inchesToMeters(3);
         case L4:
-          return Units.inchesToMeters(15);
+          return Units.inchesToMeters(16);
         case ALGAE1:
           return Units.inchesToMeters(0);
         case ALGAE2:
