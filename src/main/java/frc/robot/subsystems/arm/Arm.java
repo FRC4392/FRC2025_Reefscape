@@ -98,11 +98,11 @@ public class Arm extends SubsystemBase {
         case L1:
           return Rotation2d.fromDegrees(0);
         case L2:
-          return Rotation2d.fromDegrees(30);
+          return Rotation2d.fromDegrees(50);
         case L3:
-          return Rotation2d.fromDegrees(30);
+          return Rotation2d.fromDegrees(50);
         case L4:
-          return Rotation2d.fromDegrees(30);
+          return Rotation2d.fromDegrees(50);
         case ALGAE1:
           return Rotation2d.fromDegrees(5);
         case ALGAE2:
