@@ -23,6 +23,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "AutoAlign"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "ejectCoral"
                 }
               }

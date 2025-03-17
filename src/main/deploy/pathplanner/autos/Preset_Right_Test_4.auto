@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start_J"
+            "pathName": "Start_E"
           }
         },
         {
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "J_A"
+            "pathName": "E_C"
           }
         },
         {
@@ -69,7 +69,38 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A_B"
+            "pathName": "C_B"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "DropOffLow"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoAlign"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ejectCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "B_A"
           }
         },
         {
