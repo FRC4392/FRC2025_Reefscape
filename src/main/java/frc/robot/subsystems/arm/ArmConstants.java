@@ -196,7 +196,7 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(200.0)
+                  .withKP(100.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
