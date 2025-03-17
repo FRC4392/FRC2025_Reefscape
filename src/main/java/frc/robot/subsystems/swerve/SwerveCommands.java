@@ -329,7 +329,7 @@ public class SwerveCommands {
             new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
 
     angleController.enableContinuousInput(-Math.PI, Math.PI);
-    angleController.setTolerance(Units.degreesToRadians(1));
+    angleController.setTolerance(Units.degreesToRadians(3));
     return Commands.run(
         () -> {
           ReefSide targetSide = side;
