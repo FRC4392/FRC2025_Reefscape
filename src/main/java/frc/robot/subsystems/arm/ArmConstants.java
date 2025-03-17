@@ -98,8 +98,8 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0 / 10))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0 / 10))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0))
                   .withMotionMagicJerk(
                       DegreesPerSecondPerSecond.of(1000.0).in(RotationsPerSecondPerSecond)));
 
