@@ -40,13 +40,16 @@ public class ArmConstants {
 
   public static final int WristCanId = 41;
 
+  public static final int PivotCanCoderID = 21;
+  public static final int WristCanCoderID = 41;
+
   // Pivot Constants
   public static final double pivotGearReduction = (52.0 * 64.0 * 84.0) / (14.0 * 18.0 * 10.0);
   public static final DCMotor pivotGearbox = DCMotor.getKrakenX60Foc(3);
   public static final ClosedLoopControlType pivotControlType = ClosedLoopControlType.Voltage;
 
   public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(170.0));
-  public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-29));
+  public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-21));
 
   public static final double pivotMotorStatorCurrentLimit = 120;
 
@@ -95,8 +98,8 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0 / 10))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0 / 10))
                   .withMotionMagicJerk(
                       DegreesPerSecondPerSecond.of(1000.0).in(RotationsPerSecondPerSecond)));
 
@@ -184,15 +187,16 @@ public class ArmConstants {
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(wristReduction))
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                  .withFeedbackRemoteSensorID(WristCanId)
+                  .withSensorToMechanismRatio(1))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.CounterClockwise_Positive)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(300.0)
+                  .withKP(100.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
@@ -211,9 +215,10 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 10.0)) // 2
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0 / 10.0)) // 2
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(3600.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(3600.0 / 10.0)
+                          .in(RotationsPerSecondPerSecond))); // 4
   ;
 }

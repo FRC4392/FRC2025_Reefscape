@@ -67,17 +67,19 @@ public class VisionIOLimelight implements VisionIO {
             tidSubscriber.get());
 
     // Update target pose observation
-    inputs.lastTargetPoseObservation =
-        new targetPoseObservation(
-            new Pose3d(
-                targetPoseSubscriber.get()[0],
-                targetPoseSubscriber.get()[1],
-                targetPoseSubscriber.get()[2],
-                new Rotation3d(
-                    Units.degreesToRadians(targetPoseSubscriber.get()[5]),
-                    Units.degreesToRadians(targetPoseSubscriber.get()[3]),
-                    Units.degreesToRadians(targetPoseSubscriber.get()[4]))),
-            (int) txSubscriber.get());
+    if (targetPoseSubscriber.exists()) {
+      inputs.lastTargetPoseObservation =
+          new targetPoseObservation(
+              new Pose3d(
+                  targetPoseSubscriber.get()[0],
+                  targetPoseSubscriber.get()[1],
+                  targetPoseSubscriber.get()[2],
+                  new Rotation3d(
+                      Units.degreesToRadians(targetPoseSubscriber.get()[5]),
+                      Units.degreesToRadians(targetPoseSubscriber.get()[3]),
+                      Units.degreesToRadians(targetPoseSubscriber.get()[4]))),
+              (int) txSubscriber.get());
+    }
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(

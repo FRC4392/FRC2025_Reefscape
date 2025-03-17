@@ -154,7 +154,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser.addOption("Secret Auto", new PathPlannerAuto("Secret Auto"));
-    
+
     autoChooser.addOption("Left 1", new PathPlannerAuto("Preset_Left_Test_1"));
     autoChooser.addOption("Left 2", new PathPlannerAuto("Preset_Left_Test_2"));
     autoChooser.addOption("Left 3", new PathPlannerAuto("Preset_Left_Test_3"));
