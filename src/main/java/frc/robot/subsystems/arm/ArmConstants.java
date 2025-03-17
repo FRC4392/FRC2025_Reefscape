@@ -215,10 +215,10 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 10.0)) // 2
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0 / 10.0)) // 2
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 2.0)) // 2
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0 / 2.0)) // 2
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(3600.0 / 10.0)
+                      DegreesPerSecondPerSecond.of(3600.0 / 4.0)
                           .in(RotationsPerSecondPerSecond))); // 4
   ;
 }
