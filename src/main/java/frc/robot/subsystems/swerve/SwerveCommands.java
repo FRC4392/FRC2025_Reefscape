@@ -52,8 +52,8 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static final double ReefOffsetRight = Units.inchesToMeters(-6); // Meters
-  private static final double ReefOffsetLeft = Units.inchesToMeters(6); // Meters
+  private static final double ReefOffsetRight = Units.inchesToMeters(-8); // Meters
+  private static final double ReefOffsetLeft = Units.inchesToMeters(8); // Meters
   private static final double ReffOffsetForward = -.5; // Meters
 
   public static enum ReefSide {
