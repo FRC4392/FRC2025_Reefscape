@@ -76,6 +76,14 @@ public class ArmCommands {
         () -> {
           arm.setPosition(armPivot, armExtension, wristPosition);
         },
-        arm);
+        arm).until(arm::getArmInPosition);
+  }
+
+  public static Command setArmPosition(Arm arm,Arm.ArmPosition position) {
+    return Commands.run(
+        () -> {
+          arm.setPosition(position);
+        },
+        arm).until(arm::getArmInPosition);
   }
 }

@@ -20,7 +20,7 @@ public class GripperCommands {
           gripper.setCoralVoltage(0);
           gripper.setAlgaeVoltage(0);
         },
-        gripper);
+        gripper).until(() -> gripper.getCoralPresent());
   }
 
   public static Command coralOuttake(Gripper gripper) {
@@ -34,6 +34,21 @@ public class GripperCommands {
           gripper.setCoralVoltage(0);
         },
         gripper);
+  }
+
+  public static Command coralAutoOuttake(Gripper gripper) {
+    return Commands.sequence(
+      Commands.run(
+        () -> {
+          gripper.setAlgaeVoltage(-12);
+          gripper.setCoralVoltage(-12);
+        },
+        gripper).unless(() -> !gripper.getCoralPresent()),
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(() -> {
+          gripper.setAlgaeVoltage(0);
+          gripper.setCoralVoltage(0);
+        }, gripper));
   }
 
   public static Command algaeIntake(Gripper gripper) {

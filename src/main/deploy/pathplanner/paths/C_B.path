@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.274965066564661,
-        "y": 2.7359484489352623
+        "x": 2.7541543692129618,
+        "y": 2.5550481047453695
       },
       "isLocked": false,
       "linkedName": "C"
@@ -20,12 +20,12 @@
         "y": 4.015249999999999
       },
       "prevControl": {
-        "x": 2.01930458339983,
-        "y": 3.594624256066688
+        "x": 1.4757277199074061,
+        "y": 3.660059678819444
       },
       "nextControl": {
-        "x": 1.0077801678524754,
-        "y": 4.132649981672777
+        "x": 1.0002269733999427,
+        "y": 4.343208247017359
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 3.8787499999999993
       },
       "prevControl": {
-        "x": 2.3452648639290774,
-        "y": 3.612437358712703
+        "x": 2.3245182291666655,
+        "y": 3.890891565393518
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,7 +58,26 @@
       "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "MoveToPickup",
+      "waypointRelativePos": 0.18054541471962585,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "IntakeCoral",
+      "waypointRelativePos": 0.6986711448598131,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "MoveToUpTravel",
+      "waypointRelativePos": 1.6321188668224271,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 3.9,

@@ -17,13 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "DropOffLow"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "AutoAlign"
+                  "name": "AutoAlignRightWithTimeout"
                 }
               },
               {

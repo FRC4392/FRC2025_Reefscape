@@ -17,13 +17,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "DropOffLow"
+                  "name": "MoveToL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "AutoAlign"
+                  "name": "AutoAlignRightWithTimeout"
                 }
               },
               {
@@ -48,13 +48,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "DropOffLow"
+                  "name": "MoveToL4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "AutoAlign"
+                  "name": "AutoAlignLeftWithTimeout"
                 }
               },
               {

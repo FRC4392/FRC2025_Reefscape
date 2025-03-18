@@ -38,6 +38,7 @@ import frc.robot.subsystems.swerve.SwerveCommands.ReefSide;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
+import frc.robot.subsystems.swerve.SwerveState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -128,10 +129,14 @@ public class RobotContainer {
     }
 
     // Set up named commands
-    NamedCommands.registerCommand("DropOffLow", arm.getDropOffLowCommand());
-    NamedCommands.registerCommand("L3ScorePosition", arm.getL3ArmCommand());
+    NamedCommands.registerCommand("MoveToUpTravel", ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
+    NamedCommands.registerCommand("MoveToL4", ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4));
+    NamedCommands.registerCommand("AutoAlignRightWithTimeout", SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right).until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone).withTimeout(1.0));
+    NamedCommands.registerCommand("AutoAlignLeftWithTimeout", SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left).until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone).withTimeout(1.0));
     NamedCommands.registerCommand(
-        "ejectCoral", GripperCommands.coralOuttake(gripper).withTimeout(2));
+        "ejectCoral", GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
+    NamedCommands.registerCommand("MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
+    NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntake(gripper));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
