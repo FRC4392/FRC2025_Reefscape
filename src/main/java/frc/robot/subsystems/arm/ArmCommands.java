@@ -73,17 +73,19 @@ public class ArmCommands {
   public static Command setArmPosition(
       Arm arm, Rotation2d armPivot, double armExtension, Rotation2d wristPosition) {
     return Commands.run(
-        () -> {
-          arm.setPosition(armPivot, armExtension, wristPosition);
-        },
-        arm).until(arm::getArmInPosition);
+            () -> {
+              arm.setPosition(armPivot, armExtension, wristPosition);
+            },
+            arm)
+        .until(arm::getArmInPosition);
   }
 
-  public static Command setArmPosition(Arm arm,Arm.ArmPosition position) {
+  public static Command setArmPosition(Arm arm, Arm.ArmPosition position) {
     return Commands.run(
-        () -> {
-          arm.setPosition(position);
-        },
-        arm).until(arm::getArmInPosition);
+            () -> {
+              arm.setPosition(position);
+            },
+            arm)
+        .until(arm::getArmInPosition);
   }
 }

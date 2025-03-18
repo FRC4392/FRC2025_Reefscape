@@ -129,13 +129,24 @@ public class RobotContainer {
     }
 
     // Set up named commands
-    NamedCommands.registerCommand("MoveToUpTravel", ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
+    NamedCommands.registerCommand(
+        "MoveToUpTravel",
+        ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
     NamedCommands.registerCommand("MoveToL4", ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4));
-    NamedCommands.registerCommand("AutoAlignRightWithTimeout", SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right).until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone).withTimeout(1.0));
-    NamedCommands.registerCommand("AutoAlignLeftWithTimeout", SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left).until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone).withTimeout(1.0));
+    NamedCommands.registerCommand(
+        "AutoAlignRightWithTimeout",
+        SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
+            .until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone)
+            .withTimeout(1.0));
+    NamedCommands.registerCommand(
+        "AutoAlignLeftWithTimeout",
+        SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
+            .until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone)
+            .withTimeout(1.0));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
-    NamedCommands.registerCommand("MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
+    NamedCommands.registerCommand(
+        "MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
     NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntake(gripper));
 
     // Set up auto routines

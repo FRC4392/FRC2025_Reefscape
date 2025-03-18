@@ -110,7 +110,7 @@ public class ArmIOTalonFX implements ArmIO {
   public ArmIOTalonFX() {
 
     // Configure absolute encoders
-    wristCancoder.getPosition().setUpdateFrequency(100);
+    wristCancoder.getPosition().setUpdateFrequency(500);
 
     // Configure motors
     tryUntilOk(5, () -> pivotMotor1.getConfigurator().apply(pivotMotorBaseConfig, .25));

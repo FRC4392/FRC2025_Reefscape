@@ -141,10 +141,11 @@ public class ArmConstants {
                   .withKP(300.0)
                   .withKI(0.0)
                   .withKD(0.0)
-                  .withKG(0)
+                  .withKG(0.25)
                   .withKV(.25)
                   .withKS(0.0)
-                  .withKA(0.0))
+                  .withKA(0.0)
+                  .withGravityType(GravityTypeValue.Elevator_Static))
           .withTorqueCurrent(
               new TorqueCurrentConfigs()
                   .withPeakForwardTorqueCurrent(extensionMotorStatorCurrentLimit)
@@ -157,10 +158,10 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(6000.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(3000.0))
                   .withMotionMagicCruiseVelocity(DegreesPerSecond.of(3000.0))
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(200000.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(10000.0).in(RotationsPerSecondPerSecond)));
 
   // Wrist Constants
   public static final double wristReduction = (56.0 * 40.0 * 36.0) / (10.0 * 15.0 * 15.0);
@@ -196,7 +197,7 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(100.0)
+                  .withKP(98.0)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
