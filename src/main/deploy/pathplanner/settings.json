@@ -3,8 +3,7 @@
   "robotLength": 0.8636,
   "holonomicMode": true,
   "pathFolders": [
-    "Braedon'sTrials",
-    "Student's Inner Machinations"
+    "Braedon'sTrials"
   ],
   "autoFolders": [
     "Braedon'sTrials"
