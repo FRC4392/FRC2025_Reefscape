@@ -41,4 +41,6 @@ public interface GripperIO {
   public default boolean getAlgaePresent() {
     return false;
   }
+
+  public default void setClimberVoltage(double voltage) {}
 }

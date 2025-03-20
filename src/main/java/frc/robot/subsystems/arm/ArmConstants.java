@@ -70,8 +70,10 @@ public class ArmConstants {
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(pivotGearReduction))
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackRemoteSensorID(PivotCanCoderID)
+                  .withSensorToMechanismRatio(1)
+                  .withRotorToSensorRatio(pivotGearReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.Clockwise_Positive)
@@ -99,7 +101,7 @@ public class ArmConstants {
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0 / 10.0))
                   .withMotionMagicJerk(
                       DegreesPerSecondPerSecond.of(1000.0).in(RotationsPerSecondPerSecond)));
 
@@ -188,8 +190,9 @@ public class ArmConstants {
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
                   .withFeedbackRemoteSensorID(WristCanId)
+                  .withRotorToSensorRatio(wristReduction)
                   .withSensorToMechanismRatio(1))
           .withMotorOutput(
               new MotorOutputConfigs()

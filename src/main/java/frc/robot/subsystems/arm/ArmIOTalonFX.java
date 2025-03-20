@@ -25,6 +25,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
@@ -45,6 +47,9 @@ public class ArmIOTalonFX implements ArmIO {
   // Absolute Encoders
   private final CANcoder pivotCancoder = new CANcoder(PivotCanCoderID);
   private final CANcoder wristCancoder = new CANcoder(WristCanCoderID);
+
+  // Latch solenoid
+  private final Solenoid lathSolenoid = new Solenoid(1, PneumaticsModuleType.REVPH, 0);
 
   // Status Signals
   private final StatusSignal<Angle> pivotMotor1Position;
@@ -108,6 +113,8 @@ public class ArmIOTalonFX implements ArmIO {
   private final Debouncer wristConnectedDebouncer = new Debouncer(0.5);
 
   public ArmIOTalonFX() {
+
+    lathSolenoid.set(true);
 
     // Configure absolute encoders
     wristCancoder.getPosition().setUpdateFrequency(500);

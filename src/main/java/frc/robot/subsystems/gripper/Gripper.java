@@ -99,4 +99,8 @@ public class Gripper extends SubsystemBase {
     HasCoral,
     HasBoth;
   }
+
+  public void setClimberVoltage(double voltage) {
+    gripperIO.setClimberVoltage(voltage);
+  }
 }

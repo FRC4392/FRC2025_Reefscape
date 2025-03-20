@@ -201,6 +201,8 @@ public class RobotContainer {
     // Smart Intake
     driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
 
+    driveController.b().whileTrue(Commands.run(() -> gripper.setClimberVoltage(12), gripper));
+
     // Smart Outttake
     driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 

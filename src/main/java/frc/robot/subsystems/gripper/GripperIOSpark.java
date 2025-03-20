@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
@@ -25,6 +26,8 @@ public class GripperIOSpark implements GripperIO {
 
   private final SparkFlex coralMotor = new SparkFlex(CoralCanId, MotorType.kBrushless);
   private final SparkFlex algaeMotor = new SparkFlex(AlgaeCanId, MotorType.kBrushless);
+
+  private final SparkMax climberMotor = new SparkMax(61, MotorType.kBrushless);
 
   private final RelativeEncoder coralEncoder;
   private final RelativeEncoder algaeEncoder;
@@ -144,5 +147,9 @@ public class GripperIOSpark implements GripperIO {
   @Override
   public boolean getAlgaePresent() {
     return !algaePresent.get();
+  }
+
+  public void setClimberVoltage(double voltage) {
+    climberMotor.setVoltage(voltage);
   }
 }
