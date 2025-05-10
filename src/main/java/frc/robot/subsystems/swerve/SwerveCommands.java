@@ -52,9 +52,9 @@ public class SwerveCommands {
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
 
-  private static final double ReefOffsetRight = Units.inchesToMeters(-8); // Meters
-  private static final double ReefOffsetLeft = Units.inchesToMeters(8); // Meters
-  private static final double ReffOffsetForward = -.5; // Meters
+  private static final double ReefOffsetRight = Units.inchesToMeters(-6.5); // Meters
+  private static final double ReefOffsetLeft = Units.inchesToMeters(6.5); // Meters
+  private static final double ReffOffsetForward = -.55; // Meters
 
   public static enum ReefSide {
     left,
@@ -314,9 +314,9 @@ public class SwerveCommands {
 
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
     @SuppressWarnings("resource")
-    PIDController strafeController = new PIDController(2, 0, 0); // 0.08
+    PIDController strafeController = new PIDController(4, 0, 0); // 0.08
     @SuppressWarnings("resource")
-    PIDController forwardController = new PIDController(2, 0, 0); // 0.08
+    PIDController forwardController = new PIDController(4, 0, 0); // 0.08
 
     strafeController.setTolerance(Units.inchesToMeters(2));
     forwardController.setTolerance(Units.inchesToMeters(2));
@@ -376,7 +376,7 @@ public class SwerveCommands {
           }
 
           // invert if on the other side of the field
-          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             invertSide = !invertSide;
           }
 
@@ -417,7 +417,7 @@ public class SwerveCommands {
             swerve.setSwerveState(SwerveState.autoAlignInProgress);
           }
 
-          ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, rotation);
+          ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, 0);
           swerve.runVelocity(speeds);
         });
   }

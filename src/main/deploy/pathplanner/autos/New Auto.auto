@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoAlignLeftWithTimeout"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectCoral"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Braedon'sTrials",
+  "choreoAuto": false
+}

@@ -118,15 +118,19 @@ public class ArmIOTalonFX implements ArmIO {
 
     // Configure absolute encoders
     wristCancoder.getPosition().setUpdateFrequency(500);
+    pivotCancoder.getPosition().setUpdateFrequency(1000);
 
     // Configure motors
     tryUntilOk(5, () -> pivotMotor1.getConfigurator().apply(pivotMotorBaseConfig, .25));
     tryUntilOk(5, () -> pivotMotor2.getConfigurator().apply(pivotMotorBaseConfig, .25));
     tryUntilOk(5, () -> pivotMotor3.getConfigurator().apply(pivotMotorBaseConfig, .25));
 
-    tryUntilOk(5, () -> pivotMotor1.setPosition(minAngle.getRotations()));
-    tryUntilOk(5, () -> pivotMotor2.setPosition(minAngle.getRotations()));
-    tryUntilOk(5, () -> pivotMotor3.setPosition(minAngle.getRotations()));
+    tryUntilOk(
+        5, () -> pivotMotor1.setPosition(pivotCancoder.getAbsolutePosition().getValueAsDouble()));
+    tryUntilOk(
+        5, () -> pivotMotor2.setPosition(pivotCancoder.getAbsolutePosition().getValueAsDouble()));
+    tryUntilOk(
+        5, () -> pivotMotor3.setPosition(pivotCancoder.getAbsolutePosition().getValueAsDouble()));
 
     tryUntilOk(5, () -> pivotMotor2.setControl(new Follower(pivotMotor1.getDeviceID(), false)));
     tryUntilOk(5, () -> pivotMotor3.setControl(new Follower(pivotMotor1.getDeviceID(), false)));

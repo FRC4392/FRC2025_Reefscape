@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.04075,
-        "y": 2.8257499999999993
+        "x": 3.6865078848379618,
+        "y": 2.9997663483796293
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.338609664351851,
-        "y": 2.2079850260416665
+        "x": 3.9843675491898125,
+        "y": 2.3820013744212964
       },
       "isLocked": false,
       "linkedName": "E"
@@ -32,20 +32,39 @@
     },
     {
       "anchor": {
-        "x": 3.7439999999999998,
-        "y": 2.94275
+        "x": 3.1760456452546286,
+        "y": 3.8613679108796295
       },
       "prevControl": {
-        "x": 3.7439999999999998,
-        "y": 2.4259999999999993
+        "x": 3.1760456452546286,
+        "y": 3.3446179108796286
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "C"
     }
   ],
-  "rotationTargets": [],
-  "constraintZones": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.465899285009862,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.210444655373832,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.9,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 1050.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [
     {
       "fieldPosition": {
@@ -60,22 +79,37 @@
   ],
   "eventMarkers": [
     {
+      "name": "MoveToUpTravel",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToUpTravel"
+        }
+      }
+    },
+    {
       "name": "MoveToPickup",
       "waypointRelativePos": 0.09738244742990637,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToPickup"
+        }
+      }
     },
     {
       "name": "IntakeCoral",
       "waypointRelativePos": 0.8009820385514023,
       "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "MoveToUpTravel",
-      "waypointRelativePos": 1.502811039719627,
-      "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeCoral"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -88,13 +122,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -179.82038526272422
   },
   "reversed": false,
   "folder": "Braedon'sTrials",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -121.7481854891858
   },
   "useDefaultConstraints": true
 }

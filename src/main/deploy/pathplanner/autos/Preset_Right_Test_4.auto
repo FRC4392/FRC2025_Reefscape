@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AutoAlignRightWithTimeout"
+                  "name": "AutoAlignLeftWithTimeout"
                 }
               },
               {
@@ -54,37 +54,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AutoAlignLeftWithTimeout"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ejectCoral"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "C_B"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "MoveToL4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "AutoAlignRightWithTimeout"
                 }
               },
@@ -100,7 +69,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B_A"
+            "pathName": "C_B"
           }
         },
         {

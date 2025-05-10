@@ -51,7 +51,7 @@ public class ArmConstants {
   public static final Rotation2d maxAngle = new Rotation2d(Units.degreesToRadians(170.0));
   public static final Rotation2d minAngle = new Rotation2d(Units.degreesToRadians(-21));
 
-  public static final double pivotMotorStatorCurrentLimit = 120;
+  public static final double pivotMotorStatorCurrentLimit = 100;
 
   public static final TalonFXConfiguration pivotMotorBaseConfig =
       new TalonFXConfiguration()
@@ -71,19 +71,21 @@ public class ArmConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  // .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                   .withFeedbackRemoteSensorID(PivotCanCoderID)
                   .withSensorToMechanismRatio(1)
                   .withRotorToSensorRatio(pivotGearReduction))
+          // .withSensorToMechanismRatio(pivotGearReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.Clockwise_Positive)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(100.0)
+                  .withKP(50.0)
                   .withKI(0.0)
                   .withKD(0.0)
-                  .withKG(.23)
+                  .withKG(.4)
                   .withKV(11.0)
                   .withKS(0.0)
                   .withKA(0.0)
@@ -101,9 +103,9 @@ public class ArmConstants {
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(300.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0 / 10.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(300.0))
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(1000.0).in(RotationsPerSecondPerSecond)));
+                      DegreesPerSecondPerSecond.of(500.0).in(RotationsPerSecondPerSecond)));
 
   // Extension Constants
   public static final double extensionGearReduction = (66.0) / (11.0);
@@ -113,7 +115,7 @@ public class ArmConstants {
 
   public static final ClosedLoopControlType extensionControlType = ClosedLoopControlType.Voltage;
 
-  public static final double extensionMotorStatorCurrentLimit = 40;
+  public static final double extensionMotorStatorCurrentLimit = 120;
 
   public static final TalonFXConfiguration extensionMotorBaseConfig =
       new TalonFXConfiguration()
@@ -160,8 +162,8 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(3000.0))
-                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(3000.0))
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(4000.0))
+                  .withMotionMagicCruiseVelocity(DegreesPerSecond.of(4000.0))
                   .withMotionMagicJerk(
                       DegreesPerSecondPerSecond.of(10000.0).in(RotationsPerSecondPerSecond)));
 
@@ -200,11 +202,11 @@ public class ArmConstants {
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(98.0)
+                  .withKP(74)
                   .withKI(0.0)
                   .withKD(0.0)
                   .withKG(0)
-                  .withKV(7.0)
+                  .withKV(7.5)
                   .withKS(0.0)
                   .withKA(0.0))
           .withTorqueCurrent(
@@ -219,10 +221,9 @@ public class ArmConstants {
                   .withReverseSoftLimitEnable(true))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 3.0)) // 2
+                  .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720.0 / 4.0)) // 2
                   .withMotionMagicCruiseVelocity(DegreesPerSecond.of(360.0 / 2.0)) // 2
                   .withMotionMagicJerk(
-                      DegreesPerSecondPerSecond.of(3600.0 / 4.0)
+                      DegreesPerSecondPerSecond.of(3600.0 / 5.0)
                           .in(RotationsPerSecondPerSecond))); // 4
-  ;
 }

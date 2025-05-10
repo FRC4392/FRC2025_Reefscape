@@ -38,21 +38,21 @@ public class Arm extends SubsystemBase {
         case HOME:
           return minAngle;
         case L1:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(5); // 20
         case L2:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(20);
         case L3:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(93);
         case L4:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(91);
         case ALGAE1:
-          return Rotation2d.fromDegrees(100);
+          return Rotation2d.fromDegrees(103);
         case ALGAE2:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(93);
         case BARGE:
-          return Rotation2d.fromDegrees(70);
+          return Rotation2d.fromDegrees(73);
         case CLIMB:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(93);
         case INTAKE:
           return Rotation2d.fromDegrees(25);
         case PROCESSOR:
@@ -73,11 +73,11 @@ public class Arm extends SubsystemBase {
         case L3:
           return Units.inchesToMeters(3);
         case L4:
-          return Units.inchesToMeters(16);
+          return Units.inchesToMeters(17);
         case ALGAE1:
           return Units.inchesToMeters(0);
         case ALGAE2:
-          return Units.inchesToMeters(7);
+          return Units.inchesToMeters(6);
         case BARGE:
           return Units.inchesToMeters(17);
         case CLIMB:
@@ -96,17 +96,17 @@ public class Arm extends SubsystemBase {
         case HOME:
           return new Rotation2d();
         case L1:
-          return Rotation2d.fromDegrees(0);
+          return Rotation2d.fromDegrees(60);
         case L2:
-          return Rotation2d.fromDegrees(50);
+          return Rotation2d.fromDegrees(65);
         case L3:
           return Rotation2d.fromDegrees(50);
         case L4:
-          return Rotation2d.fromDegrees(50);
+          return Rotation2d.fromDegrees(40);
         case ALGAE1:
-          return Rotation2d.fromDegrees(5);
+          return Rotation2d.fromDegrees(60);
         case ALGAE2:
-          return Rotation2d.fromDegrees(10);
+          return Rotation2d.fromDegrees(60);
         case BARGE:
           return Rotation2d.fromDegrees(115);
         case CLIMB:
@@ -186,9 +186,9 @@ public class Arm extends SubsystemBase {
 
   public void setPosition(ArmPosition position) {
     currentPosition = position;
-    armIO.setAngle(position.pivot());
-    armIO.setLength(position.extension());
-    armIO.setWrist(position.wrist());
+    setPivotPosition(position.pivot());
+    setExtensionDistance(position.extension());
+    setWristAngle(position.wrist());
   }
 
   public void setPivotPosition(Rotation2d pivotRotation) {
@@ -226,7 +226,8 @@ public class Arm extends SubsystemBase {
 
   @AutoLogOutput
   public boolean getExtensionInPosition() {
-    return Math.abs((inputs.extensionMotor2PositionRad * driveRadius) - extensionSetPoint) < 1;
+    return Math.abs((inputs.extensionMotor2PositionRad * driveRadius) - extensionSetPoint)
+        < Units.inchesToMeters(1);
   }
 
   @AutoLogOutput
@@ -788,17 +789,10 @@ public class Arm extends SubsystemBase {
                     this.run(
                             () ->
                                 setPosition(
-                                    Rotation2d.fromDegrees(70),
-                                    currentPosition.extension(),
-                                    currentPosition.wrist()))
-                        .until(() -> getArmInPosition()),
-                    this.run(
-                            () ->
-                                setPosition(
-                                    Rotation2d.fromDegrees(70),
+                                    currentPosition.pivot(),
                                     destinationPosition.extension(),
                                     destinationPosition.wrist()))
-                        .until(() -> getArmInPosition()),
+                        .until(() -> getExtensionInPosition()),
                     this.run(() -> setPosition(destinationPosition)))
                 .schedule();
             break;

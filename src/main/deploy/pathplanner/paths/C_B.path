@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.7439999999999998,
-        "y": 2.94275
+        "x": 3.1760456452546286,
+        "y": 3.8613679108796295
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7541543692129618,
-        "y": 2.5550481047453695
+        "x": 2.1862000144675906,
+        "y": 3.4736660156249988
       },
       "isLocked": false,
       "linkedName": "C"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.2175,
-        "y": 3.8787499999999993
+        "x": 3.1607306134259248,
+        "y": 4.236964699074074
       },
       "prevControl": {
-        "x": 2.3245182291666655,
-        "y": 3.890891565393518
+        "x": 2.2677488425925905,
+        "y": 4.249106264467592
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.9936477803738324,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.9,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 1050.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [
     {
       "fieldPosition": {
@@ -60,22 +74,48 @@
   ],
   "eventMarkers": [
     {
+      "name": "MoveToUpTravel",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToUpTravel"
+        }
+      }
+    },
+    {
       "name": "MoveToPickup",
       "waypointRelativePos": 0.18054541471962585,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToPickup"
+        }
+      }
     },
     {
       "name": "IntakeCoral",
-      "waypointRelativePos": 0.6986711448598131,
+      "waypointRelativePos": 0.5070093457943923,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeCoral"
+        }
+      }
     },
     {
       "name": "MoveToUpTravel",
       "waypointRelativePos": 1.6321188668224271,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToUpTravel"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -94,7 +134,7 @@
   "folder": "Braedon'sTrials",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -179.82038526272422
   },
   "useDefaultConstraints": true
 }

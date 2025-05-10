@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0857715503589525,
-        "y": 3.9022500527871613
+        "x": 6.014683883101851,
+        "y": 4.186535734953703
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7542715503589523,
-        "y": 3.7950000527871612
+        "x": 7.755764250578704,
+        "y": 4.1428034577546295
       },
       "isLocked": false,
-      "linkedName": "B"
+      "linkedName": "Test"
     },
     {
       "anchor": {
-        "x": 1.29675,
-        "y": 2.1919999999999993
+        "x": 1.1854991319424635,
+        "y": 2.1975032552038956
       },
       "prevControl": {
-        "x": 1.328278063131547,
-        "y": 2.48272342001862
+        "x": 5.826518069673453,
+        "y": 1.7882307007209695
       },
       "nextControl": {
-        "x": 1.2697963012454114,
-        "y": 1.9434572509135557
+        "x": 0.28348451967394483,
+        "y": 2.2770482494168585
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.7342500000000003,
-        "y": 2.9524999999999992
+        "x": 3.1282371238425917,
+        "y": 3.8945601851851848
       },
       "prevControl": {
-        "x": 2.015914571022936,
-        "y": 1.7322943145657477
+        "x": 2.6529470486111104,
+        "y": 3.876508246527777
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,18 +46,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 0.9,
-        "y": 1.8
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
@@ -69,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Braedon'sTrials",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

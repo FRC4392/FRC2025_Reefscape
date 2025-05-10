@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1882500000000005,
-        "y": 3.89825
+        "x": 3.0857715503589525,
+        "y": 3.9022500527871613
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5927350983796287,
-        "y": 3.8076779513888885
+        "x": 2.4902566487385807,
+        "y": 3.81167800417605
       },
       "isLocked": false,
       "linkedName": "B"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.1882500000000005,
-        "y": 4.17125
+        "x": 3.059889839790963,
+        "y": 4.324289847709037
       },
       "prevControl": {
-        "x": 3.003140856908406,
-        "y": 4.372641846088478
+        "x": 2.8747806966993688,
+        "y": 4.525681693797515
       },
       "nextControl": null,
       "isLocked": false,
@@ -60,22 +60,48 @@
   ],
   "eventMarkers": [
     {
+      "name": "MoveToUpTravel",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToUpTravel"
+        }
+      }
+    },
+    {
       "name": "MoveToPickup",
       "waypointRelativePos": 0.17424795560747625,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToPickup"
+        }
+      }
     },
     {
       "name": "IntakeCoral",
       "waypointRelativePos": 0.5751679322429909,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeCoral"
+        }
+      }
     },
     {
       "name": "MoveToUpTravel",
       "waypointRelativePos": 1.5739632009345774,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveToUpTravel"
+        }
+      }
     }
   ],
   "globalConstraints": {

@@ -115,10 +115,10 @@ public class Leds extends SubsystemBase {
             strobe(Section.FULL, Color.kWhite, breathDuration);
             break;
           case HasAlgae:
-            solid(Section.FULL, Color.kTeal);
+            solid(Section.FULL, Color.kAquamarine);
             break;
           case HasCoral:
-            solid(Section.FULL, Color.kWhite);
+            solid(Section.FULL, Color.kOrange);
             break;
           case HasBoth:
             stripes(Section.FULL, List.of(Color.kTeal, Color.kWhite), stripeLength, stripeDuration);

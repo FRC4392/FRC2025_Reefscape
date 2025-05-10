@@ -132,7 +132,11 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "MoveToUpTravel",
         ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
-    NamedCommands.registerCommand("MoveToL4", ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4));
+    NamedCommands.registerCommand(
+        "MoveToL4",
+        ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4)
+            .until(() -> arm.getArmInPosition())
+            .withTimeout(5));
     NamedCommands.registerCommand(
         "AutoAlignRightWithTimeout",
         SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
@@ -147,7 +151,7 @@ public class RobotContainer {
         "ejectCoral", GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
     NamedCommands.registerCommand(
         "MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
-    NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntake(gripper));
+    NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntakeAuto(gripper));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -180,6 +184,7 @@ public class RobotContainer {
     autoChooser.addOption("Right 2", new PathPlannerAuto("Preset_Right_Test_2"));
     autoChooser.addOption("Right 3", new PathPlannerAuto("Preset_Right_Test_3"));
     autoChooser.addOption("Right 4", new PathPlannerAuto("Preset_Right_Test_4"));
+    autoChooser.addOption("Test Auto", new PathPlannerAuto("New Auto"));
 
     // Set up LED suppliers
     leds.setGripperSupplier(gripper::getState);
