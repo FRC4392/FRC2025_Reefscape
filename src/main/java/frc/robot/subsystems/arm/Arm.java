@@ -221,19 +221,19 @@ public class Arm extends SubsystemBase {
   @AutoLogOutput
   public boolean getPivotInPosition() {
     return Math.abs(inputs.basePivotMotor1PositionRad - pivotSetpoint.getRadians())
-        < Units.degreesToRadians(2);
+        < Units.degreesToRadians(5);
   }
 
   @AutoLogOutput
   public boolean getExtensionInPosition() {
     return Math.abs((inputs.extensionMotor2PositionRad * driveRadius) - extensionSetPoint)
-        < Units.inchesToMeters(1);
+        < Units.inchesToMeters(2);
   }
 
   @AutoLogOutput
   public boolean getWristInPosition() {
     return Math.abs(inputs.wristMotorPositionRad - wristSetpoint.getRadians())
-        < Units.degreesToRadians(2);
+        < Units.degreesToRadians(5);
   }
 
   @AutoLogOutput
