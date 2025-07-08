@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -45,7 +47,10 @@ public class Robot extends LoggedRobot {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
-        Logger.addDataReceiver(new NT4Publisher());
+        if (!DriverStation.isFMSAttached()) {
+          //Don't log to network tables during real match
+          Logger.addDataReceiver(new NT4Publisher());
+        }
         break;
 
       case SIM:
@@ -67,21 +72,26 @@ public class Robot extends LoggedRobot {
 
     Logger.start(); // Start AdvantageKit Logger
 
+    // Remove controller disconnected message
+    DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Lower brownout voltage
+    RobotController.setBrownoutVoltage(6.0);
+
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
-    m_robotContainer.controllerCheckLoop();
-    // Threads.setCurrentThreadPriority(true, 99);
-
     CommandScheduler.getInstance().run();
 
-    // Threads.setCurrentThreadPriority(false, 10);
+    m_robotContainer.updateAlerts();
+    m_robotContainer.updateDashboard();
   }
 
   @Override
   public void robotInit() {
+    // Warm up PathPlanner to reduce delay on auto init
     FollowPathCommand.warmupCommand().schedule();
   }
 

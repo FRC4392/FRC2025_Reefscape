@@ -12,7 +12,8 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+
 public class RobotContainer {
 
   // Subsystems
@@ -54,7 +56,7 @@ public class RobotContainer {
   public final Gripper gripper;
   public final Leds leds;
 
-  // Controller
+  // Controllers
   private final CommandXboxController driveController = new CommandXboxController(0);
   private final CommandXboxController operateController = new CommandXboxController(1);
 
@@ -64,12 +66,12 @@ public class RobotContainer {
   // Roobot Alerts
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected", AlertType.kError);
   Alert operatorControllerAlert = new Alert("Operator Controller Disconnected", AlertType.kError);
+  Alert autoAlert = new Alert("Select and autonomous mode! 😳", AlertType.kError);
+
+  // Permanant autos
+  private Command noAuto = Commands.none();
 
   public RobotContainer() {
-
-    // Disable rumble
-    driveController.setRumble(RumbleType.kBothRumble, 0);
-    operateController.setRumble(RumbleType.kBothRumble, 0);
 
     leds = new Leds();
 
@@ -185,6 +187,7 @@ public class RobotContainer {
     autoChooser.addOption("Right 3", new PathPlannerAuto("Preset_Right_Test_3"));
     autoChooser.addOption("Right 4", new PathPlannerAuto("Preset_Right_Test_4"));
     autoChooser.addOption("Test Auto", new PathPlannerAuto("New Auto"));
+    autoChooser.addDefaultOption("None", noAuto);
 
     // Set up LED suppliers
     leds.setGripperSupplier(gripper::getState);
@@ -206,10 +209,10 @@ public class RobotContainer {
     // Smart Intake
     driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
 
-    driveController.b().whileTrue(Commands.run(() -> gripper.setClimberVoltage(12), gripper));
-
     // Smart Outttake
     driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+
+    driveController.b().whileTrue(Commands.run(() -> gripper.setClimberVoltage(12), gripper));
 
     // Auto align to left branch from driver view
     driveController
@@ -224,6 +227,7 @@ public class RobotContainer {
     // Reset gyro rotation, maintin position
     driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
 
+    // Put drive in X position
     driveController.x().whileTrue(SwerveCommands.stopWithX(swerve));
 
     Trigger testTrigger =
@@ -250,10 +254,6 @@ public class RobotContainer {
                       return 0.0;
                     })
                 .until(testTrigger.negate())));
-  }
-
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
   }
 
   // This need to be replaced
@@ -285,9 +285,37 @@ public class RobotContainer {
     }
   }
 
-  // Periodically check if controllers are attached
-  public void controllerCheckLoop() {
+  /**
+   * Update robot alerts.
+   *
+   * <p>Should be called periodically
+   */
+  public void updateAlerts() {
+    // Check if joysticks are unplugged
     driverControllerAlert.set(!driveController.isConnected());
     operatorControllerAlert.set(!operateController.isConnected());
+
+    // Check that an auto has been selected
+    autoAlert.set(
+        DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+  }
+
+  /**
+   * Update dashboard data.
+   *
+   * <p>Should be called periodically
+   */
+  public void updateDashboard() {
+    // Send match time to dashboard
+    SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
   }
 }
