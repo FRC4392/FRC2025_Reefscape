@@ -32,13 +32,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
+import frc.robot.RobotState;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
+  private final RobotState robotState;
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -66,12 +69,15 @@ public class Swerve extends SubsystemBase {
       SwerveModuleIO flModuleIO,
       SwerveModuleIO frModuleIO,
       SwerveModuleIO blModuleIO,
-      SwerveModuleIO brModuleIO) {
+      SwerveModuleIO brModuleIO,
+      RobotState robotState) {
     this.gyroIO = gyroIO;
     modules[0] = new SwerveModule(flModuleIO, 0);
     modules[1] = new SwerveModule(frModuleIO, 1);
     modules[2] = new SwerveModule(blModuleIO, 2);
     modules[3] = new SwerveModule(brModuleIO, 3);
+
+    this.robotState = robotState;
 
     // Start odometry thread
     SwerveOdometryThread.getInstance().start();
@@ -121,14 +127,12 @@ public class Swerve extends SubsystemBase {
     odometryLock.unlock();
 
     // Stop moving when disabled
-    if (DriverStation.isDisabled()) {
+    if (robotState.isDisabled()) {
       for (var module : modules) {
         module.stop();
       }
-    }
 
-    // Log empty setpoint states when disabled
-    if (DriverStation.isDisabled()) {
+      // Log empty setpoint states when disabled
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }

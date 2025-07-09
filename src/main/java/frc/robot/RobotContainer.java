@@ -87,7 +87,8 @@ public class RobotContainer {
                 new SwerveModuleIODeceivers(0),
                 new SwerveModuleIODeceivers(1),
                 new SwerveModuleIODeceivers(2),
-                new SwerveModuleIODeceivers(3));
+                new SwerveModuleIODeceivers(3),
+                robotState);
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -107,7 +108,8 @@ public class RobotContainer {
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
                 new SwerveModuleIOSim(),
-                new SwerveModuleIOSim());
+                new SwerveModuleIOSim(),
+                robotState);
         vision =
             new Vision(
                 swerve::addVisionMeasurement,
@@ -126,7 +128,8 @@ public class RobotContainer {
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
                 new SwerveModuleIO() {},
-                new SwerveModuleIO() {});
+                new SwerveModuleIO() {},
+                robotState);
         vision = new Vision(swerve::addVisionMeasurement, new VisionIO() {});
         arm = new Arm(new ArmIO() {});
         gripper = new Gripper(new GripperIO() {});
