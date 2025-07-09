@@ -24,7 +24,7 @@ public class Robot extends LoggedRobot {
   private final RobotState robotState;
 
   public Robot() {
-    
+
     robotState = new RobotState();
 
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
