@@ -46,8 +46,9 @@ import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-
 public class RobotContainer {
+
+  private final RobotState robotState;
 
   // Subsystems
   public final Swerve swerve;
@@ -71,7 +72,9 @@ public class RobotContainer {
   // Permanant autos
   private Command noAuto = Commands.none();
 
-  public RobotContainer() {
+  public RobotContainer(RobotState state) {
+
+    robotState = state;
 
     leds = new Leds();
 

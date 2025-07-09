@@ -20,10 +20,12 @@ import org.littletonrobotics.urcl.URCL;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
-
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer robotContainer;
+  private final RobotState robotState;
 
   public Robot() {
+    
+    robotState = new RobotState();
 
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -48,7 +50,7 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
         if (!DriverStation.isFMSAttached()) {
-          //Don't log to network tables during real match
+          // Don't log to network tables during real match
           Logger.addDataReceiver(new NT4Publisher());
         }
         break;
@@ -78,15 +80,15 @@ public class Robot extends LoggedRobot {
     // Lower brownout voltage
     RobotController.setBrownoutVoltage(6.0);
 
-    m_robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer(robotState);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    m_robotContainer.updateAlerts();
-    m_robotContainer.updateDashboard();
+    robotContainer.updateAlerts();
+    robotContainer.updateDashboard();
   }
 
   @Override
@@ -96,17 +98,22 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    robotState.setDisabled(true);
+  }
 
   @Override
   public void disabledPeriodic() {}
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    robotState.setDisabled(false);
+  }
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    robotState.setAuto(true);
+    m_autonomousCommand = robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -117,10 +124,13 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    robotState.setAuto(false);
+  }
 
   @Override
   public void teleopInit() {
+    robotState.setTeleop(true);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -128,14 +138,17 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.OperatorLoop();
+    robotContainer.OperatorLoop();
   }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+    robotState.setTeleop(false);
+  }
 
   @Override
   public void testInit() {
+    robotState.setTest(true);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -143,5 +156,7 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {}
 
   @Override
-  public void testExit() {}
+  public void testExit() {
+    robotState.setTest(false);
+  }
 }
