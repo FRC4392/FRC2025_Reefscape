@@ -22,13 +22,13 @@ public class DeceiverLED extends SubsystemBase {
   // Startup notifier
   private final Notifier loadingNotifier;
 
-  //Robot data
+  // Robot data
   private final RobotState robotState;
 
   /** Constructor */
   public DeceiverLED(RobotState state) {
     robotState = state;
-    
+
     leds = new AddressableLED(ledPort);
     leds.setColorOrder(stripColorOrder);
     buffer = new AddressableLEDBuffer(numLEDs);

@@ -9,7 +9,7 @@ public class GripperConstants {
 
   // CAN IDs
   public static final int CoralCanId = 51;
-  public static final int AlgaeCanId = 52;
+  public static final int AlgaeCanId = 41;
 
   public static final double CoralReduction = 2;
   public static final double AlgaeReduction = 2;
