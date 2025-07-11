@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,8 +22,13 @@ public class DeceiverLED extends SubsystemBase {
   // Startup notifier
   private final Notifier loadingNotifier;
 
+  //Robot data
+  private final RobotState robotState;
+
   /** Constructor */
-  public DeceiverLED() {
+  public DeceiverLED(RobotState state) {
+    robotState = state;
+    
     leds = new AddressableLED(ledPort);
     leds.setColorOrder(stripColorOrder);
     buffer = new AddressableLEDBuffer(numLEDs);
