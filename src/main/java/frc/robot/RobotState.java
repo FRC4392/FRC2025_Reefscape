@@ -192,7 +192,7 @@ public class RobotState {
 
     if (isDisabled == true && this.isDisabled == false) {
       disabledStartTime = Timer.getFPGATimestamp();
-    } else if (isTest == false) {
+    } else if (isDisabled == false) {
       disabledStartTime = 0.0;
     }
 

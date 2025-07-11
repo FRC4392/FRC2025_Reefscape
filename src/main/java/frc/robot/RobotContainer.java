@@ -65,9 +65,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   // Roobot Alerts
-  Alert driverControllerAlert = new Alert("Driver Controller Disconnected", AlertType.kError);
-  Alert operatorControllerAlert = new Alert("Operator Controller Disconnected", AlertType.kError);
-  Alert autoAlert = new Alert("Select and autonomous mode! 😳", AlertType.kError);
+  Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
+  Alert operatorControllerAlert =
+      new Alert("Operator Controller Disconnected 🎮", AlertType.kError);
+  Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
 
   // Permanant autos
   private Command noAuto = Commands.none();
@@ -308,8 +309,7 @@ public class RobotContainer {
     operatorControllerAlert.set(!operateController.isConnected());
 
     // Check that an auto has been selected
-    autoAlert.set(
-        DriverStation.isAutonomous() && !DriverStation.isEnabled() && autoChooser.get() == noAuto);
+    autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);
   }
 
   /**
