@@ -69,10 +69,13 @@ public class Robot extends LoggedRobot {
         break;
     }
 
-    SignalLogger.start(); // Start CTRE Logger
-    Logger.registerURCL(URCL.startExternal()); // Start Rev Logger with AdvantageKit
+    // Start CTRE Logger
+    SignalLogger.start();
+    // Start Rev Logger with AdvantageKit
+    Logger.registerURCL(URCL.startExternal());
 
-    Logger.start(); // Start AdvantageKit Logger
+    // Start AdvantageKit Logger
+    Logger.start();
 
     // Remove controller disconnected message
     DriverStation.silenceJoystickConnectionWarning(true);

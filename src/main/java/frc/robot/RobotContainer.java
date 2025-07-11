@@ -72,6 +72,11 @@ public class RobotContainer {
   // Permanant autos
   private Command noAuto = Commands.none();
 
+  /**
+   * Holds all the systems of the robot
+   *
+   * @param state RobotState object to track the state of the robot
+   */
   public RobotContainer(RobotState state) {
 
     robotState = state;
@@ -202,6 +207,7 @@ public class RobotContainer {
     configureBindings();
   }
 
+  /** Used to set up bidings for triggers, joystick buttons, default commands, etc */
   private void configureBindings() {
     // Default command, normal field-relative drive
     swerve.setDefaultCommand(
@@ -314,6 +320,16 @@ public class RobotContainer {
   public void updateDashboard() {
     // Send match time to dashboard
     SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+  }
+
+  /**
+   * Place code here that should be run every loop cycle
+   *
+   * <p>Should be called robotPeriodic
+   */
+  public void periodic() {
+    updateDashboard();
+    updateAlerts();
   }
 
   /**

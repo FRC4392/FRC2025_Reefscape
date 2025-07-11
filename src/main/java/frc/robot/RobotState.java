@@ -3,9 +3,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
+import org.littletonrobotics.junction.AutoLogOutput;
 
-/** Add your docs here. */
+/** Used to track various robot states and status */
 public class RobotState {
   // Standard robot state data
 
@@ -18,11 +20,17 @@ public class RobotState {
   private boolean isTest = false;
   private boolean isDisabled = false;
 
+  private double disabledStartTime = 0.0;
+  private double teleopStartTime = 0.0;
+  private double autoStartTime = 0.0;
+  private double testStartTime = 0.0;
+
   /**
    * Get a value if the robot has been enabled since last boot
    *
    * @return True if the tobot has been enabled, false if not
    */
+  @AutoLogOutput(key = "RobotState/wasEnabled")
   public boolean getWasEnabled() {
     return wasEnabled;
   }
@@ -32,6 +40,7 @@ public class RobotState {
    *
    * @return True if auto has been entered, false if not
    */
+  @AutoLogOutput(key = "RobotState/wasAuto")
   public boolean getWasAuto() {
     return wasAuto;
   }
@@ -41,6 +50,7 @@ public class RobotState {
    *
    * @return True if teleop has been entered, false if not
    */
+  @AutoLogOutput(key = "RobotState/wasTeleop")
   public boolean getWasTeleop() {
     return wasTeleop;
   }
@@ -50,6 +60,7 @@ public class RobotState {
    *
    * @return True if test mode has been entered, false if not
    */
+  @AutoLogOutput(key = "RobotState/wasTest")
   public boolean isWasTest() {
     return wasTest;
   }
@@ -59,6 +70,7 @@ public class RobotState {
    *
    * @return True when the robot is running test, false when it is not
    */
+  @AutoLogOutput(key = "RobotState/isTest")
   public boolean isTest() {
     return isTest;
   }
@@ -71,7 +83,15 @@ public class RobotState {
    * @param isAuto true when in test, false otherwise
    */
   protected void setTest(boolean isTest) {
+
+    if (isTest == true && this.isTest == false) {
+      testStartTime = Timer.getFPGATimestamp();
+    } else if (isTest == false) {
+      testStartTime = 0.0;
+    }
+
     this.isTest = isTest;
+
     if (isTest == true) {
       wasTest = true;
     }
@@ -82,6 +102,7 @@ public class RobotState {
    *
    * @return True when the robot is running auto, false when it is not
    */
+  @AutoLogOutput(key = "RobotState/isAuto")
   public boolean isAuto() {
     return isAuto;
   }
@@ -94,7 +115,15 @@ public class RobotState {
    * @param isAuto true when in auto, false otherwise
    */
   protected void setAuto(boolean isAuto) {
+
+    if (isAuto == true && this.isAuto == false) {
+      autoStartTime = Timer.getFPGATimestamp();
+    } else if (isTest == false) {
+      autoStartTime = 0.0;
+    }
+
     this.isAuto = isAuto;
+
     if (isAuto == true) {
       wasAuto = true;
     }
@@ -105,6 +134,7 @@ public class RobotState {
    *
    * @return True when the robot is running teleop, false when it is not
    */
+  @AutoLogOutput(key = "RobotState/isTeleop")
   public boolean isTeleop() {
     return isTeleop;
   }
@@ -117,7 +147,15 @@ public class RobotState {
    * @param isTeleop true when in teleop, false otherwise
    */
   protected void setTeleop(boolean isTeleop) {
+
+    if (isTeleop == true && this.isTeleop == false) {
+      teleopStartTime = Timer.getFPGATimestamp();
+    } else if (isTest == false) {
+      teleopStartTime = 0.0;
+    }
+
     this.isTeleop = isTeleop;
+
     if (isTeleop == true) {
       wasTeleop = true;
     }
@@ -128,6 +166,7 @@ public class RobotState {
    *
    * @return True when the robot is disabled, false when it is not
    */
+  @AutoLogOutput(key = "RobotState/isDisabled")
   public boolean isDisabled() {
     return isDisabled;
   }
@@ -137,6 +176,7 @@ public class RobotState {
    *
    * @return True when the robot is enabled, false when it is not
    */
+  @AutoLogOutput(key = "RobotState/isEnabled")
   public boolean isEnabled() {
     return !isDisabled;
   }
@@ -149,10 +189,75 @@ public class RobotState {
    * @param isDisabled Current disabled state
    */
   protected void setDisabled(boolean isDisabled) {
+
+    if (isDisabled == true && this.isDisabled == false) {
+      disabledStartTime = Timer.getFPGATimestamp();
+    } else if (isTest == false) {
+      disabledStartTime = 0.0;
+    }
+
     this.isDisabled = isDisabled;
 
     if (!isDisabled) {
       this.wasEnabled = true;
+    }
+  }
+
+  /**
+   * Get the amount of time the robot has been in test mode
+   *
+   * @return time in seconds since the robot has been running in test mode, 0 if not in test mode
+   */
+  @AutoLogOutput(key = "RobotState/testTime")
+  public double getTestTime() {
+    if (isTest) {
+      return Timer.getFPGATimestamp() - testStartTime;
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * Get the amount of time the robot has been in auto mode
+   *
+   * @return time in seconds since the robot has been running in auto mode, 0 if not in auto mode
+   */
+  @AutoLogOutput(key = "RobotState/autoTime")
+  public double getAutoTime() {
+    if (isAuto) {
+      return Timer.getFPGATimestamp() - autoStartTime;
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * Get the amount of time the robot has been in teleop mode
+   *
+   * @return time in seconds since the robot has been running in teleop mode, 0 if not in teleop
+   *     mode
+   */
+  @AutoLogOutput(key = "RobotState/teleopTime")
+  public double getTeleopTime() {
+    if (isTeleop) {
+      return Timer.getFPGATimestamp() - teleopStartTime;
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * Get the amount of time the robot has been in disabled mode
+   *
+   * @return time in seconds since the robot has been running in disabled mode, 0 if not in disabled
+   *     mode
+   */
+  @AutoLogOutput(key = "RobotState/disabledTime")
+  public double getDisabledTime() {
+    if (isDisabled) {
+      return Timer.getFPGATimestamp() - disabledStartTime;
+    } else {
+      return 0.0;
     }
   }
 
@@ -172,6 +277,7 @@ public class RobotState {
    *
    * @return True if the robot is e-stopped, false otherwise.
    */
+  @AutoLogOutput(key = "RobotState/isEstopped")
   public boolean getIsEstopped() {
     return DriverStation.isEStopped();
   }
@@ -181,7 +287,36 @@ public class RobotState {
    *
    * @return True if the system is browned out
    */
+  @AutoLogOutput(key = "RobotState/isBrownedOut")
   public boolean getIsBrownedOut() {
     return RobotController.isBrownedOut();
+  }
+
+  /**
+   * Get a value indicating if the robot is on the Red alliance
+   *
+   * @return true if on red, false if not
+   */
+  @AutoLogOutput(key = "RobotState/isRed")
+  private boolean isRedAlliance() {
+    if (getAlliance().isPresent()) {
+      return getAlliance().get() == Alliance.Red;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Get a value indicating if the robot is on the Blue alliance
+   *
+   * @return true if on blue, false if not
+   */
+  @AutoLogOutput(key = "RobotState/isBlue")
+  private boolean isBlueAlliance() {
+    if (getAlliance().isPresent()) {
+      return getAlliance().get() == Alliance.Blue;
+    } else {
+      return false;
+    }
   }
 }
