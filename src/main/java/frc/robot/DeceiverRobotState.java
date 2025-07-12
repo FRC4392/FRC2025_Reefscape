@@ -8,9 +8,9 @@ import java.util.Optional;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Used to track various robot states and status */
-public class RobotState {
+public class DeceiverRobotState {
+ 
   // Standard robot state data
-
   private boolean wasEnabled = false;
   private boolean wasAuto = false;
   private boolean wasTeleop = false;

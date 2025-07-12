@@ -21,11 +21,11 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private final RobotContainer robotContainer;
-  private final RobotState robotState;
+  private final DeceiverRobotState robotState;
 
   public Robot() {
 
-    robotState = new RobotState();
+    robotState = new DeceiverRobotState();
 
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);

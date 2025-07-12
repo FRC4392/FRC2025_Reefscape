@@ -6,10 +6,11 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.DeceiverRobotState;
+
 import java.util.List;
 
 /** Subsytem that manages the LEDs of the robot */
@@ -23,10 +24,10 @@ public class DeceiverLED extends SubsystemBase {
   private final Notifier loadingNotifier;
 
   //Robot data
-  private final RobotState robotState;
+  private final DeceiverRobotState robotState;
 
   /** Constructor */
-  public DeceiverLED(RobotState state) {
+  public DeceiverLED(DeceiverRobotState state) {
     robotState = state;
     
     leds = new AddressableLED(ledPort);
@@ -87,6 +88,13 @@ public class DeceiverLED extends SubsystemBase {
       }
     } else {
       // Run user LED code here
+      if (!DriverStation.isDSAttached()) {
+        // No driver station attached play idle animation
+        breath(Section.FULL, Color.kBlue, Color.kBlack, breathDuration);
+      } else if (robotState.getIsEstopped()){
+        // Robot is estopped run alert animation
+        strobe(Section.FULL, Color.kRed, strobeFastDuration);
+      }
     }
 
     leds.setData(buffer);

@@ -48,7 +48,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
-  private final RobotState robotState;
+  private final DeceiverRobotState robotState;
 
   // Subsystems
   public final Swerve swerve;
@@ -78,7 +78,7 @@ public class RobotContainer {
    *
    * @param state RobotState object to track the state of the robot
    */
-  public RobotContainer(RobotState state) {
+  public RobotContainer(DeceiverRobotState state) {
 
     robotState = state;
 

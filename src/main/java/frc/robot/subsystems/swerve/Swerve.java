@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotConstants;
 import frc.robot.RobotConstants.Mode;
-import frc.robot.RobotState;
+import frc.robot.DeceiverRobotState;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,7 +40,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
-  private final RobotState robotState;
+  private final DeceiverRobotState robotState;
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -69,7 +69,7 @@ public class Swerve extends SubsystemBase {
       SwerveModuleIO frModuleIO,
       SwerveModuleIO blModuleIO,
       SwerveModuleIO brModuleIO,
-      RobotState robotState) {
+      DeceiverRobotState robotState) {
     this.gyroIO = gyroIO;
     modules[0] = new SwerveModule(flModuleIO, 0);
     modules[1] = new SwerveModule(frModuleIO, 1);

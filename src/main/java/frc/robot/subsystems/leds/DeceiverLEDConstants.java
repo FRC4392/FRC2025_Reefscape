@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 /** Add your docs here. */
 public class DeceiverLEDConstants {
 
+  /** Port on the roboRIO the led strip is connected to */
   public static final int ledPort = 0;
 
   /** Modes that allow for testing animations without overriding logic */
@@ -22,10 +23,14 @@ public class DeceiverLEDConstants {
     STRIPES,
   }
 
+  /** Should the led strips be in testing mode */
   public static final boolean isLedTestingMode = false;
+  /** What mode should be tested */
   public static LedTestingMode testingMode = LedTestingMode.SOLID;
 
+  /** How many leds are in the complete strip */
   public static final int numLEDs = 50;
+  //** What is the color order for the led strip */
   public static final ColorOrder stripColorOrder = ColorOrder.kRGB;
 
   // Pattern Constants
