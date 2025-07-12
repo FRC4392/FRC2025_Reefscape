@@ -38,10 +38,10 @@ public class ArmConstants {
   public static final int Extension1CanId = 31;
   public static final int Extension2CanId = 32;
 
-  public static final int WristCanId = 41;
+  public static final int WristCanId = 42;
 
   public static final int PivotCanCoderID = 21;
-  public static final int WristCanCoderID = 41;
+  public static final int WristCanCoderID = 42;
 
   // Pivot Constants
   public static final double pivotGearReduction = (52.0 * 64.0 * 84.0) / (14.0 * 18.0 * 10.0);

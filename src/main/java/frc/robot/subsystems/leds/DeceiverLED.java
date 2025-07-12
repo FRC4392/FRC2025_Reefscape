@@ -29,7 +29,7 @@ public class DeceiverLED extends SubsystemBase {
   /** Constructor */
   public DeceiverLED(DeceiverRobotState state) {
     robotState = state;
-    
+
     leds = new AddressableLED(ledPort);
     leds.setColorOrder(stripColorOrder);
     buffer = new AddressableLEDBuffer(numLEDs);
