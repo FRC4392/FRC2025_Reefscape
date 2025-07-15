@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
+  /** Inputs from vision system */
   @AutoLog
   public static class VisionIOInputs {
     public boolean connected = false;
@@ -35,11 +36,16 @@ public interface VisionIO {
       double averageTagDistance,
       PoseObservationType type) {}
 
+  /** Possible pose observation types */
   public static enum PoseObservationType {
     MEGATAG_1,
     MEGATAG_2,
     PHOTONVISION
   }
 
+  /** 
+   * Updates the set of loggable inputs.
+   * @param inputs Instance of the vision inputs
+   */
   public default void updateInputs(VisionIOInputs inputs) {}
 }

@@ -30,7 +30,7 @@ public class DeceiverLEDConstants {
 
   /** How many leds are in the complete strip */
   public static final int numLEDs = 50;
-  //** What is the color order for the led strip */
+  // ** What is the color order for the led strip */
   public static final ColorOrder stripColorOrder = ColorOrder.kRGB;
 
   // Pattern Constants

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
-
 import java.util.List;
 
 /** Subsytem that manages the LEDs of the robot */
@@ -23,7 +22,7 @@ public class DeceiverLED extends SubsystemBase {
   // Startup notifier
   private final Notifier loadingNotifier;
 
-  //Robot data
+  // Robot data
   private final DeceiverRobotState robotState;
 
   /** Constructor */
@@ -39,7 +38,6 @@ public class DeceiverLED extends SubsystemBase {
 
     // Start pattern while robot is booting
     loadingNotifier = new Notifier(this::startupAnimation);
-
     loadingNotifier.startPeriodic(0.02);
   }
 
@@ -91,7 +89,7 @@ public class DeceiverLED extends SubsystemBase {
       if (!DriverStation.isDSAttached()) {
         // No driver station attached play idle animation
         breath(Section.FULL, Color.kBlue, Color.kBlack, breathDuration);
-      } else if (robotState.getIsEstopped()){
+      } else if (robotState.getIsEstopped()) {
         // Robot is estopped run alert animation
         strobe(Section.FULL, Color.kRed, strobeFastDuration);
       }

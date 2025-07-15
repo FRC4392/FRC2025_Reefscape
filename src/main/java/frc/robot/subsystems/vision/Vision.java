@@ -18,19 +18,45 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIO.targetPoseObservation;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
+/* TODO:
+ * Better documentation
+ * Limelight IMU
+ * Limelight object detection
+ * Limelight HW logging
+ */
+
+/**
+ * Vision Subsystem manages all the cameras on the robot
+ */
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private EnumMap<PoseObservationType, Boolean> allowedPoseTypes =
+      new EnumMap<>(PoseObservationType.class);
 
+  /**
+   * Constructor
+   *
+   * @param consumer vision consumer to called when a vision observation is made
+   * @param io array of IO implementations for vision
+   */
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
+
+    // Initialize allowed pose observations
+    for (PoseObservationType poseType : PoseObservationType.values()) {
+      allowedPoseTypes.put(poseType, false);
+    }
+    // Default to using megatag 1
+    allowedPoseTypes.put(PoseObservationType.MEGATAG_1, true);
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -74,6 +100,7 @@ public class Vision extends SubsystemBase {
     return ((int) inputs[cameraIndex].latestTargetObservation.tid());
   }
 
+  // Might delete
   public targetPoseObservation getLastTargetPoseObservation(int cameraIndex) {
     return inputs[cameraIndex].lastTargetPoseObservation;
   }
@@ -130,7 +157,10 @@ public class Vision extends SubsystemBase {
                 || observation.pose().getX() < 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
                 || observation.pose().getY() < 0.0
-                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
+                || observation.pose().getY() > aprilTagLayout.getFieldWidth()
+
+                // Reject if it is not an allowed type
+                || !allowedPoseTypes.get(observation.type()).booleanValue();
 
         // Add pose to log
         robotPoses.add(observation.pose());
@@ -203,8 +233,26 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/TargetPoses",
         allTargetPoseObservations.toArray(new Pose3d[allTargetPoseObservations.size()]));
+    for (PoseObservationType poseType : PoseObservationType.values()) {
+      Logger.recordOutput(
+          "Vision/Summary/AllowedPoseTypes/" + poseType.name(),
+          allowedPoseTypes.get(poseType).booleanValue());
+    }
   }
 
+  /**
+   * Set if a certain pose observation type is allowed to be used or not
+   *
+   * @param poseType The specified pose observation type
+   * @param isAllowed true if it is allowed to be used, false if not
+   */
+  public void setIfPoseTypeAllowed(PoseObservationType poseType, boolean isAllowed) {
+    allowedPoseTypes.put(poseType, isAllowed);
+  }
+
+  /**
+   * Vision consumer interface, describes a pose estimation from a camera
+   */
   @FunctionalInterface
   public static interface VisionConsumer {
     public void accept(

@@ -25,14 +25,15 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
 
+    // Create new robot state
     robotState = new DeceiverRobotState();
 
+    // Record metadata about the git version for future reference
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-
     switch (BuildConstants.DIRTY) {
       case 0:
         Logger.recordMetadata("GitDirty", "All changes committed");
@@ -45,6 +46,7 @@ public class Robot extends LoggedRobot {
         break;
     }
 
+    // Set up logging based on robot mode
     switch (RobotConstants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
@@ -83,36 +85,44 @@ public class Robot extends LoggedRobot {
     // Lower brownout voltage
     RobotController.setBrownoutVoltage(6.0);
 
+    // Create robot container
     robotContainer = new RobotContainer(robotState);
   }
 
+  // Runs every loop cycle
   @Override
   public void robotPeriodic() {
+    // Run command scheduler
     CommandScheduler.getInstance().run();
 
-    robotContainer.updateAlerts();
-    robotContainer.updateDashboard();
+    // Update robot container
+    robotContainer.periodic();
   }
 
+  // Runs when robot is first started
   @Override
   public void robotInit() {
     // Warm up PathPlanner to reduce delay on auto init
     FollowPathCommand.warmupCommand().schedule();
   }
 
+  // Runs when entering disabled mode
   @Override
   public void disabledInit() {
     robotState.setDisabled(true);
   }
 
+  // Runs every loop cycle while disabled
   @Override
   public void disabledPeriodic() {}
 
+  // Runs when leaving disabled
   @Override
   public void disabledExit() {
     robotState.setDisabled(false);
   }
 
+  // Runs when entering autonomous
   @Override
   public void autonomousInit() {
     robotState.setAuto(true);
@@ -123,14 +133,17 @@ public class Robot extends LoggedRobot {
     }
   }
 
+  // Runs every loop cycle while enabled in autonmous mode
   @Override
   public void autonomousPeriodic() {}
 
+  // Runs when leaving autonomous mode
   @Override
   public void autonomousExit() {
     robotState.setAuto(false);
   }
 
+  // Runs when entering autonomous mode
   @Override
   public void teleopInit() {
     robotState.setTeleop(true);
@@ -139,25 +152,30 @@ public class Robot extends LoggedRobot {
     }
   }
 
+  // Runs every loop cycle while enabled in teleoperated mode
   @Override
   public void teleopPeriodic() {
     robotContainer.OperatorLoop();
   }
 
+  // Runs when leaving autonomous mode
   @Override
   public void teleopExit() {
     robotState.setTeleop(false);
   }
 
+  // Runs when entering test mode
   @Override
   public void testInit() {
     robotState.setTest(true);
     CommandScheduler.getInstance().cancelAll();
   }
 
+  // Runs every loop cycle while enabled in test mode
   @Override
   public void testPeriodic() {}
 
+  // Runs when leaving test mode
   @Override
   public void testExit() {
     robotState.setTest(false);

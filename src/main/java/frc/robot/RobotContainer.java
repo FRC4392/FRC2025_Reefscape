@@ -42,10 +42,13 @@ import frc.robot.subsystems.swerve.SwerveModuleIOSim;
 import frc.robot.subsystems.swerve.SwerveState;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
+/** Class to contain all the parts/subsystems of the robot */
 public class RobotContainer {
 
   private final DeceiverRobotState robotState;
@@ -63,6 +66,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  LoggedNetworkBoolean resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
 
   // Roobot Alerts
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
@@ -74,13 +78,15 @@ public class RobotContainer {
   private Command noAuto = Commands.none();
 
   /**
-   * Holds all the systems of the robot
+   * Constructor
    *
    * @param state RobotState object to track the state of the robot
    */
   public RobotContainer(DeceiverRobotState state) {
 
     robotState = state;
+
+    resetRobotStateBoolean.setDefault(false);
 
     leds = new Leds();
 
@@ -210,6 +216,28 @@ public class RobotContainer {
 
   /** Used to set up bidings for triggers, joystick buttons, default commands, etc */
   private void configureBindings() {
+    Trigger robotWasEnabled = new Trigger(robotState::getWasEnabled);
+
+    robotWasEnabled
+        .onTrue(
+            Commands.runOnce(
+                    () -> {
+                      // When robot enables for the first time, use MEGATAG 2 for loacalization, use
+                      // MEGATAG 1 before enabled to localize robot and rotation
+                      vision.setIfPoseTypeAllowed(PoseObservationType.MEGATAG_1, false);
+                      vision.setIfPoseTypeAllowed(PoseObservationType.MEGATAG_2, true);
+                    })
+                .ignoringDisable(true))
+        .onFalse(
+            Commands.runOnce(
+                    () -> {
+                      // When robot enables for the first time, use MEGATAG 2 for loacalization, use
+                      // MEGATAG 1 before enabled to localize robot and rotation
+                      vision.setIfPoseTypeAllowed(PoseObservationType.MEGATAG_1, true);
+                      vision.setIfPoseTypeAllowed(PoseObservationType.MEGATAG_2, false);
+                    })
+                .ignoringDisable(true));
+
     // Default command, normal field-relative drive
     swerve.setDefaultCommand(
         SwerveCommands.joystickDrive(
@@ -303,7 +331,7 @@ public class RobotContainer {
    *
    * <p>Should be called periodically
    */
-  public void updateAlerts() {
+  private void updateAlerts() {
     // Check if joysticks are unplugged
     driverControllerAlert.set(!driveController.isConnected());
     operatorControllerAlert.set(!operateController.isConnected());
@@ -317,9 +345,14 @@ public class RobotContainer {
    *
    * <p>Should be called periodically
    */
-  public void updateDashboard() {
+  private void updateDashboard() {
     // Send match time to dashboard
     SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+
+    if (resetRobotStateBoolean.get() && robotState.isDisabled() && !DriverStation.isFMSAttached()) {
+      robotState.resetState();
+      resetRobotStateBoolean.set(false);
+    }
   }
 
   /**

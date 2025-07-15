@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 
 /** Used to track various robot states and status */
 public class DeceiverRobotState {
- 
+
   // Standard robot state data
   private boolean wasEnabled = false;
   private boolean wasAuto = false;
@@ -317,6 +317,23 @@ public class DeceiverRobotState {
       return getAlliance().get() == Alliance.Blue;
     } else {
       return false;
+    }
+  }
+
+  /** Resets the robot state to initial startup. Only works if the robot is currently disabled. */
+  protected void resetState() {
+    if (isDisabled) {
+      wasEnabled = false;
+      wasAuto = false;
+      wasTeleop = false;
+      wasTest = false;
+      isAuto = false;
+      isTeleop = false;
+      isTest = false;
+      disabledStartTime = 0.0;
+      teleopStartTime = 0.0;
+      autoStartTime = 0.0;
+      testStartTime = 0.0;
     }
   }
 }

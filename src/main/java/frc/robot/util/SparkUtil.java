@@ -20,6 +20,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+/** Utility class for handling Rev Spark based motor controllers */
 public class SparkUtil {
   /** Stores whether any error was has been detected by other utility methods. */
   public static boolean sparkStickyFault = false;
