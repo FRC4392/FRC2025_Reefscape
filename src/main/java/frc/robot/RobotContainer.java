@@ -8,7 +8,6 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -192,19 +191,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Set up auto routines
-    autoChooser.addOption("Secret Auto", new PathPlannerAuto("Secret Auto"));
-
-    autoChooser.addOption("Left 1", new PathPlannerAuto("Preset_Left_Test_1"));
-    autoChooser.addOption("Left 2", new PathPlannerAuto("Preset_Left_Test_2"));
-    autoChooser.addOption("Left 3", new PathPlannerAuto("Preset_Left_Test_3"));
-    autoChooser.addOption("Left 4", new PathPlannerAuto("Preset_Left_Test_4"));
-
-    autoChooser.addOption("Right 1", new PathPlannerAuto("Preset_Right_Test_1"));
-    autoChooser.addOption("Right 2", new PathPlannerAuto("Preset_Right_Test_2"));
-    autoChooser.addOption("Right 3", new PathPlannerAuto("Preset_Right_Test_3"));
-    autoChooser.addOption("Right 4", new PathPlannerAuto("Preset_Right_Test_4"));
-    autoChooser.addOption("Test Auto", new PathPlannerAuto("New Auto"));
     autoChooser.addDefaultOption("None", noAuto);
 
     // Set up LED suppliers
@@ -253,8 +239,6 @@ public class RobotContainer {
     // Smart Outttake
     driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
 
-    driveController.b().whileTrue(Commands.run(() -> gripper.setClimberVoltage(12), gripper));
-
     // Auto align to left branch from driver view
     driveController
         .leftBumper()
@@ -270,31 +254,6 @@ public class RobotContainer {
 
     // Put drive in X position
     driveController.x().whileTrue(SwerveCommands.stopWithX(swerve));
-
-    Trigger testTrigger =
-        new Trigger(
-            () -> {
-              return operateController.getLeftTriggerAxis()
-                      + operateController.getRightTriggerAxis()
-                  > 0;
-            });
-    testTrigger.onTrue(
-        Commands.sequence(
-            ArmCommands.setArmPosition(
-                    arm, Rotation2d.fromDegrees(90), 0, Rotation2d.fromDegrees(50))
-                .until(() -> arm.getArmInPosition()),
-            ArmCommands.joystickArmControl(
-                    arm,
-                    () -> {
-                      return operateController.getLeftY();
-                    },
-                    () -> {
-                      return 0.0;
-                    },
-                    () -> {
-                      return 0.0;
-                    })
-                .until(testTrigger.negate())));
   }
 
   // This need to be replaced

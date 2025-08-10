@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
+/** Main robot class, do not modify */
 public final class Main {
   private Main() {}
 

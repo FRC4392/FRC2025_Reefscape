@@ -1,25 +1,11 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -51,6 +37,8 @@ public class SwerveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double SLOW_SPEED_PERCENTAGE =
+      0.75; // Percentage of full speed when in slow mode
 
   private static final double ReefOffsetRight = Units.inchesToMeters(-6.5); // Meters
   private static final double ReefOffsetLeft = Units.inchesToMeters(6.5); // Meters
@@ -63,6 +51,17 @@ public class SwerveCommands {
 
   private SwerveCommands() {}
 
+  /**
+   * Helper function to get linear velocity of the joysticks.
+   *
+   * <p>Takes raw inputs from a joysticks axis and converts them to a linear movement. Deadband is
+   * applied to the linear distance and then the the value is squared to give the driver finer
+   * control.
+   *
+   * @param x Position of the x axis of the joystick in range -1 to 1
+   * @param y Position of the x axis of the joystick in range -1 to 1
+   * @return Translation2D that represents the linear velocity from the joysticks
+   */
   private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
@@ -72,13 +71,18 @@ public class SwerveCommands {
     linearMagnitude = linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
-    return new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-        .getTranslation();
+    return new Translation2d(linearMagnitude, linearDirection);
   }
 
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   *
+   * @param drive Swerve Drive dependancy
+   * @param xSupplier DoubleSupplier that supplies the x position of the joystick
+   * @param ySupplier DoubleSupplier that supplies the y position of the joystick
+   * @param omegaSupplier DoubleSupplier that supplies the rotation position of the joystick
+   * @param fastMode BooleanSupplier that indicates if the robot should travel full speed or not
+   * @return Command that is used for joystick drive
    */
   public static Command joystickDrive(
       Swerve drive,
@@ -89,15 +93,17 @@ public class SwerveCommands {
     return Commands.run(
         () -> {
           drive.setSwerveState(SwerveState.joystickDrive);
-          double multiplier = fastMode.getAsBoolean() ? 1 : .75;
-          // Get linear velocity
+          double multiplier = fastMode.getAsBoolean() ? 1 : SLOW_SPEED_PERCENTAGE;
+
+          // Get linear velocity multiplied by speed scalar
           Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(
-                  xSupplier.getAsDouble() * multiplier, ySupplier.getAsDouble() * multiplier);
+              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                  .times(multiplier);
 
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
+          // Apply speed scalar
           omega = omega * multiplier;
 
           // Square rotation value for more precise control
@@ -109,9 +115,11 @@ public class SwerveCommands {
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec());
+
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
+
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   speeds,
@@ -126,12 +134,20 @@ public class SwerveCommands {
    * Field relative drive command using joystick for linear control and PID for angular control.
    * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
    * absolute rotation with a joystick.
+   *
+   * @param drive Swerve Drive dependancy
+   * @param xSupplier DoubleSupplier that supplies the x position of the joystick
+   * @param ySupplier DoubleSupplier that supplies the y position of the joystick
+   * @param rotationSupplier Rotation2D Supplied that supplies the specified angle of the drivetrain
+   * @param fastMode BooleanSupplier that indicates if the robot should travel full speed or not
+   * @return Command for driving with joystick at a specified angle
    */
   public static Command joystickDriveAtAngle(
       Swerve drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      Supplier<Rotation2d> rotationSupplier) {
+      Supplier<Rotation2d> rotationSupplier,
+      BooleanSupplier fastMode) {
 
     // Create PID controller
     ProfiledPIDController angleController =
@@ -146,9 +162,11 @@ public class SwerveCommands {
     return Commands.run(
             () -> {
               drive.setSwerveState(SwerveState.joystickDrive);
+              double multiplier = fastMode.getAsBoolean() ? 1 : SLOW_SPEED_PERCENTAGE;
               // Get linear velocity
               Translation2d linearVelocity =
-                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+                  getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                      .times(multiplier);
 
               // Calculate angular speed
               double omega =
@@ -177,11 +195,13 @@ public class SwerveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
-  /**
-   * Measures the velocity feedforward constants for the drive motors.
+   /**
+    * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.
-   */
+    * @param drive Swerve Drive dependency
+    * @return Command to measure feedforward
+    */
   public static Command feedforwardCharacterization(Swerve drive) {
     List<Double> velocitySamples = new LinkedList<>();
     List<Double> voltageSamples = new LinkedList<>();
@@ -241,7 +261,12 @@ public class SwerveCommands {
                 }));
   }
 
-  /** Measures the robot's wheel radius by spinning in a circle. */
+  /**
+   * Measures the robot's wheel radius by spinning in a circle and comparing distance traveled to angle moved
+   * 
+   * @param drive Swerve Drive dependancy
+   * @return Command to measure wheel radius
+   */
   public static Command wheelRadiusCharacterization(Swerve drive) {
     SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
     WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
@@ -423,6 +448,12 @@ public class SwerveCommands {
         });
   }
 
+  /**
+   * Stop the swerve drive and position the wheels in an X pattern
+   *
+   * @param swerve Swerve Drive dependancy
+   * @return Command to stop the drivetrain
+   */
   public static Command stopWithX(Swerve swerve) {
     return Commands.run(
         () -> {
