@@ -40,13 +40,13 @@ public class Arm extends SubsystemBase {
         case L1:
           return Rotation2d.fromDegrees(5); // 20
         case L2:
-          return Rotation2d.fromDegrees(20);
+          return Rotation2d.fromDegrees(0);
         case L3:
           return Rotation2d.fromDegrees(93);
         case L4:
           return Rotation2d.fromDegrees(91);
         case ALGAE1:
-          return Rotation2d.fromDegrees(103);
+          return Rotation2d.fromDegrees(120);
         case ALGAE2:
           return Rotation2d.fromDegrees(93);
         case BARGE:
@@ -54,7 +54,7 @@ public class Arm extends SubsystemBase {
         case CLIMB:
           return Rotation2d.fromDegrees(93);
         case INTAKE:
-          return Rotation2d.fromDegrees(25);
+          return Rotation2d.fromDegrees(0);
         case PROCESSOR:
           return minAngle.plus(Rotation2d.fromDegrees(14));
         default:
@@ -77,7 +77,7 @@ public class Arm extends SubsystemBase {
         case ALGAE1:
           return Units.inchesToMeters(0);
         case ALGAE2:
-          return Units.inchesToMeters(6);
+          return Units.inchesToMeters(3);
         case BARGE:
           return Units.inchesToMeters(17);
         case CLIMB:
@@ -94,25 +94,26 @@ public class Arm extends SubsystemBase {
     public Rotation2d wrist() {
       switch (this) {
         case HOME:
-          return new Rotation2d();
+          // return new Rotation2d();
+          return Rotation2d.fromDegrees(0);
         case L1:
           return Rotation2d.fromDegrees(60);
         case L2:
-          return Rotation2d.fromDegrees(65);
+          return Rotation2d.fromDegrees(90);
         case L3:
           return Rotation2d.fromDegrees(50);
         case L4:
           return Rotation2d.fromDegrees(40);
         case ALGAE1:
-          return Rotation2d.fromDegrees(60);
+          return Rotation2d.fromDegrees(0);
         case ALGAE2:
-          return Rotation2d.fromDegrees(60);
+          return Rotation2d.fromDegrees(0);
         case BARGE:
           return Rotation2d.fromDegrees(115);
         case CLIMB:
           return Rotation2d.fromDegrees(90);
         case INTAKE:
-          return Rotation2d.fromDegrees(90);
+          return Rotation2d.fromDegrees(95);
         case PROCESSOR:
           return Rotation2d.fromDegrees(180);
         default:
