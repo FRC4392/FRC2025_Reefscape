@@ -29,7 +29,7 @@ import frc.robot.subsystems.gripper.Gripper;
 import frc.robot.subsystems.gripper.GripperCommands;
 import frc.robot.subsystems.gripper.GripperIO;
 import frc.robot.subsystems.gripper.GripperIOSIm;
-import frc.robot.subsystems.gripper.GripperIOSpark;
+import frc.robot.subsystems.gripper.GripperIOTalon;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
@@ -109,7 +109,7 @@ public class RobotContainer {
                 new VisionIOLimelight(camera2Name, swerve::getRotation));
 
         arm = new Arm(new ArmIOTalonFX());
-        gripper = new Gripper(new GripperIOSpark());
+        gripper = new Gripper(new GripperIOTalon());
         break;
 
       case SIM:
@@ -248,10 +248,10 @@ public class RobotContainer {
             () -> driveController.getHID().getAButton()));
 
     // Smart Intake
-    driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
+    driveController.leftStick().whileTrue(GripperCommands.algaeIntake(gripper));
 
     // Smart Outttake
-    driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+    driveController.rightStick().whileTrue(GripperCommands.algaeOutake(gripper));
 
     driveController.b().whileTrue(Commands.run(() -> gripper.setClimberVoltage(12), gripper));
 

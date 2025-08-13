@@ -30,9 +30,7 @@ import org.littletonrobotics.junction.Logger;
  * Limelight HW logging
  */
 
-/**
- * Vision Subsystem manages all the cameras on the robot
- */
+/** Vision Subsystem manages all the cameras on the robot */
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
@@ -250,9 +248,7 @@ public class Vision extends SubsystemBase {
     allowedPoseTypes.put(poseType, isAllowed);
   }
 
-  /**
-   * Vision consumer interface, describes a pose estimation from a camera
-   */
+  /** Vision consumer interface, describes a pose estimation from a camera */
   @FunctionalInterface
   public static interface VisionConsumer {
     public void accept(

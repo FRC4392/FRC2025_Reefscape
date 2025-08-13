@@ -168,7 +168,7 @@ public class ArmConstants {
                       DegreesPerSecondPerSecond.of(10000.0).in(RotationsPerSecondPerSecond)));
 
   // Wrist Constants
-  public static final double wristReduction = (56.0 * 40.0 * 36.0) / (10.0 * 15.0 * 15.0);
+  public static final double wristReduction = (56.0 * 40.0 * 34.0) / (10.0 * 15.0 * 15.0);
   public static final DCMotor wristGearbox = DCMotor.getKrakenX60Foc(1);
 
   public static final ClosedLoopControlType wristControlType = ClosedLoopControlType.Voltage;
@@ -192,10 +192,11 @@ public class ArmConstants {
                   .withSupplyCurrentLimitEnable(true))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withFeedbackRemoteSensorID(WristCanId)
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  // .withFeedbackRemoteSensorID(WristCanId)
                   .withRotorToSensorRatio(wristReduction)
-                  .withSensorToMechanismRatio(1))
+              // .withSensorToMechanismRatio(1)
+              )
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.CounterClockwise_Positive)

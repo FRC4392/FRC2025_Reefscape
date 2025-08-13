@@ -43,8 +43,9 @@ public interface VisionIO {
     PHOTONVISION
   }
 
-  /** 
+  /**
    * Updates the set of loggable inputs.
+   *
    * @param inputs Instance of the vision inputs
    */
   public default void updateInputs(VisionIOInputs inputs) {}
