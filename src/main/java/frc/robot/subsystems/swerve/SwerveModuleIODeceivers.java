@@ -42,6 +42,7 @@ import edu.wpi.first.units.measure.Voltage;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
+/** Represents a single swerve module IO */
 public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final Rotation2d zeroRotation;
 
@@ -80,6 +81,18 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
   private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
   private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
 
+  /**
+   * Constructor for swerve module
+   * <p>
+   * Must supply a module number:
+   * <ol>
+   * <li>front left module
+   * <li>front right module
+   * <li>back left module
+   * <li>back right module
+   * </ol>
+   * @param module Module number
+   */
   public SwerveModuleIODeceivers(int module) {
 
     zeroRotation =

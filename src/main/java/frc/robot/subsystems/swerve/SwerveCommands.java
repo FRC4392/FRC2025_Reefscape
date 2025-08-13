@@ -337,6 +337,7 @@ public class SwerveCommands {
                     })));
   }
 
+  //Replace
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
     @SuppressWarnings("resource")
     PIDController strafeController = new PIDController(4, 0, 0); // 0.08
@@ -380,7 +381,7 @@ public class SwerveCommands {
 
           if (closestTag == -1) {
             swerve.runVelocity(new ChassisSpeeds());
-            swerve.setSwerveState(SwerveState.autoAlignFail);
+            swerve.setSwerveState(SwerveState.autoDriveFail);
             return;
           }
 
@@ -438,9 +439,9 @@ public class SwerveCommands {
           if (strafeController.atSetpoint()
               && forwardController.atSetpoint()
               && angleController.atSetpoint()) {
-            swerve.setSwerveState(SwerveState.autoAlignDone);
+            swerve.setSwerveState(SwerveState.autoDriveDone);
           } else {
-            swerve.setSwerveState(SwerveState.autoAlignInProgress);
+            swerve.setSwerveState(SwerveState.autoDriveInProgress);
           }
 
           ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, 0);

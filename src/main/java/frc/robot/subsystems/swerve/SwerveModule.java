@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
 
-/** Add your docs here. */
+/** Represents a single swerve module */
 public class SwerveModule {
   private final SwerveModuleIO io;
   private final SwerveModuleIOInputsAutoLogged inputs = new SwerveModuleIOInputsAutoLogged();
@@ -24,6 +24,20 @@ public class SwerveModule {
 
   private SwerveModulePosition[] odometryPositions = new SwerveModulePosition[] {};
 
+  /**
+   * Constructor of swerve module
+   * <p>
+   * Supply with Swerve IO instance and index number of module.
+   * Standard numbering is as follows:
+   * <ol>
+   * <li>front left module
+   * <li>front right module
+   * <li>back left module
+   * <li>back right module
+   * </ol>
+   * @param io IO instance of the swerve module
+   * @param index Number of the swerve module
+   */
   public SwerveModule(SwerveModuleIO io, int index) {
     this.io = io;
     this.index = index;

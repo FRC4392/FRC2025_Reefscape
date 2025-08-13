@@ -130,13 +130,13 @@ public class Leds extends SubsystemBase {
           case joystickDrive:
             strobe(Section.FULL, Color.kDarkRed, strobeFastDuration);
             break;
-          case autoAlignDone:
+          case autoDriveDone:
             strobe(Section.FULL, Color.kGreen, strobeFastDuration);
             break;
-          case autoAlignFail:
+          case autoDriveFail:
             strobe(Section.FULL, Color.kRed, strobeFastDuration);
             break;
-          case autoAlignInProgress:
+          case autoDriveInProgress:
             solid(Section.FULL, Color.kYellow);
             break;
           case stopWithX:

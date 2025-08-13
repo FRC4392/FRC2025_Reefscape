@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotConstants.Mode;
+import frc.robot.operatorinterface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.Arm.ArmPosition;
 import frc.robot.subsystems.arm.ArmCommands;
@@ -59,13 +61,15 @@ public class RobotContainer {
   public final Gripper gripper;
   public final Leds leds;
 
+  //TODO: Convert to an operator interface class
   // Controllers
   private final CommandXboxController driveController = new CommandXboxController(0);
   private final CommandXboxController operateController = new CommandXboxController(1);
+  //private final OperatorInterface operatorInterface;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  LoggedNetworkBoolean resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
+  private final LoggedNetworkBoolean resetRobotStateBoolean;
 
   // Roobot Alerts
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
@@ -83,10 +87,12 @@ public class RobotContainer {
    */
   public RobotContainer(DeceiverRobotState state) {
 
+    //Setup robot state
     robotState = state;
-
+    resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
     resetRobotStateBoolean.setDefault(false);
 
+    //Configure subsystems
     leds = new Leds();
 
     switch (RobotConstants.currentMode) {
@@ -147,6 +153,23 @@ public class RobotContainer {
         break;
     }
 
+    //TODO: transfer to the new LED class
+    // Set up LED suppliers
+    leds.setGripperSupplier(gripper::getState);
+    leds.setSwerveSupplier(swerve::getSwerveState);
+
+    // Build auto chooser automatically from path planner autos
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // Configure aditional auto modes and auto bindings
+    configureAutoModes();
+
+    //Configure Operator interface
+    //operatorInterface = new OperatorInterface();
+    //Configure command bindings
+    configureBindings();
+  }
+
+  private void configureAutoModes(){
     // Set up named commands
     NamedCommands.registerCommand(
         "MoveToUpTravel",
@@ -159,12 +182,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "AutoAlignRightWithTimeout",
         SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
-            .until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone)
+            .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
             .withTimeout(1.0));
     NamedCommands.registerCommand(
         "AutoAlignLeftWithTimeout",
         SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
-            .until(() -> swerve.getSwerveState() == SwerveState.autoAlignDone)
+            .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
             .withTimeout(1.0));
     NamedCommands.registerCommand(
         "ejectCoral", GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
@@ -172,32 +195,27 @@ public class RobotContainer {
         "MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
     NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntakeAuto(gripper));
 
-    // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // Set up auto other routines
+    if (RobotConstants.realMode == Mode.COMMISIONING) {
+      // Set up SysId routines
+      autoChooser.addOption(
+          "Drive Wheel Radius Characterization", SwerveCommands.wheelRadiusCharacterization(swerve));
+      autoChooser.addOption(
+          "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Forward)",
+          swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Reverse)",
+          swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
 
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", SwerveCommands.wheelRadiusCharacterization(swerve));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
+    //Add default auto to be do nothing
     autoChooser.addDefaultOption("None", noAuto);
-
-    // Set up LED suppliers
-    leds.setGripperSupplier(gripper::getState);
-    leds.setSwerveSupplier(swerve::getSwerveState);
-
-    configureBindings();
   }
 
   /** Used to set up bidings for triggers, joystick buttons, default commands, etc */

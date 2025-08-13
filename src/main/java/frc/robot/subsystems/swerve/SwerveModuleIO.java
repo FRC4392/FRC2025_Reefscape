@@ -7,8 +7,9 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
-/** Add your docs here. */
+/** Defines IO interface to a swerve module */
 public interface SwerveModuleIO {
+  /** Defines the inputs coming from a swerve module */
   @AutoLog
   public static class SwerveModuleIOInputs {
     public boolean driveConnected = false;

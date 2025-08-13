@@ -23,6 +23,7 @@ public class Robot extends LoggedRobot {
   private final RobotContainer robotContainer;
   private final DeceiverRobotState robotState;
 
+  /** Main robot class */
   public Robot() {
 
     // Create new robot state

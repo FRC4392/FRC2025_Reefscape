@@ -1,15 +1,17 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.swerve;
 
-/** Add your docs here. */
+/** Represents the different control states of a swerve */
 public enum SwerveState {
+  /** Driving under manual joystick control */
   joystickDrive,
+  /** Stopped with wheels in an x pattern */
   stopWithX,
-  autoAlignInProgress,
-  autoAlignDone,
-  autoAlignFail,
+  /** Automatically driving to setpoint of following path */
+  autoDriveInProgress,
+  /** Finished automatically driving */
+  autoDriveDone,
+  /** Automatic drive failed */
+  autoDriveFail,
+  /** Unknown state */
   other;
 }

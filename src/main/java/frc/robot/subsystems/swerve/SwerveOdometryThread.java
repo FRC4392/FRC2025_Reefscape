@@ -19,7 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 
-/** Add your docs here. */
+/** Thread to update odometry at a faster rate than the main roborio thread */
 public class SwerveOdometryThread {
 
   private final Lock signalsLock =
@@ -38,6 +38,10 @@ public class SwerveOdometryThread {
 
   private Notifier notifier = new Notifier(this::run);
 
+  /**
+   * Get the singleton instance of the thread
+   * @return Odometry thread instance
+   */
   public static SwerveOdometryThread getInstance() {
     if (instance == null) {
       instance = new SwerveOdometryThread();
@@ -45,10 +49,12 @@ public class SwerveOdometryThread {
     return instance;
   }
 
+  /** Constructor */
   private SwerveOdometryThread() {
     notifier.setName("OdometryThread");
   }
 
+  /** Start running the thread */
   public void start() {
     if (timestampQueues.size() > 0) {
       notifier.startPeriodic(1.0 / SwerveConstants.odometryFrequencyHz);
@@ -112,6 +118,7 @@ public class SwerveOdometryThread {
     return queue;
   }
 
+  /** Thread main loop */
   private void run() {
     boolean isValid = true;
 

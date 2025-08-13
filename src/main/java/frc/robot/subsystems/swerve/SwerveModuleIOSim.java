@@ -13,7 +13,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-/** Add your docs here. */
+/** Swerve drive simulation */
 public class SwerveModuleIOSim implements SwerveModuleIO {
   private final DCMotorSim driveSim;
   private final DCMotorSim azimuthSim;
@@ -26,6 +26,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
   private double driveAppliedVolts = 0.0;
   private double azimuthAppliedVolts = 0.0;
 
+  /** Constructor */
   public SwerveModuleIOSim() {
     // Create drive and azimuth sim models
     driveSim =

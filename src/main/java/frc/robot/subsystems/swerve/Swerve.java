@@ -62,7 +62,15 @@ public class Swerve extends SubsystemBase {
 
   private SwerveState state = SwerveState.other;
 
-  /** Creates a new swerve. */
+  /**
+   * Create a new swerve subsystem
+   * @param gyroIO IO interface of the gyroscope
+   * @param flModuleIO IO interface of the front left module
+   * @param frModuleIO IO interface of the front right module
+   * @param blModuleIO IO interface of the back left module
+   * @param brModuleIO IO interface of the back right module
+   * @param robotState Instance of the robot state
+   */
   public Swerve(
       GyroIO gyroIO,
       SwerveModuleIO flModuleIO,
@@ -249,6 +257,11 @@ public class Swerve extends SubsystemBase {
     return state;
   }
 
+  //TODO: can we handle this inside the swerve instead of relying on commands?
+  /**
+   * set the new state of the swerve drive
+   * @param newState new state
+   */
   public void setSwerveState(SwerveState newState) {
     state = newState;
   }
