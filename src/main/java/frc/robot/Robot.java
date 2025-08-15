@@ -18,12 +18,13 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
+/** Main robot class */
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
   private final RobotContainer robotContainer;
   private final DeceiverRobotState robotState;
 
-  /** Main robot class */
+  /** Constructor */
   public Robot() {
 
     // Create new robot state
@@ -49,13 +50,16 @@ public class Robot extends LoggedRobot {
 
     // Set up logging based on robot mode
     switch (RobotConstants.currentMode) {
+      case COMMISIONING:
+        // Don't log to network tables during real match
+        // Probably always false at this point, but doesn't hurt to check
+        if (!DriverStation.isFMSAttached()) {
+          Logger.addDataReceiver(new NT4Publisher());
+        }
+        // Fall through
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new WPILOGWriter());
-        if (!DriverStation.isFMSAttached()) {
-          // Don't log to network tables during real match
-          Logger.addDataReceiver(new NT4Publisher());
-        }
         break;
 
       case SIM:
@@ -80,7 +84,7 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit Logger
     Logger.start();
 
-    // Remove controller disconnected message
+    // Remove controller disconnected message, we handle this on our own
     DriverStation.silenceJoystickConnectionWarning(true);
 
     // Lower brownout voltage

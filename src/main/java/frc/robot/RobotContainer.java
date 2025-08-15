@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotConstants.Mode;
@@ -61,20 +60,14 @@ public class RobotContainer {
   public final Gripper gripper;
   public final Leds leds;
 
-  //TODO: Convert to an operator interface class
-  // Controllers
-  private final CommandXboxController driveController = new CommandXboxController(0);
-  private final CommandXboxController operateController = new CommandXboxController(1);
-  //private final OperatorInterface operatorInterface;
+  // Operator Interface
+  private final OperatorInterface operatorInterface;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedNetworkBoolean resetRobotStateBoolean;
 
   // Roobot Alerts
-  Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
-  Alert operatorControllerAlert =
-      new Alert("Operator Controller Disconnected 🎮", AlertType.kError);
   Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
 
   // Permanant autos
@@ -87,12 +80,12 @@ public class RobotContainer {
    */
   public RobotContainer(DeceiverRobotState state) {
 
-    //Setup robot state
+    // Setup robot state
     robotState = state;
     resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
     resetRobotStateBoolean.setDefault(false);
 
-    //Configure subsystems
+    // Configure subsystems
     leds = new Leds();
 
     switch (RobotConstants.currentMode) {
@@ -153,23 +146,22 @@ public class RobotContainer {
         break;
     }
 
-    //TODO: transfer to the new LED class
+    // TODO: transfer to the new LED class
     // Set up LED suppliers
     leds.setGripperSupplier(gripper::getState);
     leds.setSwerveSupplier(swerve::getSwerveState);
 
-    // Build auto chooser automatically from path planner autos
+    // Build auto chooser automatically from path planner autos and add any extra autos/auto
+    // triggers
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    // Configure aditional auto modes and auto bindings
     configureAutoModes();
 
-    //Configure Operator interface
-    //operatorInterface = new OperatorInterface();
-    //Configure command bindings
+    // Configure Operator interface and set up command bindings
+    operatorInterface = new OperatorInterface();
     configureBindings();
   }
 
-  private void configureAutoModes(){
+  private void configureAutoModes() {
     // Set up named commands
     NamedCommands.registerCommand(
         "MoveToUpTravel",
@@ -199,7 +191,8 @@ public class RobotContainer {
     if (RobotConstants.realMode == Mode.COMMISIONING) {
       // Set up SysId routines
       autoChooser.addOption(
-          "Drive Wheel Radius Characterization", SwerveCommands.wheelRadiusCharacterization(swerve));
+          "Drive Wheel Radius Characterization",
+          SwerveCommands.wheelRadiusCharacterization(swerve));
       autoChooser.addOption(
           "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
       autoChooser.addOption(
@@ -214,12 +207,14 @@ public class RobotContainer {
           "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
-    //Add default auto to be do nothing
+    // Add default auto to be do nothing
     autoChooser.addDefaultOption("None", noAuto);
   }
 
   /** Used to set up bidings for triggers, joystick buttons, default commands, etc */
   private void configureBindings() {
+
+    // Trigger to toggle between camera types
     Trigger robotWasEnabled = new Trigger(robotState::getWasEnabled);
 
     robotWasEnabled
@@ -244,62 +239,53 @@ public class RobotContainer {
 
     // Default command, normal field-relative drive
     swerve.setDefaultCommand(
-        SwerveCommands.joystickDrive(
-            swerve,
-            () -> -driveController.getLeftY(),
-            () -> -driveController.getLeftX(),
-            () -> driveController.getLeftTriggerAxis() - driveController.getRightTriggerAxis(),
-            () -> driveController.getHID().getAButton()));
+        SwerveCommands.joystickDrive(swerve, operatorInterface.getSwerveControlSignal()));
 
     // Smart Intake
-    driveController.leftStick().whileTrue(GripperCommands.coralIntake(gripper));
+    operatorInterface.intakeTrigger().whileTrue(GripperCommands.coralIntake(gripper));
 
     // Smart Outttake
-    driveController.rightStick().whileTrue(GripperCommands.coralOuttake(gripper));
+    operatorInterface.outtakeTrigger().whileTrue(GripperCommands.coralOuttake(gripper));
 
     // Auto align to left branch from driver view
-    driveController
-        .leftBumper()
+    operatorInterface
+        .autoAlignLeftTrigger()
         .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
 
     // Auto align to right branch from driver view
-    driveController
-        .rightBumper()
+    operatorInterface
+        .autoAlignRightTrigger()
         .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
 
     // Reset gyro rotation, maintin position
-    driveController.start().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
+    operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
 
     // Put drive in X position
-    driveController.x().whileTrue(SwerveCommands.stopWithX(swerve));
+    operatorInterface.stopWithXTrigger().whileTrue(SwerveCommands.stopWithX(swerve));
   }
 
   // This need to be replaced
   public void OperatorLoop() {
-    if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
-      if (operateController.getHID().getAButton()) {
-        arm.setArmPostion(ArmPosition.L2);
-      } else if (operateController.getHID().getXButton()) {
-        arm.setArmPostion(ArmPosition.L3);
-      } else if (operateController.getHID().getYButton()
-          && !driveController.getHID().getRightStickButton()) {
-        arm.setArmPostion(ArmPosition.L4);
-      } else if (operateController.getHID().getBButton()) {
-        arm.setArmPostion(ArmPosition.L1);
-      } else if (operateController.getHID().getStartButton()) {
-        arm.setArmPostion(ArmPosition.HOME);
-      } else if (operateController.getHID().getLeftBumperButton()
-          || operateController.getHID().getRightBumperButton()) {
-        arm.setArmPostion(ArmPosition.INTAKE);
-      } else if (operateController.getHID().getPOV() == 180) {
-        arm.setArmPostion(ArmPosition.ALGAE1);
-      } else if (operateController.getHID().getPOV() == 0) {
-        arm.setArmPostion(ArmPosition.ALGAE2);
-      } else if (operateController.getHID().getPOV() == 90) {
-        arm.setArmPostion(ArmPosition.BARGE);
-      } else if (operateController.getHID().getPOV() == 270) {
-        arm.setArmPostion(ArmPosition.PROCESSOR);
-      }
+    if (operatorInterface.L2PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.L2);
+    } else if (operatorInterface.L3PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.L3);
+    } else if (operatorInterface.L4PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.L4);
+    } else if (operatorInterface.L1PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.L1);
+    } else if (operatorInterface.homePositionTrigger()) {
+      arm.setArmPostion(ArmPosition.HOME);
+    } else if (operatorInterface.intakePositionTrigger()) {
+      arm.setArmPostion(ArmPosition.INTAKE);
+    } else if (operatorInterface.algae1PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.ALGAE1);
+    } else if (operatorInterface.algae2PositionTrigger()) {
+      arm.setArmPostion(ArmPosition.ALGAE2);
+    } else if (operatorInterface.bargePositionTrigger()) {
+      arm.setArmPostion(ArmPosition.BARGE);
+    } else if (operatorInterface.processorPositionTrigger()) {
+      arm.setArmPostion(ArmPosition.PROCESSOR);
     }
   }
 
@@ -310,8 +296,7 @@ public class RobotContainer {
    */
   private void updateAlerts() {
     // Check if joysticks are unplugged
-    driverControllerAlert.set(!driveController.isConnected());
-    operatorControllerAlert.set(!operateController.isConnected());
+    operatorInterface.updateAlerts();
 
     // Check that an auto has been selected
     autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);

@@ -40,6 +40,7 @@ public class SwerveOdometryThread {
 
   /**
    * Get the singleton instance of the thread
+   *
    * @return Odometry thread instance
    */
   public static SwerveOdometryThread getInstance() {

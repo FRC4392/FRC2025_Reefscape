@@ -83,14 +83,16 @@ public class SwerveModuleIODeceivers implements SwerveModuleIO {
 
   /**
    * Constructor for swerve module
-   * <p>
-   * Must supply a module number:
+   *
+   * <p>Must supply a module number:
+   *
    * <ol>
-   * <li>front left module
-   * <li>front right module
-   * <li>back left module
-   * <li>back right module
+   *   <li>front left module
+   *   <li>front right module
+   *   <li>back left module
+   *   <li>back right module
    * </ol>
+   *
    * @param module Module number
    */
   public SwerveModuleIODeceivers(int module) {

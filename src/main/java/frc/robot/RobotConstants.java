@@ -13,12 +13,13 @@ public final class RobotConstants {
    */
   public static final Mode simMode = Mode.SIM;
 
-    /**
+  /**
    * What sim mode should be used?
    *
    * <p>Mode.REAL = Real robot as would be used on the field
    *
-   * <p>Mode.COMMISIONING = Enable extra diagnostic and testing functions that aren't helpful during competition
+   * <p>Mode.COMMISIONING = Enable extra diagnostic and testing functions that aren't helpful during
+   * competition
    */
   public static final Mode realMode = Mode.REAL;
 

@@ -26,15 +26,16 @@ public class SwerveModule {
 
   /**
    * Constructor of swerve module
-   * <p>
-   * Supply with Swerve IO instance and index number of module.
-   * Standard numbering is as follows:
+   *
+   * <p>Supply with Swerve IO instance and index number of module. Standard numbering is as follows:
+   *
    * <ol>
-   * <li>front left module
-   * <li>front right module
-   * <li>back left module
-   * <li>back right module
+   *   <li>front left module
+   *   <li>front right module
+   *   <li>back left module
+   *   <li>back right module
    * </ol>
+   *
    * @param io IO instance of the swerve module
    * @param index Number of the swerve module
    */

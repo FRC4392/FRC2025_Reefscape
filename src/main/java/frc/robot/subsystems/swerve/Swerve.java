@@ -64,6 +64,7 @@ public class Swerve extends SubsystemBase {
 
   /**
    * Create a new swerve subsystem
+   *
    * @param gyroIO IO interface of the gyroscope
    * @param flModuleIO IO interface of the front left module
    * @param frModuleIO IO interface of the front right module
@@ -257,9 +258,10 @@ public class Swerve extends SubsystemBase {
     return state;
   }
 
-  //TODO: can we handle this inside the swerve instead of relying on commands?
+  // TODO: can we handle this inside the swerve instead of relying on commands?
   /**
    * set the new state of the swerve drive
+   *
    * @param newState new state
    */
   public void setSwerveState(SwerveState newState) {

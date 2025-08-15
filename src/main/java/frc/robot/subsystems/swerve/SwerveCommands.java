@@ -77,6 +77,23 @@ public class SwerveCommands {
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    *
+   * @param swerve Swerve Drive dependancy
+   * @param signal Signal composing x and y speeds along with rotation speed and signal to specify
+   *     full speeds
+   * @return
+   */
+  public static Command joystickDrive(Swerve swerve, SwerveControlSignal signal) {
+    return joystickDrive(
+        swerve,
+        signal.getxSignal(),
+        signal.getySignal(),
+        signal.getOmegaSignal(),
+        signal.getAllowFullSpeedSignal());
+  }
+
+  /**
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   *
    * @param drive Swerve Drive dependancy
    * @param xSupplier DoubleSupplier that supplies the x position of the joystick
    * @param ySupplier DoubleSupplier that supplies the y position of the joystick
@@ -195,13 +212,14 @@ public class SwerveCommands {
         .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
   }
 
-   /**
-    * Measures the velocity feedforward constants for the drive motors.
+  /**
+   * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.
-    * @param drive Swerve Drive dependency
-    * @return Command to measure feedforward
-    */
+   *
+   * @param drive Swerve Drive dependency
+   * @return Command to measure feedforward
+   */
   public static Command feedforwardCharacterization(Swerve drive) {
     List<Double> velocitySamples = new LinkedList<>();
     List<Double> voltageSamples = new LinkedList<>();
@@ -262,8 +280,9 @@ public class SwerveCommands {
   }
 
   /**
-   * Measures the robot's wheel radius by spinning in a circle and comparing distance traveled to angle moved
-   * 
+   * Measures the robot's wheel radius by spinning in a circle and comparing distance traveled to
+   * angle moved
+   *
    * @param drive Swerve Drive dependancy
    * @return Command to measure wheel radius
    */
@@ -337,7 +356,7 @@ public class SwerveCommands {
                     })));
   }
 
-  //Replace
+  // Replace
   public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
     @SuppressWarnings("resource")
     PIDController strafeController = new PIDController(4, 0, 0); // 0.08
