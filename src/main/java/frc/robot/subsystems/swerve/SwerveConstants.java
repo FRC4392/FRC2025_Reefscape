@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -143,7 +148,12 @@ public final class SwerveConstants {
   public static final double robotMassKg = Units.lbsToKilograms(115);
   public static final double robotMOI = 10;
   public static final double wheelCOF = .5;
-  public static final PathConstraints pathConstraints = new PathConstraints(null, null, null, null);
+  public static final PathConstraints pathConstraints =
+      new PathConstraints(
+          MetersPerSecond.of(5),
+          MetersPerSecondPerSecond.of(2),
+          RadiansPerSecond.of(3),
+          RadiansPerSecondPerSecond.of(2));
   public static final RobotConfig ppConfig =
       new RobotConfig(
           robotMassKg,

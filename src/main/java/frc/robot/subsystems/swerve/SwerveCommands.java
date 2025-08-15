@@ -379,7 +379,7 @@ public class SwerveCommands {
    * @param pose pose to drive to
    * @return command to drive to the pose
    */
-  public Command driveToPose(Swerve swerve, Pose2d pose) {
+  public static Command driveToPose(Swerve swerve, Pose2d pose) {
     return Commands.run(
         () -> {
           // TODO: write pose drive command
@@ -398,7 +398,7 @@ public class SwerveCommands {
    * @param alliance current alliance color
    * @return command to drive to that pose
    */
-  public Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance) {
+  public static Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance) {
     if (alliance == Alliance.Red) {
       pose = FlippingUtil.flipFieldPose(pose);
     }
@@ -416,7 +416,7 @@ public class SwerveCommands {
    * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
-  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity, Alliance alliance) {
+  public static Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity, Alliance alliance) {
     if (alliance == Alliance.Red) {
       return AutoBuilder.pathfindToPoseFlipped(pose, pathConstraints, endVelocity);
     } else {
@@ -435,7 +435,7 @@ public class SwerveCommands {
    * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
-  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity) {
+  public static Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity) {
     return AutoBuilder.pathfindToPose(pose, pathConstraints, endVelocity);
   }
 
@@ -445,7 +445,7 @@ public class SwerveCommands {
    * @param path path to pathfind to and then follow
    * @return command to pathfind and then follow a path
    */
-  public Command pathfindToPathThenFollow(PathPlannerPath path) {
+  public static Command pathfindToPathThenFollow(PathPlannerPath path) {
     return AutoBuilder.pathfindThenFollowPath(path, pathConstraints);
   }
 

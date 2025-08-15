@@ -82,6 +82,10 @@ public class OperatorInterface {
 
   // Game Controls (vary by year)
 
+  public Trigger pathPlanToPointTrigger() {
+    return driverController.back();
+  }
+
   public Trigger intakeTrigger() {
     return driverController.leftStick();
   }

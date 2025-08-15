@@ -4,14 +4,17 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -264,6 +267,16 @@ public class RobotContainer {
 
     // Put drive in X position
     operatorInterface.stopWithXTrigger().whileTrue(SwerveCommands.stopWithX(swerve));
+
+    operatorInterface
+        .pathPlanToPointTrigger()
+        .whileTrue(
+            Commands.parallel(
+                SwerveCommands.pathfindToPose(
+                    new Pose2d(),
+                    MetersPerSecond.of(0),
+                    DriverStation.getAlliance().orElse(Alliance.Blue)),
+                Commands.print("PathFinding")));
   }
 
   // This need to be replaced
