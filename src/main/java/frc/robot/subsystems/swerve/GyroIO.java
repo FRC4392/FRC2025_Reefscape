@@ -7,7 +7,9 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
+/** Generic Gyro IO interface */
 public interface GyroIO {
+  /** Input values from a connected gyro */
   @AutoLog
   public static class GyroIOInputs {
     public boolean isConnected = false;
@@ -17,5 +19,9 @@ public interface GyroIO {
     public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
   }
 
+  /**
+   * Updated the supplied inputs
+   * @param inputs input to be updated
+   */
   public default void updateInputs(GyroIOInputs inputs) {}
 }

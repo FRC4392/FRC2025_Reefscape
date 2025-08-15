@@ -16,13 +16,16 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
 
-public class SwerveConstants {
+public final class SwerveConstants {
+    private SwerveConstants(){}
   public static final double maxSpeedMetersPerSec = 4.8;
   public static final double odometryFrequencyHz = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(23.5);
@@ -140,6 +143,7 @@ public class SwerveConstants {
   public static final double robotMassKg = Units.lbsToKilograms(115);
   public static final double robotMOI = 10;
   public static final double wheelCOF = .5;
+  public static final PathConstraints pathConstraints = new PathConstraints(null, null, null, null);
   public static final RobotConfig ppConfig =
       new RobotConfig(
           robotMassKg,

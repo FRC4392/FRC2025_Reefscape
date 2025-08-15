@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 /** Add your docs here. */
 public class GripperCommands {
 
+  private GripperCommands() {}
+
   public static Command coralIntake(Gripper gripper) {
     return Commands.runEnd(
         () -> {

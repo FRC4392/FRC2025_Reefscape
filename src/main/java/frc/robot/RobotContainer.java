@@ -89,6 +89,8 @@ public class RobotContainer {
     leds = new Leds();
 
     switch (RobotConstants.currentMode) {
+      case COMMISIONING:
+        // Fall through
       case REAL:
         // Real robot, instantiate hardware IO implementations
         swerve =

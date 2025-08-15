@@ -28,7 +28,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
 
 /** Add your docs here. */
-public class ArmConstants {
+public final class ArmConstants {
 
   // CAN IDs
   public static final int Pivot1CanId = 21;
