@@ -32,16 +32,19 @@ public class OperatorInterface {
 
   /**
    * Starts the joystick rumbling and then stops it at the completion of the command.
+   *
    * @return Command to rumble the joystick
    */
-  public Command joystickRumbleCommand(){
-    return Commands.startEnd(()->{
-      driverController.setRumble(RumbleType.kBothRumble, 1.0);
-      operatorController.setRumble(RumbleType.kBothRumble, 1.0);
-    }, ()->{
-      driverController.setRumble(RumbleType.kBothRumble, 0.0);
-      operatorController.setRumble(RumbleType.kBothRumble, 0.0);
-    });
+  public Command joystickRumbleCommand() {
+    return Commands.startEnd(
+        () -> {
+          driverController.setRumble(RumbleType.kBothRumble, 1.0);
+          operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+        },
+        () -> {
+          driverController.setRumble(RumbleType.kBothRumble, 0.0);
+          operatorController.setRumble(RumbleType.kBothRumble, 0.0);
+        });
   }
 
   // Serve controls

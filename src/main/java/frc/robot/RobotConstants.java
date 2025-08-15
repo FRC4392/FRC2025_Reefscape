@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 /** Constants used for robot settings */
 public final class RobotConstants {
-  private RobotConstants(){}
+  private RobotConstants() {}
   /**
    * What sim mode should be used?
    *

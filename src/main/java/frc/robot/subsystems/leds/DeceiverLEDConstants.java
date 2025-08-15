@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 
 /** Add your docs here. */
 public final class DeceiverLEDConstants {
-  private DeceiverLEDConstants(){}
+  private DeceiverLEDConstants() {}
 
   /** Port on the roboRIO the led strip is connected to */
   public static final int ledPort = 0;

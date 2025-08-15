@@ -6,7 +6,7 @@ package frc.robot.subsystems.gripper;
 
 /** Add your docs here. */
 public final class GripperConstants {
-  private GripperConstants(){}
+  private GripperConstants() {}
 
   // CAN IDs
   public static final int CoralCanId = 51;

@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 
 public final class VisionConstants {
-    private VisionConstants() {}
+  private VisionConstants() {}
   // AprilTag layout
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);

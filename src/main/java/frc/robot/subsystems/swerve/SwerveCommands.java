@@ -1,5 +1,10 @@
 package frc.robot.subsystems.swerve;
 
+import static frc.robot.subsystems.swerve.SwerveConstants.pathConstraints;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -21,9 +26,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO.targetPoseObservation;
-
-import static frc.robot.subsystems.swerve.SwerveConstants.pathConstraints;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -31,10 +33,6 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FlippingUtil;
 
 public class SwerveCommands {
   private static final double DEADBAND = 0.01;
@@ -373,29 +371,35 @@ public class SwerveCommands {
 
   /**
    * Drive straight to specified pose
-   * 
-   * The origin for the pose is on the blue side of the field with x pointing away from the driverstation and z pointing up
+   *
+   * <p>The origin for the pose is on the blue side of the field with x pointing away from the
+   * driverstation and z pointing up
+   *
    * @param swerve swerve drive dependancy
    * @param pose pose to drive to
    * @return command to drive to the pose
    */
-  public Command driveToPose(Swerve swerve, Pose2d pose){
-    return Commands.run(() -> {
-      //TODO: write pose drive command
-    }, swerve);
+  public Command driveToPose(Swerve swerve, Pose2d pose) {
+    return Commands.run(
+        () -> {
+          // TODO: write pose drive command
+        },
+        swerve);
   }
 
   /**
    * Drive straight to specified pose
-   * 
-   * If red alliance is specified the path will be flipped so the same pose goes to the same point regardless of alliace color
+   *
+   * <p>If red alliance is specified the path will be flipped so the same pose goes to the same
+   * point regardless of alliace color
+   *
    * @param swerve swerve drive dependancy
    * @param pose pose to drive to
    * @param alliance current alliance color
    * @return command to drive to that pose
    */
-  public Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance){
-    if (alliance == Alliance.Red){
+  public Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance) {
+    if (alliance == Alliance.Red) {
       pose = FlippingUtil.flipFieldPose(pose);
     }
     return driveToPose(swerve, pose);
@@ -403,14 +407,16 @@ public class SwerveCommands {
 
   /**
    * Use Pathplanner to find a path to a specific pose.
-   * 
-   * If red alliance is specified the path will be flipped so the same pose goes to the same point regardless of alliace color
+   *
+   * <p>If red alliance is specified the path will be flipped so the same pose goes to the same
+   * point regardless of alliace color
+   *
    * @param pose The pose to pathfind to
    * @param endVelocity The end velocity to end the path with
    * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
-  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity, Alliance alliance){
+  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity, Alliance alliance) {
     if (alliance == Alliance.Red) {
       return AutoBuilder.pathfindToPoseFlipped(pose, pathConstraints, endVelocity);
     } else {
@@ -420,23 +426,26 @@ public class SwerveCommands {
 
   /**
    * Use Pathplanner to find a path to a specific pose.
-   * 
-   * The origin for the pose is on the blue side of the field with x pointing away from the driverstation and z pointing up
+   *
+   * <p>The origin for the pose is on the blue side of the field with x pointing away from the
+   * driverstation and z pointing up
+   *
    * @param pose The pose to pathfind to
    * @param endVelocity The end velocity to end the path with
    * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
-  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity){
+  public Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity) {
     return AutoBuilder.pathfindToPose(pose, pathConstraints, endVelocity);
   }
 
   /**
    * Use Pathplanner to find a path to the start point of a path, then follow that path
+   *
    * @param path path to pathfind to and then follow
    * @return command to pathfind and then follow a path
    */
-  public Command pathfindToPathThenFollow(PathPlannerPath path){
+  public Command pathfindToPathThenFollow(PathPlannerPath path) {
     return AutoBuilder.pathfindThenFollowPath(path, pathConstraints);
   }
 
@@ -455,117 +464,117 @@ public class SwerveCommands {
         swerve);
   }
 
-    // Year Specific commands
+  // Year Specific commands
 
-    //Bad
-    public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
-      @SuppressWarnings("resource")
-      PIDController strafeController = new PIDController(4, 0, 0); // 0.08
-      @SuppressWarnings("resource")
-      PIDController forwardController = new PIDController(4, 0, 0); // 0.08
-  
-      strafeController.setTolerance(Units.inchesToMeters(2));
-      forwardController.setTolerance(Units.inchesToMeters(2));
-  
-      ProfiledPIDController angleController =
-          new ProfiledPIDController(
-              ANGLE_KP,
-              0.0,
-              ANGLE_KD,
-              new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
-  
-      angleController.enableContinuousInput(-Math.PI, Math.PI);
-      angleController.setTolerance(Units.degreesToRadians(3));
-      return Commands.run(
-          () -> {
-            ReefSide targetSide = side;
-            // Get all the targets we are looking at
-            List<targetPoseObservation> targets = new LinkedList<>();
-  
-            for (int i = 0; i < 3; i++) {
-              targets.add(vision.getLastTargetPoseObservation(i));
+  // Bad
+  public static Command autoAlignCommand3D(Swerve swerve, Vision vision, ReefSide side) {
+    @SuppressWarnings("resource")
+    PIDController strafeController = new PIDController(4, 0, 0); // 0.08
+    @SuppressWarnings("resource")
+    PIDController forwardController = new PIDController(4, 0, 0); // 0.08
+
+    strafeController.setTolerance(Units.inchesToMeters(2));
+    forwardController.setTolerance(Units.inchesToMeters(2));
+
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+    angleController.setTolerance(Units.degreesToRadians(3));
+    return Commands.run(
+        () -> {
+          ReefSide targetSide = side;
+          // Get all the targets we are looking at
+          List<targetPoseObservation> targets = new LinkedList<>();
+
+          for (int i = 0; i < 3; i++) {
+            targets.add(vision.getLastTargetPoseObservation(i));
+          }
+
+          // Find closest target
+          int closestTag = -1;
+          double closest = -1;
+          for (int i = 0; i < targets.size(); i++) {
+            double distance =
+                targets.get(i).targetPose().getTranslation().getDistance(new Translation3d());
+
+            if ((distance < closest && distance > 0) || ((closest == -1) && (distance > 0))) {
+              closest = distance;
+              closestTag = i;
             }
-  
-            // Find closest target
-            int closestTag = -1;
-            double closest = -1;
-            for (int i = 0; i < targets.size(); i++) {
-              double distance =
-                  targets.get(i).targetPose().getTranslation().getDistance(new Translation3d());
-  
-              if ((distance < closest && distance > 0) || ((closest == -1) && (distance > 0))) {
-                closest = distance;
-                closestTag = i;
-              }
-            }
-  
-            if (closestTag == -1) {
-              swerve.runVelocity(new ChassisSpeeds());
-              swerve.setSwerveState(SwerveState.autoDriveFail);
-              return;
-            }
-  
-            int closestTagID = targets.get(closestTag).targetID();
-            Pose3d closestTagPose = targets.get(closestTag).targetPose();
-  
-            SmartDashboard.putNumber("closestTagID", closestTagID);
-            SmartDashboard.putNumber("ClosestTagPose", closest);
-            SmartDashboard.putNumber("closestTagIndex", closestTag);
-  
-            // Determine which way to offset
-            boolean invertSide = false;
-            if ((closestTagID >= 20 && closestTagID <= 22)
-                || (closestTagID >= 9 && closestTagID <= 11)) {
-              invertSide = true;
-            } else {
-              invertSide = false;
-            }
-  
-            // invert if on the other side of the field
-            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
-              invertSide = !invertSide;
-            }
-  
-            if (invertSide && side == ReefSide.left) {
-              targetSide = ReefSide.right;
-            } else if (invertSide && side == ReefSide.right) {
-              targetSide = ReefSide.left;
-            }
-  
-            // Determine offset Position
-            double positionOffset = 0;
-            if (targetSide == ReefSide.left) {
-              positionOffset = ReefOffsetLeft;
-            } else if (targetSide == ReefSide.right) {
-              positionOffset = ReefOffsetRight;
-            }
-  
-            // Determine Rotation
-            Rotation2d rotationTarget =
-                swerve
-                    .getRotation()
-                    .plus(closestTagPose.getRotation().toRotation2d().minus(Rotation2d.k180deg));
-  
-            // Position to offset position
-            double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
-            double forwadSpeed =
-                -forwardController.calculate(closestTagPose.getZ(), ReffOffsetForward);
-            @SuppressWarnings("unused")
-            double rotation =
-                angleController.calculate(
-                    swerve.getRotation().getRadians(), rotationTarget.getRadians());
-            //  double rotation = 0;
-  
-            if (strafeController.atSetpoint()
-                && forwardController.atSetpoint()
-                && angleController.atSetpoint()) {
-              swerve.setSwerveState(SwerveState.autoDriveDone);
-            } else {
-              swerve.setSwerveState(SwerveState.autoDriveInProgress);
-            }
-  
-            ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, 0);
-            swerve.runVelocity(speeds);
-          });
-    }
+          }
+
+          if (closestTag == -1) {
+            swerve.runVelocity(new ChassisSpeeds());
+            swerve.setSwerveState(SwerveState.autoDriveFail);
+            return;
+          }
+
+          int closestTagID = targets.get(closestTag).targetID();
+          Pose3d closestTagPose = targets.get(closestTag).targetPose();
+
+          SmartDashboard.putNumber("closestTagID", closestTagID);
+          SmartDashboard.putNumber("ClosestTagPose", closest);
+          SmartDashboard.putNumber("closestTagIndex", closestTag);
+
+          // Determine which way to offset
+          boolean invertSide = false;
+          if ((closestTagID >= 20 && closestTagID <= 22)
+              || (closestTagID >= 9 && closestTagID <= 11)) {
+            invertSide = true;
+          } else {
+            invertSide = false;
+          }
+
+          // invert if on the other side of the field
+          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+            invertSide = !invertSide;
+          }
+
+          if (invertSide && side == ReefSide.left) {
+            targetSide = ReefSide.right;
+          } else if (invertSide && side == ReefSide.right) {
+            targetSide = ReefSide.left;
+          }
+
+          // Determine offset Position
+          double positionOffset = 0;
+          if (targetSide == ReefSide.left) {
+            positionOffset = ReefOffsetLeft;
+          } else if (targetSide == ReefSide.right) {
+            positionOffset = ReefOffsetRight;
+          }
+
+          // Determine Rotation
+          Rotation2d rotationTarget =
+              swerve
+                  .getRotation()
+                  .plus(closestTagPose.getRotation().toRotation2d().minus(Rotation2d.k180deg));
+
+          // Position to offset position
+          double strafeSpeed = strafeController.calculate(closestTagPose.getX(), positionOffset);
+          double forwadSpeed =
+              -forwardController.calculate(closestTagPose.getZ(), ReffOffsetForward);
+          @SuppressWarnings("unused")
+          double rotation =
+              angleController.calculate(
+                  swerve.getRotation().getRadians(), rotationTarget.getRadians());
+          //  double rotation = 0;
+
+          if (strafeController.atSetpoint()
+              && forwardController.atSetpoint()
+              && angleController.atSetpoint()) {
+            swerve.setSwerveState(SwerveState.autoDriveDone);
+          } else {
+            swerve.setSwerveState(SwerveState.autoDriveInProgress);
+          }
+
+          ChassisSpeeds speeds = new ChassisSpeeds(forwadSpeed, strafeSpeed, 0);
+          swerve.runVelocity(speeds);
+        });
+  }
 }

@@ -21,6 +21,7 @@ public interface GyroIO {
 
   /**
    * Updated the supplied inputs
+   *
    * @param inputs input to be updated
    */
   public default void updateInputs(GyroIOInputs inputs) {}
