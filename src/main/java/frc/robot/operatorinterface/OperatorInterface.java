@@ -4,6 +4,9 @@ import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
@@ -25,6 +28,20 @@ public class OperatorInterface {
   public void updateAlerts() {
     driverControllerAlert.set(!driverController.isConnected());
     operatorControllerAlert.set(!operatorController.isConnected());
+  }
+
+  /**
+   * Starts the joystick rumbling and then stops it at the completion of the command.
+   * @return Command to rumble the joystick
+   */
+  public Command joystickRumbleCommand(){
+    return Commands.startEnd(()->{
+      driverController.setRumble(RumbleType.kBothRumble, 1.0);
+      operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+    }, ()->{
+      driverController.setRumble(RumbleType.kBothRumble, 0.0);
+      operatorController.setRumble(RumbleType.kBothRumble, 0.0);
+    });
   }
 
   // Serve controls
