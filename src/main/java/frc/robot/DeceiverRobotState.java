@@ -321,7 +321,7 @@ public class DeceiverRobotState {
   }
 
   /** Resets the robot state to initial startup. Only works if the robot is currently disabled. */
-  protected void resetState() {
+  public void resetState() {
     if (isDisabled) {
       wasEnabled = false;
       wasAuto = false;

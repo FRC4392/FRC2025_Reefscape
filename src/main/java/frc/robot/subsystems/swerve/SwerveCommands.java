@@ -4,7 +4,6 @@ import static frc.robot.subsystems.swerve.SwerveConstants.pathConstraints;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -399,10 +398,11 @@ public class SwerveCommands {
    * @return command to drive to that pose
    */
   public static Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance) {
-    if (alliance == Alliance.Red) {
-      pose = FlippingUtil.flipFieldPose(pose);
-    }
-    return driveToPose(swerve, pose);
+    return Commands.run(
+        () -> {
+          // TODO write pose flipping code
+        },
+        swerve);
   }
 
   /**
@@ -416,12 +416,12 @@ public class SwerveCommands {
    * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
-  public static Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity, Alliance alliance) {
-    if (alliance == Alliance.Red) {
-      return AutoBuilder.pathfindToPoseFlipped(pose, pathConstraints, endVelocity);
-    } else {
-      return AutoBuilder.pathfindToPose(pose, pathConstraints, endVelocity);
-    }
+  public static Command pathfindToPose(
+      Pose2d pose, LinearVelocity endVelocity, Supplier<Alliance> allianceSupplier) {
+    return Commands.either(
+        AutoBuilder.pathfindToPoseFlipped(pose, pathConstraints, endVelocity),
+        AutoBuilder.pathfindToPose(pose, pathConstraints, endVelocity),
+        () -> allianceSupplier.get() == Alliance.Red);
   }
 
   /**

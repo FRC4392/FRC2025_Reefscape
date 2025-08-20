@@ -2,32 +2,77 @@ package frc.robot.operatorinterface;
 
 import static frc.robot.operatorinterface.OperatorInterfaceConstants.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.DeceiverRobotState;
 import frc.robot.subsystems.swerve.SwerveControlSignal;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
-public class OperatorInterface {
+public class OperatorInterface extends SubsystemBase {
+  private final DeceiverRobotState robotState;
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
+
+  private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedNetworkBoolean resetRobotStateBoolean;
+
+  private Command noAuto = Commands.none();
+
+  Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
 
   Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
   Alert operatorControllerAlert =
       new Alert("Operator Controller Disconnected 🎮", AlertType.kError);
 
-  public OperatorInterface() {
+  public OperatorInterface(DeceiverRobotState state) {
+    robotState = state;
     driverController = new CommandXboxController(DriverControllerPort);
     operatorController = new CommandXboxController(OperatorControllerPort);
+
+    resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
+    resetRobotStateBoolean.setDefault(false);
+
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addDefaultOption("None", noAuto);
   }
 
   // Update alerts
-  public void updateAlerts() {
+  private void updateAlerts() {
     driverControllerAlert.set(!driverController.isConnected());
     operatorControllerAlert.set(!operatorController.isConnected());
+    // Check that an auto has been selected
+    autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);
+  }
+
+  @Override
+  public void periodic() {
+    updateAlerts();
+
+    // Send match time to the Dashboard
+    SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
+
+    if (resetRobotStateBoolean.get() && robotState.isDisabled() && !DriverStation.isFMSAttached()) {
+      robotState.resetState();
+      resetRobotStateBoolean.set(false);
+    }
+  }
+
+  public Command getAutoCommand() {
+    return autoChooser.get();
+  }
+
+  public void addAutoOption(String name, Command autoCommand) {
+    autoChooser.addOption(name, autoCommand);
   }
 
   /**
@@ -36,7 +81,7 @@ public class OperatorInterface {
    * @return Command to rumble the joystick
    */
   public Command joystickRumbleCommand() {
-    return Commands.startEnd(
+    return this.startEnd(
         () -> {
           driverController.setRumble(RumbleType.kBothRumble, 1.0);
           operatorController.setRumble(RumbleType.kBothRumble, 1.0);

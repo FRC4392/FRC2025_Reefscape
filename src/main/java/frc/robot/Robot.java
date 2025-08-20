@@ -99,9 +99,6 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     // Run command scheduler
     CommandScheduler.getInstance().run();
-
-    // Update robot container
-    robotContainer.periodic();
   }
 
   // Runs when robot is first started

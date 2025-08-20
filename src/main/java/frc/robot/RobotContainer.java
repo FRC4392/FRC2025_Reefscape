@@ -5,17 +5,14 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,8 +45,6 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 /** Class to contain all the parts/subsystems of the robot */
 public class RobotContainer {
@@ -66,16 +61,6 @@ public class RobotContainer {
   // Operator Interface
   private final OperatorInterface operatorInterface;
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedNetworkBoolean resetRobotStateBoolean;
-
-  // Roobot Alerts
-  Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
-
-  // Permanant autos
-  private Command noAuto = Commands.none();
-
   /**
    * Constructor
    *
@@ -85,8 +70,6 @@ public class RobotContainer {
 
     // Setup robot state
     robotState = state;
-    resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
-    resetRobotStateBoolean.setDefault(false);
 
     // Configure subsystems
     leds = new Leds();
@@ -156,13 +139,9 @@ public class RobotContainer {
     leds.setGripperSupplier(gripper::getState);
     leds.setSwerveSupplier(swerve::getSwerveState);
 
-    // Build auto chooser automatically from path planner autos and add any extra autos/auto
-    // triggers
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    configureAutoModes();
-
     // Configure Operator interface and set up command bindings
-    operatorInterface = new OperatorInterface();
+    operatorInterface = new OperatorInterface(robotState);
+    configureAutoModes();
     configureBindings();
   }
 
@@ -195,25 +174,22 @@ public class RobotContainer {
     // Set up auto other routines
     if (RobotConstants.realMode == Mode.COMMISIONING) {
       // Set up SysId routines
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive Wheel Radius Characterization",
           SwerveCommands.wheelRadiusCharacterization(swerve));
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive SysId (Quasistatic Forward)",
           swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive SysId (Quasistatic Reverse)",
           swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive SysId (Dynamic Forward)", swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooser.addOption(
+      operatorInterface.addAutoOption(
           "Drive SysId (Dynamic Reverse)", swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
-
-    // Add default auto to be do nothing
-    autoChooser.addDefaultOption("None", noAuto);
   }
 
   /** Used to set up bidings for triggers, joystick buttons, default commands, etc */
@@ -268,15 +244,18 @@ public class RobotContainer {
     // Put drive in X position
     operatorInterface.stopWithXTrigger().whileTrue(SwerveCommands.stopWithX(swerve));
 
+    // Rumble at the start of end game
+    Trigger endGameTrigger = new Trigger(() -> DriverStation.getMatchTime() < 20);
+    endGameTrigger.onTrue(operatorInterface.joystickRumbleCommand().withTimeout(Seconds.of(1)));
+
+    // Generate a path to the specified point on the fly
     operatorInterface
         .pathPlanToPointTrigger()
         .whileTrue(
-            Commands.parallel(
-                SwerveCommands.pathfindToPose(
-                    new Pose2d(),
-                    MetersPerSecond.of(0),
-                    DriverStation.getAlliance().orElse(Alliance.Blue)),
-                Commands.print("PathFinding")));
+            SwerveCommands.pathfindToPose(
+                new Pose2d(),
+                MetersPerSecond.of(0),
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue)));
   }
 
   // This need to be replaced
@@ -305,49 +284,11 @@ public class RobotContainer {
   }
 
   /**
-   * Update robot alerts.
-   *
-   * <p>Should be called periodically
-   */
-  private void updateAlerts() {
-    // Check if joysticks are unplugged
-    operatorInterface.updateAlerts();
-
-    // Check that an auto has been selected
-    autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);
-  }
-
-  /**
-   * Update dashboard data.
-   *
-   * <p>Should be called periodically
-   */
-  private void updateDashboard() {
-    // Send match time to dashboard
-    SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
-
-    if (resetRobotStateBoolean.get() && robotState.isDisabled() && !DriverStation.isFMSAttached()) {
-      robotState.resetState();
-      resetRobotStateBoolean.set(false);
-    }
-  }
-
-  /**
-   * Place code here that should be run every loop cycle
-   *
-   * <p>Should be called robotPeriodic
-   */
-  public void periodic() {
-    updateDashboard();
-    updateAlerts();
-  }
-
-  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return operatorInterface.getAutoCommand();
   }
 }
