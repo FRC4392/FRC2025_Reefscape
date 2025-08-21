@@ -14,43 +14,33 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.DigitalInput;
 import java.util.function.DoubleSupplier;
 
 /** Add your docs here. */
 public class GripperIOSpark implements GripperIO {
 
-  private final SparkFlex coralMotor = new SparkFlex(CoralCanId, MotorType.kBrushless);
-  private final SparkFlex algaeMotor = new SparkFlex(AlgaeCanId, MotorType.kBrushless);
+  private final SparkFlex gripperMotor = new SparkFlex(MotorCanId, MotorType.kBrushless);
 
-  private final SparkMax climberMotor = new SparkMax(61, MotorType.kBrushless);
+  private final RelativeEncoder gripperEncoder;
 
-  private final RelativeEncoder coralEncoder;
-  private final RelativeEncoder algaeEncoder;
-
-  private final Debouncer coralConnectedDebounce = new Debouncer(.5);
-  private final Debouncer algaeConnectedDebounce = new Debouncer(.5);
-
-  private final DigitalInput coralPresent = new DigitalInput(coralSensorPort);
-  private final DigitalInput algaePresent = new DigitalInput(algaeSensorPort);
+  private final Debouncer motorConnectedDebounce = new Debouncer(.5);
 
   public GripperIOSpark() {
 
     var coralConfig = new SparkMaxConfig();
     coralConfig
-        .inverted(CoralInverted)
+        .inverted(GripperInverted)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(coralCurrentLimit)
+        .smartCurrentLimit(GripperCurrentLimit)
         .voltageCompensation(12.0);
     coralConfig
         .absoluteEncoder
-        .inverted(CoralInverted)
-        .positionConversionFactor(coralPositionConversionFactor)
-        .velocityConversionFactor(coralPositionConversionFactor)
+        .inverted(GripperInverted)
+        .positionConversionFactor(GripperPositionConversionFactor)
+        .velocityConversionFactor(GripperVelocityConversionFactor)
         .averageDepth(2);
     coralConfig
         .signals
@@ -62,94 +52,34 @@ public class GripperIOSpark implements GripperIO {
         .busVoltagePeriodMs(20)
         .outputCurrentPeriodMs(20);
 
-    coralMotor.configure(
-        coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    var algaeConfig = new SparkMaxConfig();
-    algaeConfig
-        .inverted(AlgaeInverted)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(algaeCurrentLimit)
-        .voltageCompensation(12.0);
-    algaeConfig
-        .absoluteEncoder
-        .inverted(AlgaeInverted)
-        .positionConversionFactor(algaePositionConversionFactor)
-        .velocityConversionFactor(algaePositionConversionFactor)
-        .averageDepth(2);
-    algaeConfig
-        .signals
-        .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs(20)
-        .absoluteEncoderVelocityAlwaysOn(true)
-        .absoluteEncoderVelocityPeriodMs(20)
-        .appliedOutputPeriodMs(20)
-        .busVoltagePeriodMs(20)
-        .outputCurrentPeriodMs(20);
     tryUntilOk(
-        algaeMotor,
+        gripperMotor,
         5,
         () ->
-            algaeMotor.configure(
-                algaeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+            gripperMotor.configure(
+                coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    coralEncoder = coralMotor.getEncoder();
-    algaeEncoder = algaeMotor.getEncoder();
+    gripperEncoder = gripperMotor.getEncoder();
   }
 
   @Override
   public void updateInputs(GripperIOInputs inputs) {
     sparkStickyFault = false;
     ifOk(
-        coralMotor,
-        coralEncoder::getVelocity,
-        (value) -> inputs.coralMotorVelocityRadPerSec = value);
+        gripperMotor,
+        gripperEncoder::getVelocity,
+        (value) -> inputs.motorVelocityRadPerSec = value);
     ifOk(
-        coralMotor,
-        new DoubleSupplier[] {coralMotor::getAppliedOutput, coralMotor::getBusVoltage},
-        (values) -> inputs.coralMotorAppliedVolts = values[0] * values[1]);
-    ifOk(coralMotor, coralMotor::getOutputCurrent, (value) -> inputs.coralMotorCurrentAmps = value);
-    ifOk(coralMotor, coralMotor::getMotorTemperature, (value) -> inputs.coralMotorTemp = value);
-    inputs.coralMotorConnected = coralConnectedDebounce.calculate(!sparkStickyFault);
-
-    sparkStickyFault = false;
-    ifOk(
-        algaeMotor,
-        algaeEncoder::getVelocity,
-        (value) -> inputs.algaeMotorVelocityRadPerSec = value);
-    ifOk(
-        algaeMotor,
-        new DoubleSupplier[] {algaeMotor::getAppliedOutput, algaeMotor::getBusVoltage},
-        (values) -> inputs.algaeMotorAppliedVolts = values[0] * values[1]);
-    ifOk(algaeMotor, algaeMotor::getOutputCurrent, (value) -> inputs.algaeMotorCurrentAmps = value);
-    ifOk(algaeMotor, algaeMotor::getMotorTemperature, (value) -> inputs.algaeMotorTemp = value);
-    inputs.algaeMotorConnected = algaeConnectedDebounce.calculate(!sparkStickyFault);
-
-    inputs.coralPresent = getCoralPresent();
-    inputs.algaePresent = getAlgaePresent();
+        gripperMotor,
+        new DoubleSupplier[] {gripperMotor::getAppliedOutput, gripperMotor::getBusVoltage},
+        (values) -> inputs.motorAppliedVolts = values[0] * values[1]);
+    ifOk(gripperMotor, gripperMotor::getOutputCurrent, (value) -> inputs.motorCurrentAmps = value);
+    ifOk(gripperMotor, gripperMotor::getMotorTemperature, (value) -> inputs.motorTemp = value);
+    inputs.motorConnected = motorConnectedDebounce.calculate(!sparkStickyFault);
   }
 
   @Override
-  public void setAlgaeMotorVoltage(double voltage) {
-    algaeMotor.setVoltage(voltage);
-  }
-
-  @Override
-  public void setCoralMotorVoltage(double voltage) {
-    coralMotor.setVoltage(voltage);
-  }
-
-  @Override
-  public boolean getCoralPresent() {
-    return !coralPresent.get();
-  }
-
-  @Override
-  public boolean getAlgaePresent() {
-    return !algaePresent.get();
-  }
-
-  public void setClimberVoltage(double voltage) {
-    climberMotor.setVoltage(voltage);
+  public void setGripperVoltage(double voltage) {
+    gripperMotor.setVoltage(voltage);
   }
 }

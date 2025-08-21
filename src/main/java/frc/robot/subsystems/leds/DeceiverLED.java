@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.DeceiverRobotState;
 import java.util.List;
 
+// TODO: make adding patterns easy
+
 /** Subsytem that manages the LEDs of the robot */
 public class DeceiverLED extends SubsystemBase {
 

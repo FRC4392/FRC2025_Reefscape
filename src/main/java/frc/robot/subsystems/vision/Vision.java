@@ -28,6 +28,7 @@ import org.littletonrobotics.junction.Logger;
  * Limelight IMU
  * Limelight object detection
  * Limelight HW logging
+ * Improve loop time
  */
 
 /** Vision Subsystem manages all the cameras on the robot */

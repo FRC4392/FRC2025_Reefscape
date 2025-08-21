@@ -130,9 +130,7 @@ public class Arm extends SubsystemBase {
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  private ArmPosition targetPosition = ArmPosition.HOME;
   private ArmPosition currentPosition = ArmPosition.HOME;
-  private ArmState armState = ArmState.INPOSITION;
 
   private Rotation2d pivotSetpoint = minAngle;
   private double extensionSetPoint = 0.0;

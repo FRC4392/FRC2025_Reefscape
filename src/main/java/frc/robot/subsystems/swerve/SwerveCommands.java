@@ -379,11 +379,7 @@ public class SwerveCommands {
    * @return command to drive to the pose
    */
   public static Command driveToPose(Swerve swerve, Pose2d pose) {
-    return Commands.run(
-        () -> {
-          // TODO: write pose drive command
-        },
-        swerve);
+    return driveToPose(swerve, pose, () -> Alliance.Blue);
   }
 
   /**
@@ -397,7 +393,7 @@ public class SwerveCommands {
    * @param alliance current alliance color
    * @return command to drive to that pose
    */
-  public static Command driveToPose(Swerve swerve, Pose2d pose, Alliance alliance) {
+  public static Command driveToPose(Swerve swerve, Pose2d pose, Supplier<Alliance> alliance) {
     return Commands.run(
         () -> {
           // TODO write pose flipping code
@@ -432,7 +428,6 @@ public class SwerveCommands {
    *
    * @param pose The pose to pathfind to
    * @param endVelocity The end velocity to end the path with
-   * @param alliance The current alliance color
    * @return Command to pathfind to that pose
    */
   public static Command pathfindToPose(Pose2d pose, LinearVelocity endVelocity) {

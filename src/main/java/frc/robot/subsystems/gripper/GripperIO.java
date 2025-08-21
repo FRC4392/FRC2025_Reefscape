@@ -10,37 +10,15 @@ import org.littletonrobotics.junction.AutoLog;
 public interface GripperIO {
   @AutoLog
   public static class GripperIOInputs {
-    public boolean coralMotorConnected = false;
-    public double coralMotorPositionRad = 0.0;
-    public double coralMotorVelocityRadPerSec = 0.0;
-    public double coralMotorAppliedVolts = 0.0;
-    public double coralMotorCurrentAmps = 0.0;
-    public double coralMotorTemp = 0.0;
-
-    public boolean algaeMotorConnected = false;
-    public double algaeMotorPositionRad = 0.0;
-    public double algaeMotorVelocityRadPerSec = 0.0;
-    public double algaeMotorAppliedVolts = 0.0;
-    public double algaeMotorCurrentAmps = 0.0;
-    public double algaeMotorTemp = 0.0;
-
-    public boolean coralPresent = false;
-    public boolean algaePresent = false;
+    public boolean motorConnected = false;
+    public double motorPositionRad = 0.0;
+    public double motorVelocityRadPerSec = 0.0;
+    public double motorAppliedVolts = 0.0;
+    public double motorCurrentAmps = 0.0;
+    public double motorTemp = 0.0;
   }
 
   public default void updateInputs(GripperIOInputs inputs) {}
 
-  public default void setAlgaeMotorVoltage(double voltage) {}
-
-  public default void setCoralMotorVoltage(double voltage) {}
-
-  public default boolean getCoralPresent() {
-    return false;
-  }
-
-  public default boolean getAlgaePresent() {
-    return false;
-  }
-
-  public default void setClimberVoltage(double voltage) {}
+  public default void setGripperVoltage(double voltage) {}
 }

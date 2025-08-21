@@ -8,7 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,7 +26,6 @@ import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.gripper.Gripper;
-import frc.robot.subsystems.gripper.GripperCommands;
 import frc.robot.subsystems.gripper.GripperIO;
 import frc.robot.subsystems.gripper.GripperIOSIm;
 import frc.robot.subsystems.gripper.GripperIOSpark;
@@ -146,30 +145,29 @@ public class RobotContainer {
   }
 
   private void configureAutoModes() {
-    // Set up named commands
-    NamedCommands.registerCommand(
-        "MoveToUpTravel",
-        ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
-    NamedCommands.registerCommand(
-        "MoveToL4",
-        ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4)
-            .until(() -> arm.getArmInPosition())
-            .withTimeout(5));
-    NamedCommands.registerCommand(
-        "AutoAlignRightWithTimeout",
-        SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
-            .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
-            .withTimeout(1.0));
-    NamedCommands.registerCommand(
-        "AutoAlignLeftWithTimeout",
-        SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
-            .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
-            .withTimeout(1.0));
-    NamedCommands.registerCommand(
-        "ejectCoral", GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
-    NamedCommands.registerCommand(
-        "MoveToPickup", ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
-    NamedCommands.registerCommand("IntakeCoral", GripperCommands.coralIntakeAuto(gripper));
+    // Set up Auto Triggers
+
+    new EventTrigger("MoveToUpTravel")
+        .onTrue(ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
+    new EventTrigger("MoveToL4")
+        .onTrue(
+            ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4)
+                .until(() -> arm.getArmInPosition())
+                .withTimeout(5));
+    new EventTrigger("AutoAlignRightWithTimeout")
+        .onTrue(
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
+                .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
+                .withTimeout(1.0));
+    new EventTrigger("AutoAlignLeftWithTimeout")
+        .onTrue(
+            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
+                .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
+                .withTimeout(1.0));
+    // new
+    // EventTrigger("ejectCoral").onTrue(GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
+    new EventTrigger("MoveToPickup").onTrue(ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
+    // new EventTrigger("IntakeCoral").onTrue(GripperCommands.coralIntakeAuto(gripper));
 
     // Set up auto other routines
     if (RobotConstants.realMode == Mode.COMMISIONING) {
@@ -223,10 +221,10 @@ public class RobotContainer {
         SwerveCommands.joystickDrive(swerve, operatorInterface.getSwerveControlSignal()));
 
     // Smart Intake
-    operatorInterface.intakeTrigger().whileTrue(GripperCommands.coralIntake(gripper));
+    // operatorInterface.intakeTrigger().whileTrue(GripperCommands.coralIntake(gripper));
 
     // Smart Outttake
-    operatorInterface.outtakeTrigger().whileTrue(GripperCommands.coralOuttake(gripper));
+    // operatorInterface.outtakeTrigger().whileTrue(GripperCommands.coralOuttake(gripper));
 
     // Auto align to left branch from driver view
     operatorInterface

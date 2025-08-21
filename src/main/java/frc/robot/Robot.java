@@ -31,6 +31,7 @@ public class Robot extends LoggedRobot {
     robotState = new DeceiverRobotState();
 
     // Record metadata about the git version for future reference
+    Logger.recordMetadata("RobotMode", RobotConstants.currentMode.toString());
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -83,9 +84,6 @@ public class Robot extends LoggedRobot {
 
     // Start AdvantageKit Logger
     Logger.start();
-
-    // Remove controller disconnected message, we handle this on our own
-    DriverStation.silenceJoystickConnectionWarning(true);
 
     // Lower brownout voltage
     RobotController.setBrownoutVoltage(6.0);

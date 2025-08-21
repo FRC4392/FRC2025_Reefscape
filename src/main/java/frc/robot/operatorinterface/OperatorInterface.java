@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -19,37 +18,54 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class OperatorInterface extends SubsystemBase {
+  // Robot state instance
   private final DeceiverRobotState robotState;
+
+  // Controllers
   private final CommandXboxController driverController;
   private final CommandXboxController operatorController;
 
+  // Dashboard
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedNetworkBoolean resetRobotStateBoolean;
 
-  private Command noAuto = Commands.none();
-
-  Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
-
-  Alert driverControllerAlert = new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
-  Alert operatorControllerAlert =
+  // Alerts
+  private final Alert autoAlert = new Alert("Select an autonomous mode! 😟", AlertType.kError);
+  private final Alert driverControllerAlert =
+      new Alert("Driver Controller Disconnected 🎮", AlertType.kError);
+  private final Alert operatorControllerAlert =
       new Alert("Operator Controller Disconnected 🎮", AlertType.kError);
 
+  /**
+   * Constructor
+   *
+   * @param state robot state instance
+   */
   public OperatorInterface(DeceiverRobotState state) {
     robotState = state;
+
+    // Set up controllers
     driverController = new CommandXboxController(DriverControllerPort);
     operatorController = new CommandXboxController(OperatorControllerPort);
 
+    // Setup reset robot state button
     resetRobotStateBoolean = new LoggedNetworkBoolean("resetRobotState");
     resetRobotStateBoolean.setDefault(false);
 
+    // Set up auto chooser
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     autoChooser.addDefaultOption("None", noAuto);
+
+    // Remove controller disconnected message, we handle this on our own
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
-  // Update alerts
+  /** Update dashboard alerts */
   private void updateAlerts() {
+    // Set controller connected alerts
     driverControllerAlert.set(!driverController.isConnected());
     operatorControllerAlert.set(!operatorController.isConnected());
+
     // Check that an auto has been selected
     autoAlert.set(!robotState.getWasAuto() && autoChooser.get() == noAuto);
   }
@@ -61,16 +77,28 @@ public class OperatorInterface extends SubsystemBase {
     // Send match time to the Dashboard
     SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime());
 
+    // Reset robot state if button is pressed
     if (resetRobotStateBoolean.get() && robotState.isDisabled() && !DriverStation.isFMSAttached()) {
       robotState.resetState();
       resetRobotStateBoolean.set(false);
     }
   }
 
+  /**
+   * Get the currently selected auto command
+   *
+   * @return The currently selected auto command
+   */
   public Command getAutoCommand() {
     return autoChooser.get();
   }
 
+  /**
+   * Add an new auto option to the dashboard
+   *
+   * @param name Name of the command
+   * @param autoCommand The Command to run when selected
+   */
   public void addAutoOption(String name, Command autoCommand) {
     autoChooser.addOption(name, autoCommand);
   }

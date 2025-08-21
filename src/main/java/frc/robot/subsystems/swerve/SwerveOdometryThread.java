@@ -19,6 +19,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 
+// TODO: raw odometry is bad, need to look at why
+
 /** Thread to update odometry at a faster rate than the main roborio thread */
 public class SwerveOdometryThread {
 
