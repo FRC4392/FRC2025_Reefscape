@@ -30,6 +30,9 @@ import frc.robot.util.PhoenixUtil.ClosedLoopControlType;
 /** Add your docs here. */
 public final class ArmConstants {
 
+  public static final double DEADBAND = 0.01;
+  public static final double MAX_OUTPUT = 1;
+
   // CAN IDs
   public static final int Pivot1CanId = 21;
   public static final int Pivot2CanId = 22;

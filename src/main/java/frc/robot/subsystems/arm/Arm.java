@@ -4,9 +4,9 @@
 
 package frc.robot.subsystems.arm;
 
-import static frc.robot.subsystems.arm.ArmConstants.driveRadius;
-import static frc.robot.subsystems.arm.ArmConstants.minAngle;
+import static frc.robot.subsystems.arm.ArmConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -813,77 +814,127 @@ public class Arm extends SubsystemBase {
   public Command getDropOffLowCommand() {
     ArmPosition destinationPosition = ArmPosition.L2;
     return Commands.sequence(
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        currentPosition.extension(),
-                        destinationPosition.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    currentPosition.extension(),
+                    destinationPosition.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    destinationPosition.extension(),
+                    destinationPosition.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+        run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
   }
 
   public Command getL3ArmCommand() {
     ArmPosition destinationPosition = ArmPosition.L3;
     return Commands.sequence(
-        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
+        run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
             .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    destinationPosition.extension(),
+                    destinationPosition.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+        run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
   }
 
   public Command getL4ArmCommand() {
     ArmPosition destinationPosition = ArmPosition.L4;
     return Commands.sequence(
-        this.run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
+        run(() -> setPosition(Rotation2d.fromDegrees(70), 0, new Rotation2d()))
             .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    destinationPosition.extension(),
+                    destinationPosition.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
+        run(() -> setPosition(destinationPosition)).until(() -> getArmInPosition()));
   }
 
   public Command getL4ScoreCommand() {
     ArmPosition destinationPosition = ArmPosition.L4;
     return Commands.sequence(
-        this.run(
-                () ->
-                    setPosition(
-                        destinationPosition.pivot(),
-                        destinationPosition.extension(),
-                        destinationPosition.wrist().plus(Rotation2d.fromDegrees(20))))
+        run(() ->
+                setPosition(
+                    destinationPosition.pivot(),
+                    destinationPosition.extension(),
+                    destinationPosition.wrist().plus(Rotation2d.fromDegrees(20))))
             .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        currentPosition.extension(),
-                        currentPosition.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    currentPosition.extension(),
+                    currentPosition.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(
-                () ->
-                    setPosition(
-                        Rotation2d.fromDegrees(70),
-                        ArmPosition.INTAKE.extension(),
-                        ArmPosition.INTAKE.wrist()))
+        run(() ->
+                setPosition(
+                    Rotation2d.fromDegrees(70),
+                    ArmPosition.INTAKE.extension(),
+                    ArmPosition.INTAKE.wrist()))
             .until(() -> getArmInPosition()),
-        this.run(() -> setPosition(ArmPosition.INTAKE)));
+        run(() -> setPosition(ArmPosition.INTAKE)));
+  }
+
+  public Command joystickArmControl(
+      DoubleSupplier pivotSupplier,
+      DoubleSupplier extensionSupplier,
+      DoubleSupplier wristSupplier) {
+    return run(
+        () -> {
+          double pivotVelocity = MathUtil.applyDeadband(pivotSupplier.getAsDouble(), DEADBAND);
+
+          pivotVelocity = pivotVelocity * MAX_OUTPUT;
+
+          // Square rotation value for more precise control
+          pivotVelocity = Math.copySign(pivotVelocity * pivotVelocity, pivotVelocity);
+
+          double pivotVoltage = pivotVelocity * 12.0;
+
+          setPivotVoltage(pivotVoltage);
+
+          double extensionVelocity =
+              MathUtil.applyDeadband(extensionSupplier.getAsDouble(), DEADBAND);
+
+          extensionVelocity = extensionVelocity * MAX_OUTPUT;
+
+          // Square rotation value for more precise control
+          extensionVelocity =
+              Math.copySign(extensionVelocity * extensionVelocity, extensionVelocity);
+
+          double extensionVoltage = extensionVelocity * 12.0;
+
+          setExtensionVoltage(extensionVoltage);
+
+          double wristVelocity = MathUtil.applyDeadband(wristSupplier.getAsDouble(), DEADBAND);
+
+          wristVelocity = wristVelocity * .5;
+
+          wristVelocity = Math.copySign(wristVelocity * wristVelocity, wristVelocity);
+
+          double wristVoltage = wristVelocity * 12.0;
+
+          setWristVoltage(wristVoltage);
+        });
+  }
+
+  public Command setArmPosition(
+      Rotation2d armPivot, double armExtension, Rotation2d wristPosition) {
+    return run(() -> {
+          setPosition(armPivot, armExtension, wristPosition);
+        })
+        .until(this::getArmInPosition);
+  }
+
+  public Command setArmPosition(Arm.ArmPosition position) {
+    return run(() -> {
+          setPosition(position);
+        })
+        .until(this::getArmInPosition);
   }
 }

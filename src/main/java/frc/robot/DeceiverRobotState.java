@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -318,6 +319,15 @@ public class DeceiverRobotState {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Get a value indicating if the robot is real or not
+   *
+   * @return true if on blue, false if not
+   */
+  public boolean isReal(){
+    return RobotBase.isReal();
   }
 
   /** Resets the robot state to initial startup. Only works if the robot is currently disabled. */

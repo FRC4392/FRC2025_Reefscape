@@ -12,7 +12,7 @@ public final class RobotConstants {
    *
    * <p>Mode.REPLAY = AdvantageKit Replay
    */
-  public static final Mode simMode = Mode.SIM;
+  private static final Mode simMode = Mode.SIM;
 
   /**
    * What sim mode should be used?
@@ -22,7 +22,7 @@ public final class RobotConstants {
    * <p>Mode.COMMISIONING = Enable extra diagnostic and testing functions that aren't helpful during
    * competition
    */
-  public static final Mode realMode = Mode.REAL;
+  private static final Mode realMode = Mode.REAL;
 
   /** What is the current mode the robot is in? */
   public static final Mode currentMode = RobotBase.isReal() ? realMode : simMode;

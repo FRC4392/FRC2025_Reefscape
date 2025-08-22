@@ -21,7 +21,6 @@ import frc.robot.RobotConstants.Mode;
 import frc.robot.operatorinterface.OperatorInterface;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.Arm.ArmPosition;
-import frc.robot.subsystems.arm.ArmCommands;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -33,8 +32,7 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.GyroIO;
 import frc.robot.subsystems.swerve.GyroIOPigeon2;
 import frc.robot.subsystems.swerve.Swerve;
-import frc.robot.subsystems.swerve.SwerveCommands;
-import frc.robot.subsystems.swerve.SwerveCommands.ReefSide;
+import frc.robot.subsystems.swerve.SwerveConstants.ReefSide;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIODeceivers;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
@@ -148,35 +146,36 @@ public class RobotContainer {
     // Set up Auto Triggers
 
     new EventTrigger("MoveToUpTravel")
-        .onTrue(ArmCommands.setArmPosition(arm, Rotation2d.fromDegrees(90), 0, new Rotation2d()));
+        .onTrue(arm.setArmPosition(Rotation2d.fromDegrees(90), 0, new Rotation2d()));
     new EventTrigger("MoveToL4")
         .onTrue(
-            ArmCommands.setArmPosition(arm, Arm.ArmPosition.L4)
+            arm.setArmPosition(Arm.ArmPosition.L4)
                 .until(() -> arm.getArmInPosition())
                 .withTimeout(5));
     new EventTrigger("AutoAlignRightWithTimeout")
         .onTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right)
+            swerve
+                .autoAlignCommand3D(vision, ReefSide.right)
                 .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
                 .withTimeout(1.0));
     new EventTrigger("AutoAlignLeftWithTimeout")
         .onTrue(
-            SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left)
+            swerve
+                .autoAlignCommand3D(vision, ReefSide.left)
                 .until(() -> swerve.getSwerveState() == SwerveState.autoDriveDone)
                 .withTimeout(1.0));
     // new
     // EventTrigger("ejectCoral").onTrue(GripperCommands.coralAutoOuttake(gripper).withTimeout(2));
-    new EventTrigger("MoveToPickup").onTrue(ArmCommands.setArmPosition(arm, ArmPosition.PROCESSOR));
+    new EventTrigger("MoveToPickup").onTrue(arm.setArmPosition(ArmPosition.PROCESSOR));
     // new EventTrigger("IntakeCoral").onTrue(GripperCommands.coralIntakeAuto(gripper));
 
     // Set up auto other routines
-    if (RobotConstants.realMode == Mode.COMMISIONING) {
+    if (RobotConstants.currentMode == Mode.COMMISIONING) {
       // Set up SysId routines
       operatorInterface.addAutoOption(
-          "Drive Wheel Radius Characterization",
-          SwerveCommands.wheelRadiusCharacterization(swerve));
+          "Drive Wheel Radius Characterization", swerve.wheelRadiusCharacterization());
       operatorInterface.addAutoOption(
-          "Drive Simple FF Characterization", SwerveCommands.feedforwardCharacterization(swerve));
+          "Drive Simple FF Characterization", swerve.feedforwardCharacterization());
       operatorInterface.addAutoOption(
           "Drive SysId (Quasistatic Forward)",
           swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -217,8 +216,7 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Default command, normal field-relative drive
-    swerve.setDefaultCommand(
-        SwerveCommands.joystickDrive(swerve, operatorInterface.getSwerveControlSignal()));
+    swerve.setDefaultCommand(swerve.joystickDrive(operatorInterface.getSwerveControlSignal()));
 
     // Smart Intake
     // operatorInterface.intakeTrigger().whileTrue(GripperCommands.coralIntake(gripper));
@@ -229,18 +227,18 @@ public class RobotContainer {
     // Auto align to left branch from driver view
     operatorInterface
         .autoAlignLeftTrigger()
-        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.left));
+        .whileTrue(swerve.autoAlignCommand3D(vision, ReefSide.left));
 
     // Auto align to right branch from driver view
     operatorInterface
         .autoAlignRightTrigger()
-        .whileTrue(SwerveCommands.autoAlignCommand3D(swerve, vision, ReefSide.right));
+        .whileTrue(swerve.autoAlignCommand3D(vision, ReefSide.right));
 
     // Reset gyro rotation, maintin position
     operatorInterface.restGyroTrigger().onTrue(Commands.runOnce(() -> swerve.resetGyro()));
 
     // Put drive in X position
-    operatorInterface.stopWithXTrigger().whileTrue(SwerveCommands.stopWithX(swerve));
+    operatorInterface.stopWithXTrigger().whileTrue(swerve.stopWithX());
 
     // Rumble at the start of end game
     Trigger endGameTrigger = new Trigger(() -> DriverStation.getMatchTime() < 20);
@@ -250,10 +248,10 @@ public class RobotContainer {
     operatorInterface
         .pathPlanToPointTrigger()
         .whileTrue(
-            SwerveCommands.pathfindToPose(
+            swerve.pathfindToPose(
                 new Pose2d(),
                 MetersPerSecond.of(0),
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue)));
+                () -> robotState.getAlliance().orElse(Alliance.Blue)));
   }
 
   // This need to be replaced
