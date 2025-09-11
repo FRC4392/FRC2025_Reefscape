@@ -27,8 +27,8 @@ public class GripperConstants {
   public static final boolean CoralInverted = false;
   public static final boolean AlgaeInverted = true;
 
-  public static final int coralCurrentLimit = 40;
-  public static final int algaeCurrentLimit = 80;
+  public static final int coralCurrentLimit = 60;
+  public static final int algaeCurrentLimit = 60;
 
   public static final double coralVelocityConversionFactor = 2;
   public static final double coralPositionConversionFactor = 2;

@@ -115,7 +115,7 @@ public class ArmConstants {
 
   public static final ClosedLoopControlType extensionControlType = ClosedLoopControlType.Voltage;
 
-  public static final double extensionMotorStatorCurrentLimit = 120;
+  public static final double extensionMotorStatorCurrentLimit = 40;
 
   public static final TalonFXConfiguration extensionMotorBaseConfig =
       new TalonFXConfiguration()
@@ -193,19 +193,16 @@ public class ArmConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  // .withFeedbackRemoteSensorID(WristCanId)
-                  .withRotorToSensorRatio(wristReduction)
-              // .withSensorToMechanismRatio(1)
-              )
+                  .withSensorToMechanismRatio(wristReduction))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withInverted(InvertedValue.CounterClockwise_Positive)
                   .withNeutralMode(NeutralModeValue.Brake))
           .withSlot0(
               new Slot0Configs()
-                  .withKP(74)
-                  .withKI(0.0)
-                  .withKD(0.0)
+                  .withKP(50)
+                  .withKI(0)
+                  .withKD(0)
                   .withKG(0)
                   .withKV(7.5)
                   .withKS(0.0)

@@ -301,23 +301,23 @@ public class RobotContainer {
   public void OperatorLoop() {
     if (operateController.getLeftTriggerAxis() + operateController.getRightTriggerAxis() == 0) {
       if (operateController.getHID().getAButton()) {
-        arm.setArmPostion(ArmPosition.L2);
+        arm.setArmPostion(ArmPosition.ALGAE1);
       } else if (operateController.getHID().getXButton()) {
         arm.setArmPostion(ArmPosition.L3);
       } else if (operateController.getHID().getYButton()
           && !driveController.getHID().getRightStickButton()) {
         arm.setArmPostion(ArmPosition.L4);
       } else if (operateController.getHID().getBButton()) {
-        arm.setArmPostion(ArmPosition.L1);
+        arm.setArmPostion(ArmPosition.ALGAE2);
       } else if (operateController.getHID().getStartButton()) {
         arm.setArmPostion(ArmPosition.HOME);
       } else if (operateController.getHID().getLeftBumperButton()
           || operateController.getHID().getRightBumperButton()) {
         arm.setArmPostion(ArmPosition.INTAKE);
       } else if (operateController.getHID().getPOV() == 180) {
-        arm.setArmPostion(ArmPosition.ALGAE1);
+        // arm.setArmPostion(ArmPosition.ALGAE1);
       } else if (operateController.getHID().getPOV() == 0) {
-        arm.setArmPostion(ArmPosition.ALGAE2);
+        // arm.setArmPostion(ArmPosition.ALGAE2);
       } else if (operateController.getHID().getPOV() == 90) {
         arm.setArmPostion(ArmPosition.BARGE);
       } else if (operateController.getHID().getPOV() == 270) {
