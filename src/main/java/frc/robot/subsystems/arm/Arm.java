@@ -50,13 +50,13 @@ public class Arm extends SubsystemBase {
         case ALGAE2:
           return Rotation2d.fromDegrees(93);
         case BARGE:
-          return Rotation2d.fromDegrees(73);
+          return Rotation2d.fromDegrees(98);
         case CLIMB:
           return Rotation2d.fromDegrees(93);
         case INTAKE:
-          return Rotation2d.fromDegrees(0);
+          return Rotation2d.fromDegrees(-1.5);
         case PROCESSOR:
-          return minAngle.plus(Rotation2d.fromDegrees(14));
+          return Rotation2d.fromDegrees(04);
         default:
           return new Rotation2d();
       }
@@ -71,21 +71,21 @@ public class Arm extends SubsystemBase {
         case L2:
           return Units.inchesToMeters(0);
         case L3:
-          return Units.inchesToMeters(3);
+          return Units.inchesToMeters(3); // 3
         case L4:
-          return Units.inchesToMeters(17);
+          return Units.inchesToMeters(17); // 17
         case ALGAE1:
           return Units.inchesToMeters(0);
         case ALGAE2:
-          return Units.inchesToMeters(3);
+          return Units.inchesToMeters(3); // 3
         case BARGE:
-          return Units.inchesToMeters(17);
+          return Units.inchesToMeters(20); // 17
         case CLIMB:
           return Units.inchesToMeters(0);
         case INTAKE:
           return Units.inchesToMeters(0);
         case PROCESSOR:
-          return Units.inchesToMeters(2);
+          return Units.inchesToMeters(0); // 2
         default:
           return Units.inchesToMeters(0);
       }
@@ -109,13 +109,13 @@ public class Arm extends SubsystemBase {
         case ALGAE2:
           return Rotation2d.fromDegrees(0);
         case BARGE:
-          return Rotation2d.fromDegrees(115);
+          return Rotation2d.fromDegrees(100);
         case CLIMB:
           return Rotation2d.fromDegrees(90);
         case INTAKE:
-          return Rotation2d.fromDegrees(95);
+          return Rotation2d.fromDegrees(110);
         case PROCESSOR:
-          return Rotation2d.fromDegrees(180);
+          return Rotation2d.fromDegrees(80);
         default:
           return new Rotation2d();
       }
